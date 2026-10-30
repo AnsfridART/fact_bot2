@@ -1,3 +1,4 @@
 edge-tts>=7.0
 numpy>=1.26
 requests>=2.31
+num2words>=0.5

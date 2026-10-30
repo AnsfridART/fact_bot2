@@ -8,10 +8,13 @@ CF_ACCOUNT_ID = os.getenv("CF_ACCOUNT_ID")            # необязательн
 CF_API_TOKEN = os.getenv("CF_API_TOKEN")
 
 # ---- Голос рассказчика ----
-VOICE = os.getenv("VOICE", "dmitri")       # dmitri / denis / ruslan (мужские голоса Piper)
-VOICE_SPEED = float(os.getenv("VOICE_SPEED", "1.22"))  # больше = медленнее речь
-VOICE_PITCH = float(os.getenv("VOICE_PITCH", "0.90"))  # меньше = ниже и «старше» голос
-SENTENCE_PAUSE = 0.35                      # пауза между предложениями, сек
+TTS_ENGINE = os.getenv("TTS_ENGINE", "silero")    # silero / yandex / piper
+VOICE = os.getenv("VOICE", "aidar")               # silero: aidar, eugene; yandex: filipp, ermil, madirus...
+VOICE_SPEED = float(os.getenv("VOICE_SPEED", "1.2"))   # больше = медленнее речь
+VOICE_PITCH = float(os.getenv("VOICE_PITCH", "0.9"))   # меньше = ниже голос
+SENTENCE_PAUSE = 0.35                             # пауза между предложениями, сек
+SPEECHKIT_API_KEY = os.getenv("SPEECHKIT_API_KEY")
+YC_FOLDER_ID = os.getenv("YC_FOLDER_ID")
 FALLBACK_VOICE = "ru-RU-DmitryNeural"      # запасной голос edge-tts
 
 FPS = 30
