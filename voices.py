@@ -4,17 +4,16 @@ import subprocess
 import requests
 import config
 import tts
+import music
 
 PHRASE = ("Гренландская акула может прожить около четырёхсот лет. "
           "Некоторые из них плавали в океане ещё до рождения Петра Первого!")
 
 # (голос Silero, тон Silero, доп. понижение тона, обработка, описание)
 VARIANTS = [
-    ("aidar", 0.9, 1.0, "studio", "как вариант 2 (для сравнения)"),
-    ("aidar", 0.8, 1.0, "deep", "очень низкий тон + дикторская обработка"),
-    ("aidar", 0.9, 0.94, "deep", "ниже на 6% + дикторская обработка"),
-    ("aidar", 0.9, 0.90, "deep", "ниже на 10% + дикторская обработка"),
-    ("aidar", 0.8, 0.94, "deep", "очень низкий + ниже на 6% + дикторская"),
+    ("aidar", 0.9, 0.97, "deep", "дикторская обработка, тон чуть ниже обычного"),
+    ("aidar", 0.9, 1.00, "deep", "дикторская обработка, обычный тон"),
+    ("aidar", 0.9, 0.95, "deep", "дикторская обработка, тон пониже"),
 ]
 
 
@@ -36,6 +35,21 @@ def main():
                    files={"audio": (f"voice{n}.mp3", f, "audio/mpeg")})
         except Exception as e:
             tg("sendMessage", data={"chat_id": config.TELEGRAM_CHAT_ID, "text": f"{label}: ошибка — {str(e)[:300]}"})
+
+    # пример: голос + загадочная музыка с приглушением под голос
+    try:
+        voice, bg, mix = "work/v1.wav", "work/music.wav", "work/mix.mp3"
+        music.generate(bg, 20, 7)
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", bg, "-i", voice, "-filter_complex",
+                        "[1:a]adelay=1500|1500,apad,asplit=2[v][sc];"
+                        "[0:a][sc]sidechaincompress=threshold=0.03:ratio=6:attack=50:release=600[bgd];"
+                        "[bgd][v]amix=inputs=2:duration=first:normalize=0,volume=1.2",
+                        "-b:a", "160k", mix], check=True)
+        with open(mix, "rb") as f:
+            tg("sendAudio", data={"chat_id": config.TELEGRAM_CHAT_ID, "caption": "Пример: вариант 1 + музыка",
+                                  "title": "Голос + музыка"}, files={"audio": ("mix.mp3", f, "audio/mpeg")})
+    except Exception as e:
+        tg("sendMessage", data={"chat_id": config.TELEGRAM_CHAT_ID, "text": f"Пример с музыкой: ошибка — {str(e)[:300]}"})
 
 
 if __name__ == "__main__":

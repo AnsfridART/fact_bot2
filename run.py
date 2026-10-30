@@ -13,6 +13,7 @@ import requests
 import config
 import tts
 import images
+import music
 
 FPS = config.FPS
 
@@ -127,10 +128,25 @@ def build_props(s):
         start += dur
 
     props = {"segments": segments, "totalFrames": start}
+    # музыка: свои треки из папки music/, иначе генерируем загадочный эмбиент
     tracks = glob.glob(os.path.join(config.MUSIC_DIR, "*.mp3"))
-    if tracks:
-        shutil.copy(random.choice(tracks), os.path.join(config.PUBLIC_DIR, "music.mp3"))
-        props["music"] = "music.mp3"
+    try:
+        if tracks:
+            shutil.copy(random.choice(tracks), os.path.join(config.PUBLIC_DIR, "music.mp3"))
+            props["music"] = "music.mp3"
+        else:
+            music.generate(os.path.join(config.PUBLIC_DIR, "music.wav"), start / FPS + 1, seed)
+            props["music"] = "music.wav"
+    except Exception as e:
+        print("Музыка не получилась:", e)
+    # громкость музыки приглушается, когда звучит голос (сглаженно, без «качелей»)
+    voice = np.zeros(start)
+    for sg in segments:
+        e = np.array(sg["env"][: max(0, start - sg["start"])])
+        voice[sg["start"]: sg["start"] + len(e)] = e
+    win = np.ones(15) / 15
+    duck = np.convolve(voice, win, mode="same")
+    props["duck"] = [round(float(min(1.0, x * 1.6)), 2) for x in duck]
     with open("props.json", "w", encoding="utf-8") as f:
         json.dump(props, f, ensure_ascii=False)
     return props
