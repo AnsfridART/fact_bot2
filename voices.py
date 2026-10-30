@@ -8,11 +8,13 @@ import tts
 PHRASE = ("Гренландская акула может прожить около четырёхсот лет. "
           "Некоторые из них плавали в океане ещё до рождения Петра Первого!")
 
-# (движок, голос, скорость: больше = медленнее, тон: меньше = ниже)
+# (голос Silero, тон Silero, доп. понижение тона, обработка, описание)
 VARIANTS = [
-    ("silero", "aidar", 1.2, 0.9), ("silero", "aidar", 1.0, 0.9),
-    ("silero", "eugene", 1.2, 0.9), ("silero", "eugene", 1.0, 0.9),
-    ("piper", "dmitri", 1.22, 0.9),
+    ("aidar", 0.9, 1.0, "studio", "как вариант 2 (для сравнения)"),
+    ("aidar", 0.8, 1.0, "deep", "очень низкий тон + дикторская обработка"),
+    ("aidar", 0.9, 0.94, "deep", "ниже на 6% + дикторская обработка"),
+    ("aidar", 0.9, 0.90, "deep", "ниже на 10% + дикторская обработка"),
+    ("aidar", 0.8, 0.94, "deep", "очень низкий + ниже на 6% + дикторская"),
 ]
 
 
@@ -23,12 +25,11 @@ def tg(method, **kw):
 
 def main():
     os.makedirs("work", exist_ok=True)
-    for n, (engine, voice, speed, pitch) in enumerate(VARIANTS, 1):
-        tempo = "медленно" if speed >= 1.15 else "обычно"
-        label = f"Вариант {n}: {engine} / {voice}, {tempo}"
+    for n, (voice, pitch, post, preset, desc) in enumerate(VARIANTS, 1):
+        label = f"Вариант {n}: {desc}"
         try:
             wav, mp3 = f"work/v{n}.wav", f"work/v{n}.mp3"
-            tts.render(PHRASE, wav, engine, voice, speed=speed, pitch=pitch)
+            tts.render(PHRASE, wav, "silero", voice, speed=1.0, pitch=pitch, post_pitch=post, preset=preset)
             subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", wav, "-b:a", "160k", mp3], check=True)
             with open(mp3, "rb") as f:
                 tg("sendAudio", data={"chat_id": config.TELEGRAM_CHAT_ID, "caption": label, "title": label},

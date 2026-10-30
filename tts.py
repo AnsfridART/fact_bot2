@@ -10,7 +10,8 @@ import requests
 import config
 
 SR = 44100
-STUDIO = ",".join([
+PRESETS = {}
+PRESETS["studio"] = ",".join([
     "highpass=f=70",
     "equalizer=f=140:t=q:w=1.0:g=3",      # тепло и «грудной» голос
     "equalizer=f=380:t=q:w=1.2:g=-2.5",   # убираем «бубнение»
@@ -20,6 +21,18 @@ STUDIO = ",".join([
     "aecho=0.85:0.55:28|47|71:0.14|0.09|0.05",  # небольшая студийная комната
     "loudnorm=I=-15:TP=-1.5:LRA=7",
 ])
+# «дикторский»: больше низов и плотности, чуть больше зала
+PRESETS["deep"] = ",".join([
+    "highpass=f=55",
+    "equalizer=f=110:t=q:w=0.9:g=5",
+    "equalizer=f=320:t=q:w=1.2:g=-3",
+    "equalizer=f=2600:t=q:w=1.0:g=2.5",
+    "equalizer=f=8500:t=q:w=1.0:g=1.5",
+    "acompressor=threshold=-22dB:ratio=4:attack=4:release=120:makeup=4",
+    "aecho=0.85:0.6:35|60|95|140:0.16|0.11|0.07|0.04",
+    "loudnorm=I=-14:TP=-1.5:LRA=6",
+])
+STUDIO = PRESETS["studio"]
 
 
 def _ffmpeg(src, dst, af):
@@ -57,13 +70,15 @@ _silero = None
 
 
 def _silero_sentence(text, path, voice, speed, pitch):
+    """pitch < 0.85 = x-low, < 0.95 = low, иначе обычный тон."""
     global _silero
     import torch
     if _silero is None:
         _silero = torch.package.PackageImporter("models/silero_ru.pt").load_pickle("tts_models", "model")
         _silero.to(torch.device("cpu"))
     rate = {True: "slow", False: "medium"}[speed >= 1.15]
-    ssml = f'<speak><prosody rate="{rate}" pitch="{"low" if pitch < 0.95 else "medium"}">{text}</prosody></speak>'
+    tone = "x-low" if pitch < 0.85 else "low" if pitch < 0.95 else "medium"
+    ssml = f'<speak><prosody rate="{rate}" pitch="{tone}">{text}</prosody></speak>'
     audio = _silero.apply_tts(ssml_text=ssml, speaker=voice, sample_rate=48000, put_accent=True, put_yo=True)
     _write_wav(path, (audio.numpy() * 32767).astype(np.int16), 48000)
 
@@ -101,10 +116,12 @@ def _piper_sentence(text, path, voice, speed, pitch):
 ENGINES = {"silero": _silero_sentence, "yandex": _yandex_sentence, "piper": _piper_sentence}
 
 
-def render(text, wav_path, engine, voice, speed=None, pitch=None, studio=True):
-    """Озвучивает текст по предложениям, вставляет паузы, накладывает обработку."""
+def render(text, wav_path, engine, voice, speed=None, pitch=None, post_pitch=None, preset=None):
+    """Озвучивает текст по предложениям, вставляет паузы, понижает тон и накладывает обработку."""
     speed = speed or config.VOICE_SPEED
     pitch = pitch or config.VOICE_PITCH
+    post_pitch = post_pitch or config.VOICE_POST_PITCH
+    preset = preset or config.VOICE_PRESET
     fn = ENGINES[engine]
     if engine == "silero":
         text = numbers_to_words(text)
@@ -113,9 +130,10 @@ def render(text, wav_path, engine, voice, speed=None, pitch=None, studio=True):
     for i, part in enumerate(split_sentences(text)):
         raw, norm = f"{wav_path}.{i}.raw.wav", f"{wav_path}.{i}.wav"
         fn(part, raw, voice, speed, pitch)
+        shift = post_pitch * (pitch if engine == "piper" else 1.0)  # у Piper тон понижаем только вручную
         af = "anull"
-        if engine == "piper" and pitch != 1.0:  # у Piper тон понижаем вручную
-            af = f"aresample=22050,asetrate={int(22050 * pitch)},aresample={SR},atempo={1 / pitch:.4f}"
+        if abs(shift - 1.0) > 0.001:  # ниже тон при той же скорости речи
+            af = f"aresample=48000,asetrate={int(48000 * shift)},aresample={SR},atempo={1 / shift:.4f}"
         _ffmpeg(raw, norm, af)
         chunks.append(_read(norm))
         os.remove(raw)
@@ -126,7 +144,7 @@ def render(text, wav_path, engine, voice, speed=None, pitch=None, studio=True):
         out.setsampwidth(2)
         out.setframerate(SR)
         out.writeframes(silence.join(chunks) + silence[: len(silence) // 2])
-    _ffmpeg(dry, wav_path, STUDIO if studio else "anull")
+    _ffmpeg(dry, wav_path, PRESETS.get(preset, STUDIO))
     os.remove(dry)
     return wav_path
 

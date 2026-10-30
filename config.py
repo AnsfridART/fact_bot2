@@ -10,8 +10,10 @@ CF_API_TOKEN = os.getenv("CF_API_TOKEN")
 # ---- Голос рассказчика ----
 TTS_ENGINE = os.getenv("TTS_ENGINE", "silero")    # silero / yandex / piper
 VOICE = os.getenv("VOICE", "aidar")               # silero: aidar, eugene; yandex: filipp, ermil, madirus...
-VOICE_SPEED = float(os.getenv("VOICE_SPEED", "1.2"))   # больше = медленнее речь
-VOICE_PITCH = float(os.getenv("VOICE_PITCH", "0.9"))   # меньше = ниже голос
+VOICE_SPEED = float(os.getenv("VOICE_SPEED", "1.0"))   # больше = медленнее речь
+VOICE_PITCH = float(os.getenv("VOICE_PITCH", "0.9"))   # тон Silero: <0.85 очень низкий, <0.95 низкий
+VOICE_POST_PITCH = float(os.getenv("VOICE_POST_PITCH", "1.0"))  # дополнительное понижение тона (0.9 = ниже)
+VOICE_PRESET = os.getenv("VOICE_PRESET", "studio")    # studio / deep
 SENTENCE_PAUSE = 0.35                             # пауза между предложениями, сек
 SPEECHKIT_API_KEY = os.getenv("SPEECHKIT_API_KEY")
 YC_FOLDER_ID = os.getenv("YC_FOLDER_ID")
