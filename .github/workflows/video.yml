@@ -1,0 +1,67 @@
+name: Ролик с фактами
+
+on:
+  schedule:
+    - cron: "0 7,12,17 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency: factbot
+
+jobs:
+  make-video:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Установка ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-dejavu-core
+
+      - name: Кэш npm и голоса
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm
+            models
+          key: factbot-${{ hashFiles('package.json') }}-v1
+
+      - name: Установка Remotion
+        run: npm install --no-audit --no-fund && npx remotion browser ensure
+
+      - name: Установка Python-библиотек
+        run: pip install -r requirements.txt
+
+      - name: Установка голоса Piper
+        continue-on-error: true
+        run: |
+          pip install piper-tts onnxruntime
+          mkdir -p models
+          BASE=https://huggingface.co/rhasspy/piper-voices/resolve/main/ru/ru_RU/dmitri/medium
+          [ -s models/voice.onnx ] || curl -fL -o models/voice.onnx $BASE/ru_RU-dmitri-medium.onnx
+          [ -s models/voice.onnx.json ] || curl -fL -o models/voice.onnx.json $BASE/ru_RU-dmitri-medium.onnx.json
+
+      - name: Создание ролика
+        run: python run.py
+        env:
+          PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+
+      - name: Сохранение очереди
+        run: |
+          git config user.name "factbot"
+          git config user.email "factbot@users.noreply.github.com"
+          git add -A queue done.txt
+          git diff --cached --quiet || (git commit -m "Использован сценарий" && git push)
