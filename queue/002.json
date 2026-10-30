@@ -1,0 +1,279 @@
+[
+ {
+  "title": "Армия с пулемётами проиграла войну… птицам 🐦",
+  "intro": {
+   "title": "АРМИЯ|*ПРОИГРАЛА*|ПТИЦАМ",
+   "text": "Знаешь, как армия с пулемётами проиграла войну… птицам? Слушай."
+  },
+  "scenes": [
+   {
+    "text": "Австралия, 1932 год.",
+    "prompt": "vast dry wheat fields in Western Australia, small 1930s farmhouse, dusk",
+    "cam": "in",
+    "tag": "1932 · АВСТРАЛИЯ"
+   },
+   {
+    "text": "Бывшие солдаты стали фермерами и выращивают пшеницу.",
+    "prompt": "1930s farmer in wide hat standing in wheat field, worried face",
+    "cam": "right",
+    "tag": "ФЕРМЕРЫ"
+   },
+   {
+    "text": "И тут приходят *они*.",
+    "prompt": "huge flock of emus walking toward the viewer across the horizon at dusk, ominous",
+    "cam": "out",
+    "alert": "20 000"
+   },
+   {
+    "text": "Двадцать тысяч эму топчут и съедают урожай.",
+    "prompt": "emus trampling and eating wheat crops near a broken wooden fence",
+    "cam": "shake",
+    "tag": "УРОЖАЙ",
+    "alert": "УНИЧТОЖЕН"
+   },
+   {
+    "text": "Фермеры просят помощи у правительства.",
+    "prompt": "group of 1930s farmers in a government office talking to an official behind a desk",
+    "cam": "in",
+    "tag": "ПРОСЬБА"
+   },
+   {
+    "text": "И правительство отправляет… *армию*.",
+    "prompt": "two 1930s Australian soldiers with a machine gun on the back of an old truck in the outback",
+    "cam": "left",
+    "alert": "АРМИЯ"
+   },
+   {
+    "text": "Два пулемёта. Десять тысяч патронов.",
+    "prompt": "close-up of a vintage machine gun and wooden ammunition boxes on dry ground",
+    "cam": "in",
+    "tag": "ОРУЖИЕ"
+   },
+   {
+    "text": "Но эму хитрее. Они разбегаются в разные стороны.",
+    "prompt": "emus scattering in all directions across a field, dust clouds",
+    "cam": "right"
+   },
+   {
+    "text": "А пулемёт заклинивает в самый важный момент.",
+    "prompt": "jammed smoking machine gun, soldier hands in frustration",
+    "cam": "shake",
+    "alert": "ЗАКЛИНИЛО"
+   },
+   {
+    "text": "Солдаты гонятся за птицами на грузовике, но не могут их догнать.",
+    "prompt": "old army truck bouncing over rough field chasing running emus",
+    "cam": "left"
+   },
+   {
+    "text": "Почти десять тысяч патронов… а эму всё ещё тысячи.",
+    "prompt": "pile of empty shell casings on dry ground, emus standing unharmed in the background",
+    "cam": "up",
+    "tag": "ДЕКАБРЬ 1932"
+   }
+  ],
+  "punch": {
+   "big": "ПТИЦЫ|*ПОБЕДИЛИ*",
+   "text": "Армия отступила. Войну выиграли эму."
+  },
+  "outro": {
+   "text": "Подпишись! Завтра расскажу, как украли самую известную картину в мире."
+  },
+  "source": "M. Johnson, Journal of Australian Studies, 2006; Национальный архив Австралии",
+  "description": "В 1932 году Австралия отправила солдат с пулемётами воевать с эму. Угадай, кто победил.",
+  "hashtags": [
+   "факты",
+   "истории",
+   "знаешьли",
+   "shorts",
+   "интересно",
+   "история",
+   "австралия"
+  ]
+ },
+ {
+  "title": "Как Мону Лизу вынесли из Лувра под халатом",
+  "intro": {
+   "title": "КАК УКРАЛИ|*МОНУ ЛИЗУ*",
+   "text": "Знаешь, что самую известную картину в мире однажды просто вынесли из Лувра под одеждой?"
+  },
+  "scenes": [
+   {
+    "text": "Париж, август 1911 года.",
+    "prompt": "Paris street in 1911 early morning, light fog, grand museum building",
+    "cam": "in",
+    "tag": "1911 · ПАРИЖ"
+   },
+   {
+    "text": "Понедельник. Лувр закрыт для посетителей.",
+    "prompt": "empty grand museum gallery hall with paintings, quiet morning light",
+    "cam": "out",
+    "tag": "ЛУВР · ПОНЕДЕЛЬНИК"
+   },
+   {
+    "text": "По пустым залам идёт рабочий в белом халате.",
+    "prompt": "man in white worker smock walking alone through an empty museum hall",
+    "cam": "left"
+   },
+   {
+    "text": "Это Винченцо Перуджа. Когда-то он сам ставил стёкла на картины в этом музее.",
+    "prompt": "worker installing protective glass over a painting in a museum",
+    "cam": "in",
+    "tag": "ВИНЧЕНЦО ПЕРУДЖА"
+   },
+   {
+    "text": "Он подходит к *Моне Лизе*.",
+    "prompt": "dark museum wall with a renaissance portrait painting under a spotlight, silhouette of a man approaching",
+    "cam": "in"
+   },
+   {
+    "text": "Снимает её со стены.",
+    "prompt": "hands lifting a framed painting off a museum wall",
+    "cam": "shake",
+    "alert": "СНЯЛ"
+   },
+   {
+    "text": "На лестнице вынимает из рамы и прячет под халат.",
+    "prompt": "man hiding a wooden panel painting under his white smock in a dark stairwell",
+    "cam": "in"
+   },
+   {
+    "text": "Дверь заперта. И проходящий мимо сантехник *сам* открывает её вору.",
+    "prompt": "friendly plumber opening a locked old door for a man in a white smock",
+    "cam": "right",
+    "alert": "ДВЕРЬ"
+   },
+   {
+    "text": "Пропажу замечают только на следующий день.",
+    "prompt": "museum wall with four iron hooks and an empty space where a painting hung, shocked artist with easel",
+    "cam": "out",
+    "alert": "ПУСТАЯ СТЕНА"
+   },
+   {
+    "text": "Под подозрение попадает даже молодой *Пикассо*.",
+    "prompt": "young painter in 1911 being questioned by a police detective in an office",
+    "cam": "left",
+    "tag": "ПОДОЗРЕВАЕМЫЙ"
+   },
+   {
+    "text": "А картина два года лежит в сундуке в обычной комнате.",
+    "prompt": "small shabby room, open wooden trunk with a hidden painting inside",
+    "cam": "in",
+    "tag": "2 ГОДА СПУСТЯ"
+   },
+   {
+    "text": "Вора ловят, когда он пытается продать её во Флоренции.",
+    "prompt": "art dealer in Florence examining a painting, suspicious look",
+    "cam": "right",
+    "tag": "1913 · ФЛОРЕНЦИЯ"
+   }
+  ],
+  "punch": {
+   "big": "КРАЖА СДЕЛАЛА ЕЁ|*САМОЙ ЗНАМЕНИТОЙ*",
+   "text": "И именно эта кража сделала Мону Лизу самой знаменитой картиной в мире."
+  },
+  "outro": {
+   "text": "Подпишись! Завтра расскажу, почему вороны помнят твоё лицо."
+  },
+  "source": "Музей Лувр; N. Charney, «The Thefts of the Mona Lisa», 2011",
+  "description": "В 1911 году Мону Лизу украли из Лувра, и пропажу заметили только через сутки.",
+  "hashtags": [
+   "факты",
+   "истории",
+   "знаешьли",
+   "shorts",
+   "интересно",
+   "история",
+   "искусство"
+  ]
+ },
+ {
+  "title": "Вороны помнят твоё лицо. И рассказывают другим 🐦‍⬛",
+  "intro": {
+   "title": "ВОРОНЫ|*ПОМНЯТ*|ТВОЁ ЛИЦО",
+   "text": "Знаешь, что вороны могут годами помнить твоё лицо? И рассказать о тебе другим."
+  },
+  "scenes": [
+   {
+    "text": "Сиэтл, 2006 год. Университетский кампус.",
+    "prompt": "university campus with trees and old brick buildings, overcast day, crows on branches",
+    "cam": "in",
+    "tag": "2006 · СИЭТЛ"
+   },
+   {
+    "text": "Учёные надевают жуткую *маску* пещерного человека.",
+    "prompt": "scientist wearing a creepy caveman rubber mask on a campus lawn",
+    "cam": "in",
+    "alert": "МАСКА"
+   },
+   {
+    "text": "В этой маске они ловят семь ворон, кольцуют и отпускают.",
+    "prompt": "researcher in a caveman mask holding a crow and putting a ring on its leg",
+    "cam": "right",
+    "tag": "7 ВОРОН"
+   },
+   {
+    "text": "Птицам не сделали ничего плохого. Но они *запомнили*.",
+    "prompt": "extreme close-up of a crow eye staring, reflection of a mask in the eye",
+    "cam": "in"
+   },
+   {
+    "text": "Теперь каждый раз, когда человек в этой маске идёт по кампусу…",
+    "prompt": "lonely person in a caveman mask walking along a campus path, crows watching from trees",
+    "cam": "left"
+   },
+   {
+    "text": "Вороны кричат и пикируют на него.",
+    "prompt": "many crows diving and screaming at a masked man",
+    "cam": "shake",
+    "alert": "АТАКА"
+   },
+   {
+    "text": "А на человека в другой маске они не обращают внимания.",
+    "prompt": "person in a neutral face mask walking calmly, crows ignoring him",
+    "cam": "right",
+    "tag": "ДРУГАЯ МАСКА"
+   },
+   {
+    "text": "Проходят годы.",
+    "prompt": "campus trees changing through seasons, time passing",
+    "cam": "out",
+    "tag": "ГОДЫ СПУСТЯ"
+   },
+   {
+    "text": "Ворон, которые кричат на маску, становится только *больше*.",
+    "prompt": "large crowd of crows on power lines all looking down",
+    "cam": "up"
+   },
+   {
+    "text": "Среди них есть птицы, которых никто никогда не ловил.",
+    "prompt": "young crow among older crows on a branch, all staring at the viewer",
+    "cam": "in",
+    "alert": "НИКТО НЕ ТРОГАЛ"
+   },
+   {
+    "text": "Они узнали о враге от других ворон.",
+    "prompt": "crows gathered together as if talking, one crow pointing its beak at a masked man",
+    "cam": "left"
+   }
+  ],
+  "punch": {
+   "big": "ОНИ|*ПОМНЯТ ТЕБЯ*",
+   "text": "Так что подумай, прежде чем обижать ворону."
+  },
+  "outro": {
+   "text": "Подпишись! Завтра будет история ещё безумнее."
+  },
+  "source": "J. Marzluff и др., Animal Behaviour, 2010; Cornell и др., Proc. R. Soc. B, 2012",
+  "description": "Учёные надели маску и поймали семь ворон. Годы спустя на маску кричали даже вороны, которых никто не трогал.",
+  "hashtags": [
+   "факты",
+   "истории",
+   "знаешьли",
+   "shorts",
+   "интересно",
+   "животные",
+   "вороны"
+  ]
+ }
+]

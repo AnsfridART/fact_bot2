@@ -34,6 +34,9 @@ def next_script():
     for path in sorted(glob.glob(os.path.join(config.QUEUE_DIR, "*.json"))):
         with open(path, encoding="utf-8") as f:
             items = json.load(f)
+        # сценарии старого формата (без сцен) пропускаем
+        while items and "scenes" not in items[0]:
+            items = items[1:]
         if items:
             return items[0], path, items[1:]
         os.remove(path)
@@ -68,15 +71,19 @@ def audio_info(path):
 
 
 def word_timings(text, first, last):
-    """Распределяем слова по времени речи пропорционально длине слова."""
+    """Распределяем слова по времени речи пропорционально длине. *слово* = ключевое (красное)."""
     words = text.replace("\u00a0", " ").split()
-    weights = [len(w.strip(".,!?«»—:;")) + 2 for w in words]
+    weights = [len(w.strip(".,!?«»—:;*…")) + 2 for w in words]
     total, span, t, out = sum(weights), max(1, last - first), float(first), []
     for w, k in zip(words, weights):
         d = span * k / total
-        out.append({"w": w.strip("«»"), "s": int(t), "e": int(t + d)})
+        out.append({"w": w.replace("*", "").strip("«»"), "key": "*" in w, "s": int(t), "e": int(t + d)})
         t += d
     return out
+
+
+def clean(text):
+    return text.replace("*", "").replace("|", " ")
 
 
 # ---------- Сборка данных ----------
@@ -85,38 +92,37 @@ def build_props(s):
         shutil.rmtree(config.PUBLIC_DIR)
     os.makedirs(config.PUBLIC_DIR)
 
-    plan = [{"kind": "hook", "text": s["hook"]["text"], "image": s["hook"].get("image"),
-             "emotion": "enter", "big": s["hook"].get("big")}]
-    emotions = ["point", "think", "point", "laugh", "point"]
-    for i, f in enumerate(s["facts"], 1):
-        emo = f.get("emotion") or ("shock" if f.get("big") else emotions[(i - 1) % len(emotions)])
-        plan.append({"kind": "fact", "index": i, "total": len(s["facts"]), "text": f["text"],
-                     "image": f.get("image"), "emotion": emo, "big": f.get("big")})
-    outro = s.get("outro") or {}
-    plan.append({"kind": "outro", "emotion": "wave", "image": outro.get("image") or s["facts"][-1].get("image"),
-                 "text": outro.get("text", "Какой факт взорвал тебе мозг? Пиши номер в комментариях!")})
+    plan = [{"kind": "intro", "text": s["intro"]["text"], "title": s["intro"].get("title"), "emotion": "enter"}]
+    for sc in s["scenes"]:
+        plan.append({"kind": "scene", **sc})
+    if s.get("punch"):
+        plan.append({"kind": "punch", "text": s["punch"]["text"], "big": s["punch"]["big"]})
+    plan.append({"kind": "outro", "emotion": "wave",
+                 "text": (s.get("outro") or {}).get("text", "Подпишись, завтра расскажу историю ещё безумнее!")})
 
-    segments, start, last_img = [], 0, None
+    seed = random.randint(1, 10_000_000)
+    segments, start = [], 0
     for i, p in enumerate(plan):
         wav = f"seg{i}.wav"
-        tts.synthesize(p["text"], os.path.join(config.PUBLIC_DIR, wav))
+        tts.synthesize(clean(p["text"]), os.path.join(config.PUBLIC_DIR, wav))
         frames, env, first, last = audio_info(os.path.join(config.PUBLIC_DIR, wav))
-        dur = frames + int(0.35 * FPS)
+        gap = 0.12 if p["kind"] == "scene" else 0.35
+        dur = max(frames + int(gap * FPS), int(1.6 * FPS))
         seg = {"kind": p["kind"], "start": start, "dur": dur, "audio": wav, "env": env,
-               "words": word_timings(p["text"], first, last), "emotion": p["emotion"]}
-        for k in ("index", "total", "big"):
+               "words": word_timings(p["text"].replace("|", " "), first, last)}
+        for k in ("title", "emotion", "tag", "alert", "cam", "big"):
             if p.get(k):
                 seg[k] = p[k]
-        if p.get("image"):
+        if p["kind"] == "scene":
+            img = f"img{i}.jpg"
             try:
-                img = f"img{i}.jpg"
-                _, credit = images.fetch(p["image"], os.path.join(config.PUBLIC_DIR, img))
-                seg["image"], seg["credit"] = img, credit
-                last_img = (img, credit)
+                images.generate(p["prompt"], os.path.join(config.PUBLIC_DIR, img), seed, p.get("stock", ""))
+                seg["image"] = img
             except Exception as e:
-                print("Картинка не найдена:", e)
-        if "image" not in seg and last_img:
-            seg["image"], seg["credit"] = last_img
+                print("Картинка не получилась:", e)
+                prev = next((x["image"] for x in reversed(segments) if x.get("image")), None)
+                if prev:
+                    seg["image"] = prev
         segments.append(seg)
         start += dur
 
@@ -158,10 +164,9 @@ def main():
     build_props(s)
     video = render()
 
-    facts = "\n".join(
-        f"{i}. {html.escape(f['text'])}\n   <i>Источник: {html.escape(f.get('source', '?'))}</i>"
-        for i, f in enumerate(s["facts"], 1))
-    say(f"<b>{html.escape(s['title'])}</b>\n\n{facts}")
+    story = " ".join(clean(sc["text"]) for sc in s["scenes"])
+    say(f"<b>{html.escape(s['title'])}</b>\n\n{html.escape(story)}\n\n"
+        f"<i>Источник: {html.escape(s.get('source', '?'))}</i>")
     with open(video, "rb") as fh:
         tg("sendVideo", data={"chat_id": config.TELEGRAM_CHAT_ID, "supports_streaming": "true"},
            files={"video": ("video.mp4", fh, "video/mp4")})

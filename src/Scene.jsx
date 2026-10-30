@@ -144,127 +144,189 @@ function professorPose(seg, f, frame) {
   return p;
 }
 
-// ---------- Субтитры (по 3 слова, текущее слово подсвечено) ----------
-function Subtitles({ seg, f, font }) {
-  const words = seg.words || [];
-  if (!words.length) return null;
-  let cur = words.findIndex((w) => f >= w.s && f < w.e);
-  if (cur < 0) cur = f < words[0].s ? 0 : words.length - 1;
-  // делим на куски: до 3 слов и не длиннее ~16 символов
+// ======================= ИСТОРИЯ =======================
+const RED = "#FF4B3E";
+
+// *слово* в тексте = красное ключевое слово
+function parseWords(text) {
+  return text.split(/\s+/).filter(Boolean).map((w) => ({ w: w.replace(/\*/g, ""), key: /\*/.test(w) }));
+}
+
+function chunkWords(words) {
   const chunks = [];
   let c = [];
   words.forEach((w, i) => {
     const len = c.map((x) => x.w).join(" ").length + w.w.length + 1;
-    if (c.length && (c.length >= 3 || len > 16)) {
-      // короткие предлоги («в», «на», «до») не оставляем в конце строки
-      const tail = c.length > 1 && c[c.length - 1].w.replace(/[^А-Яа-яЁёA-Za-z]/g, "").length <= 2 ? [c.pop()] : [];
+    if (c.length && (c.length >= 2 || len > 13)) {
+      const lastLen = c[c.length - 1].w.replace(/[^А-Яа-яЁёA-Za-z0-9]/g, "").length;
+      const tail = c.length > 1 && lastLen <= 2 ? [c.pop()] : [];
       chunks.push(c);
       c = tail;
     }
     c.push({ ...w, i });
   });
   if (c.length) chunks.push(c);
-  const chunk = chunks.find((ch) => ch.some((w) => w.i === cur)) || chunks[0];
-  const start = chunk[0].i;
-  const chunkStart = chunk[0].s;
-  const pop = backOut(prog(f, chunkStart, 6));
+  return chunks;
+}
+
+const outline = (px) => ({ WebkitTextStroke: `${px}px #000`, paintOrder: "stroke fill" });
+
+function Captions({ seg, f, font, top = 1180 }) {
+  const words = seg.words || [];
+  if (!words.length) return null;
+  let cur = words.findIndex((w) => f >= w.s && f < w.e);
+  if (cur < 0) cur = f < words[0].s ? 0 : words.length - 1;
+  const chunk = chunkWords(words).find((ch) => ch.some((w) => w.i === cur));
+  if (!chunk) return null;
+  const pop = backOut(prog(f, chunk[0].s, 5));
   const text = chunk.map((w) => w.w).join(" ");
-  const size = Math.min(20, 240 / Math.max(6, text.length * 0.74));
-  return (
-    <g transform={`translate(135 ${268}) scale(${0.6 + 0.4 * pop}) translate(-135 -268)`} opacity={clamp(pop * 1.5)}>
-      <text x="135" y="268" textAnchor="middle" fontFamily={font} fontWeight="900" fontSize={size}
-        stroke={NAVY} strokeWidth={size * 0.28} strokeLinejoin="round" paintOrder="stroke" style={{ textTransform: "uppercase" }}>
-        {chunk.map((w, i) => (
-          <tspan key={i} fill={start + i === cur ? GOLD : "#fff"}>{(i ? " " : "") + w.w}</tspan>
-        ))}
-      </text>
-    </g>
-  );
-}
-
-function Badge({ seg, f, font }) {
-  if (!seg.big) return null;
-  const at = Math.floor(seg.dur * (seg.bigAt || 0.5));
-  const t = backOut(prog(f, at, 7)) * (1 - easeOut(prog(f, seg.dur - 8, 8)));
-  if (t <= 0.01) return null;
-  const shake = Math.sin(f * 1.6) * 6 * clamp(1 - (f - at - 7) / 10);
-  const w = Math.max(80, seg.big.length * 11 + 28);
-  return (
-    <g transform={`translate(${248 - w / 2} 206) rotate(${-6 + shake}) scale(${t})`}>
-      <rect x={-w / 2} y="-22" width={w} height="44" rx="10" fill="#E8453C" stroke="#fff" strokeWidth="2.5" />
-      <text x="0" y="9" textAnchor="middle" fontFamily={font} fontWeight="900" fontSize="21" fill="#fff">{seg.big}</text>
-    </g>
-  );
-}
-
-function Header({ seg, frame, total, font }) {
-  const label = seg.kind === "fact" ? `ФАКТ ${seg.index}/${seg.total}` : seg.kind === "hook" ? "ЗНАЛ ЛИ ТЫ?" : "А ТЕПЕРЬ ТЫ";
-  return (
-    <g>
-      <rect x="16" y="16" width="238" height="6" rx="3" fill="#2E2A6B" />
-      <rect x="16" y="16" width={Math.max(6, 238 * (frame / Math.max(1, total)))} height="6" rx="3" fill={GOLD} />
-      <rect x="16" y="32" width={label.length * 7.4 + 22} height="22" rx="11" fill={GOLD} />
-      <text x={16 + (label.length * 7.4 + 22) / 2} y="47" textAnchor="middle" fontFamily={font} fontWeight="800" fontSize="11" fill={NAVY}>{label}</text>
-    </g>
-  );
-}
-
-// ---------- Карточка с картинкой (HTML-слой, чтобы Remotion дождался загрузки) ----------
-function Card({ seg, f, src, ImgComp, font }) {
-  if (!seg.image) return null;
-  const inT = backOut(prog(f, 0, 12));
-  const outT = easeOut(prog(f, seg.dur - 8, 8));
-  const zoom = 1 + 0.15 * (f / seg.dur);
-  const panX = Math.sin(seg.start) * 3 * (f / seg.dur);
-  const x = 16 * S, y = 66 * S, w = 238 * S, h = 170 * S;
+  const size = Math.min(104, 900 / Math.max(5, text.length * 0.62));
   return (
     <div style={{
-      position: "absolute", left: x, top: y, width: w, height: h, borderRadius: 14 * S, overflow: "hidden",
-      border: `${2 * S}px solid ${GOLD}`, boxSizing: "border-box", background: "#0B0A24",
-      transform: `translateX(${-outT * 1300}px) rotate(${lerp(-8, 0, inT) - outT * 10}deg) scale(${Math.max(0, inT)})`,
+      position: "absolute", left: 40, right: 40, top, textAlign: "center", fontFamily: font,
+      fontWeight: 900, fontSize: size, lineHeight: 1.05, textTransform: "uppercase", letterSpacing: 1,
+      transform: `scale(${0.7 + 0.3 * pop})`, opacity: clamp(pop * 2), ...outline(size * 0.16),
     }}>
-      <ImgComp src={src(seg.image)} style={{
-        width: "100%", height: "100%", objectFit: "cover",
-        transform: `scale(${zoom}) translateX(${panX}%)`,
-      }} />
-      {seg.credit ? (
-        <div style={{ position: "absolute", right: 10 * S, bottom: 6 * S, fontFamily: font, fontSize: 9 * S, color: "rgba(255,255,255,.75)", textShadow: "0 0 8px #000" }}>{seg.credit}</div>
-      ) : null}
+      {chunk.map((w, k) => (
+        <span key={k} style={{ color: w.key ? RED : w.i === cur ? GOLD : "#fff" }}>{(k ? " " : "") + w.w}</span>
+      ))}
     </div>
   );
 }
 
-function Hook({ seg, f, font }) {
-  if (seg.kind !== "hook") return null;
-  const t = backOut(prog(f, 12, 8));
-  if (t <= 0) return null;
+function Tags({ seg, f, font }) {
+  const items = [];
+  if (seg.tag) items.push({ text: seg.tag, bg: "rgba(10,10,14,.82)", fg: "#fff", delay: 0, border: "rgba(255,255,255,.25)" });
+  if (seg.alert) items.push({ text: seg.alert, bg: RED, fg: "#fff", delay: 6, border: "rgba(255,255,255,.6)" });
   return (
-    <g transform={`translate(200 318) rotate(${12 + Math.sin(f / 3) * 6}) scale(${t})`}>
-      <text x="0" y="0" textAnchor="middle" fontFamily={font} fontWeight="900" fontSize="44" fill={GOLD} stroke={NAVY} strokeWidth="5" paintOrder="stroke">?!</text>
-    </g>
+    <div style={{ position: "absolute", top: 120, left: 0, right: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 14 }}>
+      {items.map((t, i) => {
+        const p = backOut(prog(f, 3 + t.delay, 6));
+        return (
+          <div key={i} style={{
+            background: t.bg, color: t.fg, fontFamily: font, fontWeight: 800, fontSize: 40, letterSpacing: 2,
+            padding: "10px 26px", borderRadius: 12, border: `2px solid ${t.border}`, textTransform: "uppercase",
+            transform: `scale(${clamp(p, 0, 1.3)}) rotate(${i ? -2 : 0}deg)`, opacity: clamp(p * 2),
+          }}>{t.text}</div>
+        );
+      })}
+    </div>
   );
+}
+
+function camera(seg, f) {
+  // длинная сцена делится на два «плана»: на середине резкая смена на крупный план
+  if (seg.dur > 75 && f >= Math.floor(seg.dur / 2)) {
+    const h = Math.floor(seg.dur / 2), f2 = f - h, t2 = f2 / Math.max(1, seg.dur - h);
+    const side = seg.start % 2 ? 1 : -1;
+    const kick2 = 0.08 * (1 - easeOut(prog(f2, 0, 6)));
+    return { s: lerp(1.55, 1.68, t2) + kick2, x: side * 7, y: -5 + t2 * 2, r: side * 0.6 };
+  }
+  const t = f / Math.max(1, seg.dur);
+  const kick = 0.07 * (1 - easeOut(prog(f, 0, 6))); // резкий «наезд» в начале каждой сцены
+  const drift = Math.sin((seg.start + f) / 40) * 0.4;
+  switch (seg.cam) {
+    case "out": return { s: lerp(1.28, 1.08, t) + kick, x: 0, y: 0, r: drift };
+    case "left": return { s: 1.2 + kick, x: lerp(4, -4, t), y: 0, r: drift };
+    case "right": return { s: 1.2 + kick, x: lerp(-4, 4, t), y: 0, r: drift };
+    case "up": return { s: 1.2 + kick, x: 0, y: lerp(4, -4, t), r: drift };
+    case "shake": return { s: 1.18 + kick, x: Math.sin(f * 1.7) * 0.8, y: Math.cos(f * 2.1) * 0.8, r: Math.sin(f) * 0.6 };
+    default: return { s: lerp(1.06, 1.24, t) + kick, x: 0, y: 0, r: drift };
+  }
+}
+
+function StoryScene({ seg, f, src, ImgComp, font }) {
+  const c = camera(seg, f);
+  const cut = seg.dur > 75 ? Math.floor(seg.dur / 2) : -99;
+  const flash = Math.max(1 - easeOut(prog(f, 0, 4)), 0.6 * (1 - easeOut(prog(f, cut, 3))) * (f >= cut ? 1 : 0));
+  return (
+    <div style={{ position: "absolute", inset: 0, overflow: "hidden", background: "#0b0b0f" }}>
+      {seg.image ? (
+        <ImgComp src={src(seg.image)} style={{
+          position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover",
+          transform: `scale(${c.s}) translate(${c.x}%, ${c.y}%) rotate(${c.r}deg)`,
+        }} />
+      ) : null}
+      <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at center, rgba(0,0,0,0) 45%, rgba(0,0,0,.7) 100%)" }} />
+      <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: 900, background: "linear-gradient(rgba(0,0,0,0), rgba(0,0,0,.55))" }} />
+      <div style={{ position: "absolute", inset: 0, background: "#000", opacity: flash * 0.6 }} />
+      <Tags seg={seg} f={f} font={font} />
+      <Captions seg={seg} f={f} font={font} />
+    </div>
+  );
+}
+
+function Punch({ seg, f, font }) {
+  const lines = (seg.big || "").split("|");
+  return (
+    <div style={{ position: "absolute", inset: 0, background: "#050507", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", gap: 10 }}>
+      {lines.map((line, i) => {
+        const p = backOut(prog(f, 4 + i * 8, 7));
+        const shake = Math.sin(f * 1.9) * 8 * clamp(1 - (f - 4 - i * 8 - 7) / 12);
+        return (
+          <div key={i} style={{
+            fontFamily: font, fontWeight: 900, fontSize: 118, lineHeight: 1.05, textAlign: "center", padding: "0 50px",
+            textTransform: "uppercase", transform: `scale(${clamp(p, 0, 1.4)}) translateX(${shake}px)`, opacity: clamp(p * 2),
+          }}>
+            {parseWords(line).map((w, k) => (
+              <span key={k} style={{ color: w.key ? RED : "#fff" }}>{(k ? " " : "") + w.w}</span>
+            ))}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function HostScene({ seg, f, frame, font }) {
+  const pose = professorPose(seg, f, frame);
+  const zoomOut = seg.kind === "intro" ? easeIn(prog(f, seg.dur - 7, 7)) : 0;
+  const title = seg.title ? seg.title.split("|") : [];
+  return (
+    <div style={{ position: "absolute", inset: 0, background: NAVY, overflow: "hidden" }}>
+      <div style={{ position: "absolute", inset: 0, transform: `scale(${1 + zoomOut * 2.2})`, transformOrigin: "50% 74%", opacity: 1 - zoomOut }}>
+        <svg width="1080" height="1920" viewBox="0 0 270 480" style={{ position: "absolute", inset: 0 }}>
+          <rect width="270" height="480" fill={NAVY} />
+          <circle cx="135" cy="420" r="120" fill="#1D1A52" />
+          <Stars frame={frame} />
+          <Professor p={{ ...pose, y: pose.y + 40 }} />
+        </svg>
+        <div style={{ position: "absolute", top: 230, left: 50, right: 50, display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+          {title.map((line, i) => {
+            const p = backOut(prog(f, 6 + i * 6, 7));
+            return (
+              <div key={i} style={{
+                fontFamily: font, fontWeight: 900, fontSize: 92, lineHeight: 1.05, textAlign: "center", textTransform: "uppercase",
+                transform: `scale(${clamp(p, 0, 1.3)}) rotate(${i % 2 ? 1.5 : -1.5}deg)`, opacity: clamp(p * 2), ...outline(14),
+              }}>
+                {parseWords(line).map((w, k) => (
+                  <span key={k} style={{ color: w.key ? GOLD : "#fff" }}>{(k ? " " : "") + w.w}</span>
+                ))}
+              </div>
+            );
+          })}
+        </div>
+        <Captions seg={seg} f={f} font={font} top={760} />
+      </div>
+    </div>
+  );
+}
+
+const easeIn = (t) => t * t * t;
+
+function currentSeg(segments, frame) {
+  for (const s of segments) if (frame >= s.start && frame < s.start + s.dur) return [s, frame - s.start];
+  const last = segments[segments.length - 1];
+  return [last, last.dur - 1];
 }
 
 export function Scene({ frame, data, src, ImgComp, font = "Montserrat, DejaVu Sans, Arial" }) {
   const segs = data.segments || [];
-  if (!segs.length) return <div style={{ width: 1080, height: 1920, background: NAVY }} />;
-  const { seg, f } = currentSegment(segs, frame);
-  const pose = professorPose(seg, f, frame);
-  return (
-    <div style={{ position: "absolute", inset: 0, width: 1080, height: 1920, background: NAVY, overflow: "hidden" }}>
-      <svg width="1080" height="1920" viewBox="0 0 270 480" style={{ position: "absolute", inset: 0 }}>
-        <rect width="270" height="480" fill={NAVY} />
-        <circle cx="135" cy="420" r="120" fill="#1D1A52" />
-        <Stars frame={frame} />
-        <Header seg={seg} frame={frame} total={data.totalFrames} font={font} />
-      </svg>
-      <Card seg={seg} f={f} src={src} ImgComp={ImgComp} font={font} />
-      <svg width="1080" height="1920" viewBox="0 0 270 480" style={{ position: "absolute", inset: 0 }}>
-        <Professor p={pose} />
-        <Hook seg={seg} f={f} font={font} />
-        <Badge seg={seg} f={f} font={font} />
-        <Subtitles seg={seg} f={f} font={font} />
-      </svg>
-    </div>
-  );
+  if (!segs.length) return <div style={{ width: 1080, height: 1920, background: "#000" }} />;
+  const [seg, f] = currentSeg(segs, frame);
+  let body;
+  if (seg.kind === "intro" || seg.kind === "outro") body = <HostScene seg={seg} f={f} frame={frame} font={font} />;
+  else if (seg.kind === "punch") body = <Punch seg={seg} f={f} font={font} />;
+  else body = <StoryScene seg={seg} f={f} src={src} ImgComp={ImgComp} font={font} />;
+  return <div style={{ position: "absolute", inset: 0, width: 1080, height: 1920, overflow: "hidden", background: "#000" }}>{body}</div>;
 }

@@ -12,25 +12,24 @@
 ## Секреты (Settings → Secrets and variables → Actions)
 `PIXABAY_API_KEY`, `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`
 
-## Формат сценария
+## Формат сценария (история)
 ```json
 {
   "title": "Заголовок",
-  "hook": {"text": "Фраза-крючок", "image": "octopus underwater"},
-  "facts": [
-    {"text": "Текст для озвучки", "image": "nasa:moon", "big": "400 ЛЕТ",
-     "emotion": "shock", "source": "Источник"}
+  "intro": {"title": "СТРОКА 1|*КЛЮЧЕВОЕ*", "text": "Что говорит профессор в начале"},
+  "scenes": [
+    {"text": "Фраза рассказчика, *слово* = красное", "prompt": "english scene description",
+     "tag": "1932 · АВСТРАЛИЯ", "alert": "КРАСНАЯ ПЛАШКА", "cam": "in"}
   ],
-  "description": "Описание для YouTube",
-  "hashtags": ["факты"]
+  "punch": {"big": "ФИНАЛЬНАЯ|*ФРАЗА*", "text": "Что звучит на чёрном экране"},
+  "outro": {"text": "Что говорит профессор в конце"},
+  "source": "Источник", "description": "Описание", "hashtags": ["факты"]
 }
 ```
-- `image`: запрос для поиска на английском. С префиксом `nasa:` картинка берётся из архива NASA.
-- `big`: красная плашка с цифрой, при её появлении камера наезжает на профессора.
-- `emotion`: point (указывает), shock (удивляется), think (задумался), laugh (смеётся).
+`cam`: in, out, left, right, up, shake. Картинки сцен рисует нейросеть (Pollinations, запасной Cloudflare Workers AI через секреты `CF_ACCOUNT_ID` и `CF_API_TOKEN`).
+
+## Голос
+Переменные репозитория (Settings → Secrets and variables → Actions → Variables): `VOICE` (dmitri/denis/ruslan), `VOICE_SPEED`, `VOICE_PITCH`. Тест голосов: Run workflow → mode = voices.
 
 ## Расписание
 `cron` в `video.yml`, время в UTC (Москва = UTC+3).
-
-## Музыка (необязательно)
-Папка `music/` с mp3 без авторских прав.
