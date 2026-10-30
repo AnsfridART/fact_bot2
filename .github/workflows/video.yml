@@ -2,8 +2,17 @@ name: Ролик с фактами
 
 on:
   schedule:
+    # Время в UTC. 7, 12, 17 UTC = 10:00, 15:00, 20:00 по Москве
     - cron: "0 7,12,17 * * *"
   workflow_dispatch:
+    inputs:
+      mode:
+        description: "Что сделать"
+        type: choice
+        options:
+          - video
+          - voices
+        default: video
 
 permissions:
   contents: write
@@ -14,6 +23,17 @@ jobs:
   make-video:
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    env:
+      PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      POLLINATIONS_TOKEN: ${{ secrets.POLLINATIONS_TOKEN }}
+      CF_ACCOUNT_ID: ${{ secrets.CF_ACCOUNT_ID }}
+      CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+      MODE: ${{ github.event.inputs.mode || 'video' }}
+      VOICE: ${{ vars.VOICE || 'dmitri' }}
+      VOICE_SPEED: ${{ vars.VOICE_SPEED || '1.22' }}
+      VOICE_PITCH: ${{ vars.VOICE_PITCH || '0.90' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -29,37 +49,43 @@ jobs:
       - name: Установка ffmpeg
         run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-dejavu-core
 
-      - name: Кэш npm и голоса
+      - name: Кэш npm и голосов
         uses: actions/cache@v4
         with:
           path: |
             ~/.npm
             models
-          key: factbot-${{ hashFiles('package.json') }}-v1
+          key: factbot-${{ hashFiles('package.json') }}-v2
 
       - name: Установка Remotion
+        if: env.MODE == 'video'
         run: npm install --no-audit --no-fund && npx remotion browser ensure
 
       - name: Установка Python-библиотек
         run: pip install -r requirements.txt
 
-      - name: Установка голоса Piper
+      - name: Установка голосов Piper
         continue-on-error: true
         run: |
           pip install piper-tts onnxruntime
           mkdir -p models
-          BASE=https://huggingface.co/rhasspy/piper-voices/resolve/main/ru/ru_RU/dmitri/medium
-          [ -s models/voice.onnx ] || curl -fL -o models/voice.onnx $BASE/ru_RU-dmitri-medium.onnx
-          [ -s models/voice.onnx.json ] || curl -fL -o models/voice.onnx.json $BASE/ru_RU-dmitri-medium.onnx.json
+          for V in dmitri denis ruslan; do
+            BASE=https://huggingface.co/rhasspy/piper-voices/resolve/main/ru/ru_RU/$V/medium
+            [ -s models/$V.onnx ] || curl -fL -o models/$V.onnx $BASE/ru_RU-$V-medium.onnx || rm -f models/$V.onnx
+            [ -s models/$V.onnx.json ] || curl -fL -o models/$V.onnx.json $BASE/ru_RU-$V-medium.onnx.json || rm -f models/$V.onnx.json
+          done
+          ls -la models
+
+      - name: Тест голосов
+        if: env.MODE == 'voices'
+        run: python voices.py
 
       - name: Создание ролика
+        if: env.MODE == 'video'
         run: python run.py
-        env:
-          PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
 
       - name: Сохранение очереди
+        if: env.MODE == 'video'
         run: |
           git config user.name "factbot"
           git config user.email "factbot@users.noreply.github.com"
