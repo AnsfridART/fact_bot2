@@ -7,7 +7,7 @@
   },
   "scenes": [
    {
-    "text": "Австралия, 1932 год.",
+    "text": "Австралия, тысяча девятьсот тридцать второй год.",
     "prompt": "vast dry wheat fields in Western Australia, small 1930s farmhouse, dusk",
     "cam": "in",
     "tag": "1932 · АВСТРАЛИЯ"
@@ -99,7 +99,7 @@
   },
   "scenes": [
    {
-    "text": "Париж, август 1911 года.",
+    "text": "Париж, август тысяча девятьсот одиннадцатого года.",
     "prompt": "Paris street in 1911 early morning, light fog, grand museum building",
     "cam": "in",
     "tag": "1911 · ПАРИЖ"
@@ -195,7 +195,7 @@
   },
   "scenes": [
    {
-    "text": "Сиэтл, 2006 год. Университетский кампус.",
+    "text": "Сиэтл, две тысячи шестой год. Университетский кампус.",
     "prompt": "university campus with trees and old brick buildings, overcast day, crows on branches",
     "cam": "in",
     "tag": "2006 · СИЭТЛ"
