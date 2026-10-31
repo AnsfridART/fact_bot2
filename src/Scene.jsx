@@ -1,6 +1,7 @@
 // Вся анимация кадра. Чистый React без зависимостей от Remotion,
 // поэтому кадр можно отрендерить и в Remotion, и в обычном браузере для превью.
 import React from "react";
+import { Stage } from "./story/Stage.jsx";
 
 const S = 4; // сцена рисуется в координатах 270x480, а выводится в 1080x1920
 const GOLD = "#F2B84B";
@@ -236,6 +237,18 @@ function camera(seg, f) {
 }
 
 function StoryScene({ seg, f, src, ImgComp, font }) {
+  if (seg.actors || seg.bg) {
+    const env = seg.env || [];
+    const mouth = clamp(env[Math.min(f, env.length - 1)] || 0);
+    return (
+      <div style={{ position: "absolute", inset: 0, overflow: "hidden", background: "#000" }}>
+        <Stage seg={seg} f={f} mouth={mouth} />
+        <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: 700, background: "linear-gradient(rgba(0,0,0,0), rgba(0,0,0,.45))" }} />
+        <Tags seg={seg} f={f} font={font} />
+        <Captions seg={seg} f={f} font={font} top={1400} />
+      </div>
+    );
+  }
   const c = camera(seg, f);
   const cut = seg.dur > 75 ? Math.floor(seg.dur / 2) : -99;
   const flash = Math.max(1 - easeOut(prog(f, 0, 4)), 0.6 * (1 - easeOut(prog(f, cut, 3))) * (f >= cut ? 1 : 0));
