@@ -89,7 +89,7 @@ export function Stage({ seg, f, mouth }) {
       {tint && <rect width="270" height="480" fill={tint[0]} opacity={tint[1]} style={{ mixBlendMode: "multiply" }} />}
       <rect width="270" height="480" filter="url(#grain)" opacity=".07" />
       <rect width="270" height="480" fill="url(#vig)" />
-      <rect width="270" height="480" fill="#000" opacity={Math.max(1 - easeOut(prog(f, 0, 4)), cutFlash) * 0.55} />
+      <rect width="270" height="480" fill="#000" opacity={Math.max(seg.kind === "hook" ? 0 : 1 - easeOut(prog(f, 0, 4)), cutFlash) * 0.55} />
     </svg>
   );
 }

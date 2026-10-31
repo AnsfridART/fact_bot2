@@ -37,7 +37,7 @@ function Stars({ frame }) {
 }
 
 // ---------- Профессор ----------
-function Professor({ p }) {
+export function Professor({ p }) {
   const eyeRy = 3.5 * p.eyeScale * (p.blink ? 0.12 : 1);
   const mouthRy = p.mouthO ? 9 : 1 + 7 * p.mouth;
   const mouthRx = p.mouthO ? 9 : 8 + 2 * p.mouth;
@@ -236,6 +236,29 @@ function camera(seg, f) {
   }
 }
 
+function HookTitle({ seg, f, font }) {
+  if (!seg.title) return null;
+  const lines = seg.title.split("|");
+  return (
+    <div style={{ position: "absolute", top: 300, left: 40, right: 40, display: "flex", flexDirection: "column", alignItems: "center" }}>
+      {lines.map((line, i) => {
+        const p = i === 0 ? 1 : backOut(prog(f, i * 4, 6));
+        const shake = Math.sin(f * 1.8) * 6 * clamp(1 - (f - i * 4 - 6) / 10);
+        return (
+          <div key={i} style={{
+            fontFamily: font, fontWeight: 900, fontSize: 126, lineHeight: 1.02, textAlign: "center", textTransform: "uppercase",
+            transform: `scale(${clamp(p, 0, 1.4)}) translateX(${shake}px)`, opacity: clamp(p * 2), ...outline(18),
+          }}>
+            {parseWords(line).map((w, k) => (
+              <span key={k} style={{ color: w.key ? RED : "#fff" }}>{(k ? " " : "") + w.w}</span>
+            ))}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function StoryScene({ seg, f, src, ImgComp, font }) {
   if (seg.actors || seg.bg) {
     const env = seg.env || [];
@@ -244,7 +267,9 @@ function StoryScene({ seg, f, src, ImgComp, font }) {
       <div style={{ position: "absolute", inset: 0, overflow: "hidden", background: "#000" }}>
         <Stage seg={seg} f={f} mouth={mouth} />
         <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: 700, background: "linear-gradient(rgba(0,0,0,0), rgba(0,0,0,.45))" }} />
+        {seg.kind === "hook" ? <div style={{ position: "absolute", left: 0, right: 0, top: 0, height: 900, background: "linear-gradient(rgba(0,0,0,.55), rgba(0,0,0,0))" }} /> : null}
         <Tags seg={seg} f={f} font={font} />
+        <HookTitle seg={seg} f={f} font={font} />
         <Captions seg={seg} f={f} font={font} top={1400} />
       </div>
     );
@@ -340,6 +365,6 @@ export function Scene({ frame, data, src, ImgComp, font = "Montserrat, DejaVu Sa
   let body;
   if (seg.kind === "intro" || seg.kind === "outro") body = <HostScene seg={seg} f={f} frame={frame} font={font} />;
   else if (seg.kind === "punch") body = <Punch seg={seg} f={f} font={font} />;
-  else body = <StoryScene seg={seg} f={f} src={src} ImgComp={ImgComp} font={font} />;
+  else body = <StoryScene seg={seg} f={f} src={src} ImgComp={ImgComp} font={font} />;  // scene и hook
   return <div style={{ position: "absolute", inset: 0, width: 1080, height: 1920, overflow: "hidden", background: "#000" }}>{body}</div>;
 }
