@@ -55,6 +55,18 @@ PRESETS["energetic"] = ",".join([
     "aecho=0.85:0.55:25|45|70:0.10|0.06|0.03",  # совсем небольшая комната
     "loudnorm=I=-14:TP=-1.5:LRA=9",
 ])
+# «мягкий рассказчик»: тёплый, гладкий, без хрипа и металла
+PRESETS["smooth"] = ",".join([
+    "highpass=f=75",
+    "equalizer=f=180:t=q:w=1.0:g=2",       # тепло
+    "equalizer=f=450:t=q:w=1.4:g=-1.5",
+    "equalizer=f=3000:t=q:w=1.2:g=-1",      # убираем резкость и «грубость»
+    "equalizer=f=5500:t=q:w=1.5:g=-3",      # гасим шипение синтезатора
+    "lowpass=f=10000",
+    "acompressor=threshold=-20dB:ratio=2:attack=15:release=200:makeup=2",
+    "aecho=0.85:0.55:30|52|80:0.12|0.08|0.04",
+    "loudnorm=I=-15:TP=-1.5:LRA=10",
+])
 STUDIO = PRESETS["studio"]
 
 
@@ -105,7 +117,7 @@ def _silero_sentence(text, path, voice, speed, pitch, mood="plain"):
     if mood == "question":
         base, rate = base + 1, "medium"
     elif mood == "exclaim":
-        base, rate = base + 1, "fast" if rate == "medium" else "medium"
+        base = base + 1
     elif mood == "suspense":
         base, rate = max(0, base - 1), "slow"
     elif mood == "low":
