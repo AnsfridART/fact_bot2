@@ -39,7 +39,7 @@ jobs:
       VOICE_PITCH: ${{ vars.VOICE_PITCH || '1.0' }}
       VOICE_TEMPO: ${{ vars.VOICE_TEMPO || '0.96' }}
       VOICE_POST_PITCH: ${{ vars.VOICE_POST_PITCH || '1.0' }}
-      VOICE_PRESET: ${{ vars.VOICE_PRESET || 'grandpa' }}
+      VOICE_PRESET: ${{ vars.VOICE_PRESET || 'smooth' }}
     steps:
       - uses: actions/checkout@v4
 
