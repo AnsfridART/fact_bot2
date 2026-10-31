@@ -43,6 +43,18 @@ PRESETS["grandpa"] = ",".join([
     "aecho=0.85:0.6:32|55|88|130:0.13|0.09|0.05|0.03",
     "loudnorm=I=-15:TP=-1.5:LRA=11",
 ])
+# «энергичный рассказчик»: плотный, чёткий, с напором, но без пережатия и металла
+PRESETS["energetic"] = ",".join([
+    "highpass=f=70",
+    "equalizer=f=130:t=q:w=1.0:g=3",       # плотные низы, голос ниже по ощущению
+    "equalizer=f=320:t=q:w=1.3:g=-2.5",    # без бубнения
+    "equalizer=f=2800:t=q:w=1.0:g=3",      # чёткость и напор
+    "equalizer=f=6800:t=q:w=1.4:g=-2.5",   # гасим «синтетический» металл
+    "lowpass=f=11500",
+    "acompressor=threshold=-19dB:ratio=3:attack=8:release=120:makeup=3",
+    "aecho=0.85:0.55:25|45|70:0.10|0.06|0.03",  # совсем небольшая комната
+    "loudnorm=I=-14:TP=-1.5:LRA=9",
+])
 STUDIO = PRESETS["studio"]
 
 
