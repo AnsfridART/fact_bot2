@@ -1,0 +1,268 @@
+[
+ {
+  "title": "Вороны годами помнят лицо обидчика 🐦‍⬛",
+  "hook": {
+   "text": "Вороны годами помнят лицо обидчика. И рассказывают о нём другим воронам!",
+   "title": "ВОРОНЫ|*ПОМНЯТ*|ТВОЁ ЛИЦО",
+   "bg": "campus",
+   "cam": "shake",
+   "tint": "red",
+   "actors": [
+    {
+     "kind": "person",
+     "look": {
+      "skin": "#E9B98F",
+      "shirt": "#e8e8e4",
+      "pants": "#3a3a44",
+      "coat": true,
+      "hair": "#4a3a2a",
+      "mask": "cave"
+     },
+     "x": 135,
+     "y": 410,
+     "anim": "shock"
+    },
+    {
+     "kind": "crows",
+     "x": 135,
+     "y": 330,
+     "count": 9,
+     "spread": 240,
+     "depth": 60,
+     "anim": "fly"
+    }
+   ]
+  },
+  "scenes": [
+   {
+    "text": "Сиэтл. Учёные надевают жуткую *маску* и ловят семь ворон.",
+    "bg": "campus",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E9B98F",
+       "shirt": "#e8e8e4",
+       "pants": "#3a3a44",
+       "coat": true,
+       "hair": "#4a3a2a",
+       "mask": "cave"
+      },
+      "x": 110,
+      "y": 395,
+      "anim": "carry"
+     },
+     {
+      "kind": "crow",
+      "x": 175,
+      "y": 380,
+      "anim": "fly",
+      "s": 1.4
+     }
+    ],
+    "cam": "in",
+    "tag": "2006 · СИЭТЛ",
+    "alert": "МАСКА",
+    "tint": "cold"
+   },
+   {
+    "text": "Птиц кольцуют и отпускают. Ничего плохого… Но они *запомнили*.",
+    "bg": "campus",
+    "actors": [
+     {
+      "kind": "crow",
+      "x": 135,
+      "y": 400,
+      "s": 3.2,
+      "anim": "idle"
+     }
+    ],
+    "cam": "in",
+    "focus": 0,
+    "tint": "cold"
+   },
+   {
+    "text": "Теперь, когда человек в этой маске идёт по кампусу, вороны кричат и пикируют на него!",
+    "bg": "campus",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E9B98F",
+       "shirt": "#e8e8e4",
+       "pants": "#3a3a44",
+       "coat": true,
+       "hair": "#4a3a2a",
+       "mask": "cave"
+      },
+      "x": 60,
+      "y": 400,
+      "to": {
+       "x": 140,
+       "y": 400
+      },
+      "anim": "walk"
+     },
+     {
+      "kind": "crows",
+      "x": 160,
+      "y": 300,
+      "count": 7,
+      "spread": 200,
+      "depth": 50,
+      "anim": "fly"
+     }
+    ],
+    "cam": "shake",
+    "alert": "АТАКА",
+    "tint": "red"
+   },
+   {
+    "text": "А на человека в другой маске — ноль внимания.",
+    "bg": "campus",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E9B98F",
+       "shirt": "#e8e8e4",
+       "pants": "#3a3a44",
+       "coat": true,
+       "hair": "#4a3a2a",
+       "mask": "plain"
+      },
+      "x": 40,
+      "y": 395,
+      "to": {
+       "x": 150,
+       "y": 392
+      },
+      "anim": "walk"
+     },
+     {
+      "kind": "crows",
+      "x": 200,
+      "y": 370,
+      "count": 3,
+      "spread": 60,
+      "depth": 10,
+      "anim": "idle"
+     }
+    ],
+    "cam": "right",
+    "tag": "ДРУГАЯ МАСКА",
+    "tint": "cold"
+   },
+   {
+    "text": "Проходят годы.",
+    "bg": "night_field",
+    "actors": [
+     {
+      "kind": "crows",
+      "x": 135,
+      "y": 360,
+      "count": 6,
+      "spread": 220,
+      "depth": 20,
+      "anim": "idle"
+     }
+    ],
+    "cam": "out",
+    "tag": "ГОДЫ СПУСТЯ",
+    "tint": "night"
+   },
+   {
+    "text": "Кричащих ворон становится только *больше*.",
+    "bg": "campus",
+    "actors": [
+     {
+      "kind": "crows",
+      "x": 135,
+      "y": 380,
+      "count": 18,
+      "spread": 260,
+      "depth": 70,
+      "anim": "scream"
+     }
+    ],
+    "cam": "up",
+    "tint": "cold"
+   },
+   {
+    "text": "Среди них — птицы, которых никто никогда не ловил.",
+    "bg": "campus",
+    "actors": [
+     {
+      "kind": "crows",
+      "x": 135,
+      "y": 370,
+      "count": 7,
+      "spread": 220,
+      "depth": 20,
+      "anim": "idle"
+     },
+     {
+      "kind": "crow",
+      "x": 135,
+      "y": 410,
+      "s": 1.6,
+      "anim": "scream"
+     }
+    ],
+    "cam": "in",
+    "alert": "НИКТО НЕ ТРОГАЛ",
+    "focus": 1,
+    "tint": "cold"
+   },
+   {
+    "text": "Они узнали о враге от других ворон.",
+    "bg": "campus",
+    "actors": [
+     {
+      "kind": "crows",
+      "x": 90,
+      "y": 385,
+      "count": 6,
+      "spread": 120,
+      "depth": 30,
+      "anim": "scream"
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E9B98F",
+       "shirt": "#e8e8e4",
+       "pants": "#3a3a44",
+       "coat": true,
+       "hair": "#4a3a2a",
+       "mask": "cave"
+      },
+      "x": 210,
+      "y": 395,
+      "anim": "worried"
+     }
+    ],
+    "cam": "left",
+    "tint": "cold"
+   }
+  ],
+  "punch": {
+   "big": "ОНИ|*ПОМНЯТ ТЕБЯ*",
+   "text": "Так что подумай, прежде чем обижать ворону."
+  },
+  "outro": {
+   "text": "Это был Доктор Боб. Подпишись, завтра история ещё безумнее!"
+  },
+  "source": "J. Marzluff и др., Animal Behaviour, 2010; Cornell и др., Proc. R. Soc. B, 2012",
+  "description": "Учёные надели маску и поймали семь ворон. Годы спустя на маску кричали даже вороны, которых никто не трогал.",
+  "hashtags": [
+   "факты",
+   "истории",
+   "знаешьли",
+   "shorts",
+   "интересно",
+   "животные",
+   "вороны"
+  ]
+ }
+]
