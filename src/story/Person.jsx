@@ -3,7 +3,7 @@
 import React from "react";
 import { clamp, lerp, shade } from "./util.js";
 
-const DEF = { skin: "#E9B98F", hair: "#3B2A20", hairStyle: "short", shirt: "#7A5A3A", pants: "#3E3A36",
+const DEF = { dress: null, skin: "#E9B98F", hair: "#3B2A20", hairStyle: "short", shirt: "#7A5A3A", pants: "#3E3A36",
   shoes: "#2A2420", hat: null, hatColor: "#8A6A40", beard: false, beardColor: "#cfcfcf", mask: null,
   glasses: false, coat: false, tie: null };
 
@@ -71,6 +71,9 @@ function pose(anim, t, phase) {
     case "carry": return { la: -40, ra: 40, ll: 0, rl: 0, bob: s * 1, lean: 0 };
     case "worried": return { la: -55, ra: 55, ll: 0, rl: 0, bob: s * 0.8, lean: 0 };
     case "wave": return { la: 8, ra: -150 + s2 * 25, ll: 0, rl: 0, bob: 0, lean: 0 };
+    case "dance": { const d = Math.sin(t * 0.55 + phase); return { la: 120 + d * 40, ra: -120 + d * 40, ll: d * 25, rl: d * 25, bob: -Math.abs(d) * 8, lean: d * 10 }; }
+    case "tired": return { la: 15, ra: -15, ll: 4, rl: -4, bob: 4 + s * 0.6, lean: 9 };
+    case "salute": return { la: 6, ra: -160, ll: 0, rl: 0, bob: 0, lean: 0 };
     case "talk": return { la: 10 + s * 8, ra: -20 - Math.max(0, s2) * 30, ll: 0, rl: 0, bob: s * 1.2, lean: 0 };
     default: return { la: 6 + s * 2, ra: -6 - s * 2, ll: 0, rl: 0, bob: s * 0.8, lean: 0 };
   }
@@ -97,7 +100,13 @@ export function Person({ look = {}, anim = "idle", t = 0, mouth = 0, expr, phase
     <g>
       <ellipse cx="0" cy="2" rx="34" ry="6" fill="#000" opacity=".28" />
       <g transform={`translate(0 ${p.bob}) rotate(${p.lean})`}>
-        {leg(-1, p.ll)}{leg(1, p.rl)}
+        {L.dress ? (
+          <g>
+            <g transform={`translate(-9 -20) rotate(${p.ll * 0.4})`}><rect x="-5" y="0" width="10" height="18" fill={L.skin} /><ellipse cx="0" cy="20" rx="8" ry="4" fill={L.shoes} /></g>
+            <g transform={`translate(9 -20) rotate(${p.rl * 0.4})`}><rect x="-5" y="0" width="10" height="18" fill={L.skin} /><ellipse cx="0" cy="20" rx="8" ry="4" fill={L.shoes} /></g>
+            <path d={`M-24 -62 L24 -62 L${36 + p.rl * 0.3} -16 L${-36 + p.ll * 0.3} -16 Z`} fill={L.dress} />
+          </g>
+        ) : <>{leg(-1, p.ll)}{leg(1, p.rl)}</>}
         {arm(-1, p.la)}
         <rect x="-26" y="-112" width="52" height="60" rx="14" fill={L.shirt} />
         <rect x="-26" y="-80" width="52" height="28" rx="10" fill={shade(L.shirt, 0.85)} opacity=".6" />

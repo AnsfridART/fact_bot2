@@ -3,10 +3,10 @@ import React from "react";
 import { clamp, lerp, prog, easeOut, easeInOut } from "./util.js";
 import { Person } from "./Person.jsx";
 import { Emu, Crow } from "./Animals.jsx";
-import { Truck, MachineGun, Fence, House, Desk, AmmoBox, Casings, Paper, Trunk, Door, Frame } from "./Props.jsx";
+import { Truck, MachineGun, Fence, House, Desk, AmmoBox, Casings, Paper, Trunk, Door, Frame, LawnChair, Briefcase, Tank, Wave, Shelves, Smoke, Stage as Podium, Letter } from "./Props.jsx";
 import { Background } from "./Backgrounds.jsx";
 
-const PROPS = { truck: Truck, gun: MachineGun, fence: Fence, house: House, desk: Desk, ammo: AmmoBox, casings: Casings, paper: Paper, trunk: Trunk, door: Door, frame: Frame };
+const PROPS = { truck: Truck, gun: MachineGun, fence: Fence, house: House, desk: Desk, ammo: AmmoBox, casings: Casings, paper: Paper, trunk: Trunk, door: Door, frame: Frame, chair: LawnChair, briefcase: Briefcase, tank: Tank, wave: Wave, shelves: Shelves, smoke: Smoke, podium: Podium, letter: Letter };
 
 function actorPos(a, t) {
   const k = a.to ? easeInOut(clamp(t)) : 0;
@@ -19,9 +19,17 @@ function Actor({ a, f, t, mouth, idx }) {
   const flip = a.flip ? -1 : 1;
   const common = { t: f, phase: idx * 1.7 + (a.phase || 0) };
   let body = null;
-  if (a.kind === "person") body = <Person {...common} look={a.look} anim={a.anim} expr={a.expr} held={a.held} mouth={a.talk ? mouth : 0} />;
+  if (a.kind === "crowd") {
+    const n = a.count || 8, spread = a.spread || 220, items = [];
+    for (let i = 0; i < n; i++) {
+      const dx = ((i * 61) % 100) / 100 * spread - spread / 2, dy = ((i * 43) % 100) / 100 * (a.depth || 40);
+      const lk = (a.looks || [{}])[i % (a.looks || [{}]).length];
+      items.push({ dy, el: <g key={i} transform={`translate(${dx} ${dy}) scale(${0.6 + dy / (a.depth || 40) * 0.35})`}><Person t={f} phase={i * 1.9} look={lk} anim={a.anim || "idle"} /></g> });
+    }
+    body = <g>{items.sort((p, q) => p.dy - q.dy).map((p) => p.el)}</g>;
+  } else if (a.kind === "person") body = <Person {...common} look={a.look} anim={a.anim} expr={a.expr} held={a.held} mouth={a.talk ? mouth : 0} />;
   else if (a.kind === "emu") body = <Emu {...common} anim={a.anim} angry={a.angry} />;
-  else if (a.kind === "crow") body = <Crow {...common} anim={a.anim} />;
+  else if (a.kind === "crow") body = <Crow {...common} anim={a.anim} color={a.color} />;
   else if (a.kind === "flock" || a.kind === "crows") {
     const n = a.count || 12, spread = a.spread || 220;
     const items = [];
@@ -30,7 +38,7 @@ function Actor({ a, f, t, mouth, idx }) {
       const dy = ((i * 37) % 100) / 100 * (a.depth || 60);
       const sc = 0.55 + dy / (a.depth || 60) * 0.5;
       const El = a.kind === "flock" ? Emu : Crow;
-      items.push({ dy, el: <g key={i} transform={`translate(${dx} ${dy}) scale(${sc})`}><El t={f} phase={i * 2.3} anim={a.anim || "walk"} /></g> });
+      items.push({ dy, el: <g key={i} transform={`translate(${dx} ${dy}) scale(${sc})`}><El t={f} phase={i * 2.3} anim={a.anim || "walk"} color={a.color} /></g> });
     }
     body = <g>{items.sort((p, q) => p.dy - q.dy).map((p) => p.el)}</g>;
   } else if (PROPS[a.kind]) {

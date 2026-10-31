@@ -36,7 +36,7 @@ export function Emu({ t = 0, anim = "walk", phase = 0, color = "#5B4E44", angry 
 }
 
 // Ворона, вид сбоку. anim: idle, fly, scream
-export function Crow({ t = 0, anim = "idle", phase = 0 }) {
+export function Crow({ t = 0, anim = "idle", phase = 0, color = "#1f2128" }) {
   const flap = anim === "fly" ? Math.sin(t * 0.9 + phase) : 0;
   const scream = anim === "scream" ? Math.abs(Math.sin(t * 0.5 + phase)) : 0;
   return (
@@ -44,12 +44,12 @@ export function Crow({ t = 0, anim = "idle", phase = 0 }) {
       {anim !== "fly" && <ellipse cx="0" cy="2" rx="14" ry="3" fill="#000" opacity=".25" />}
       <g transform={`translate(0 ${anim === "fly" ? -40 + flap * 4 : 0})`}>
         {anim !== "fly" && <path d="M-4 -14 L-6 0 M4 -14 L6 0" stroke="#333" strokeWidth="2.5" />}
-        <path d="M-20 -22 Q-10 -40 12 -36 Q22 -32 18 -18 Q8 -10 -10 -14 Z" fill="#1f2128" />
+        <path d="M-20 -22 Q-10 -40 12 -36 Q22 -32 18 -18 Q8 -10 -10 -14 Z" fill={color} />
         <path d="M-20 -22 L-34 -14 L-18 -16 Z" fill="#17181d" />
         <g transform={`rotate(${anim === "fly" ? flap * -40 : -8} -2 -30)`}>
-          <path d="M-2 -30 Q-18 -54 -30 -48 Q-20 -40 -6 -26 Z" fill="#2a2d36" />
+          <path d="M-2 -30 Q-18 -54 -30 -48 Q-20 -40 -6 -26 Z" fill={color === "#1f2128" ? "#2a2d36" : color} opacity=".85" />
         </g>
-        <circle cx="16" cy="-38" r="9" fill="#1f2128" />
+        <circle cx="16" cy="-38" r="9" fill={color} />
         <path d={`M23 -40 L33 -38 L23 ${-36 + scream * 3} Z`} fill="#3a3c44" />
         <circle cx="18" cy="-40" r="2" fill="#e8e0c8" /><circle cx="18.5" cy="-40" r="1" fill="#000" />
       </g>

@@ -111,3 +111,63 @@ export function Frame({ empty = false }) {
       : <g><rect x="-21" y="-29" width="42" height="58" fill="#3f5a3f" /><ellipse cx="0" cy="-6" rx="10" ry="13" fill="#c49a6c" /><path d="M-14 29 Q0 8 14 29 Z" fill="#2f3a28" /></g>}
   </g>);
 }
+
+export function LawnChair({ t = 0, balloons = 30, flying = true }) {
+  const sway = flying ? Math.sin(t * 0.08) * 4 : 0;
+  const cols = ["#e8453c", "#f2b84b", "#4aa3df", "#7bc96f", "#c86fd1", "#f28b4b"];
+  const items = [];
+  for (let i = 0; i < balloons; i++) {
+    const a = (i / balloons) * Math.PI * 2, r = 18 + (i % 4) * 9;
+    const x = Math.cos(a * 3.1) * r * 1.4, y = -170 - Math.abs(Math.sin(a * 2.3)) * 70 - (i % 5) * 10;
+    items.push(<g key={i}><line x1="0" y1="-60" x2={x} y2={y + 8} stroke="#ddd" strokeWidth=".5" opacity=".6" />
+      <ellipse cx={x} cy={y} rx="9" ry="11" fill={cols[i % cols.length]} /></g>);
+  }
+  return (<g transform={`rotate(${sway})`}>{items}
+    <path d="M-24 -20 L24 -20 L20 -6 L-20 -6 Z" fill="#2f8f6a" /><path d="M-24 -20 L-30 -60 L-18 -60 L-14 -20 Z" fill="#2f8f6a" />
+    {[-22, 22].map((x, i) => <line key={i} x1={x} y1="-6" x2={x + (i ? 6 : -6)} y2="10" stroke="#bbb" strokeWidth="2" />)}
+  </g>);
+}
+
+export function Briefcase() {
+  return (<g><rect x="-22" y="-26" width="44" height="26" rx="3" fill="#3a2a1c" /><rect x="-8" y="-32" width="16" height="7" rx="2" fill="none" stroke="#3a2a1c" strokeWidth="3" />
+    <rect x="-2" y="-18" width="4" height="5" fill="#c9a24a" /></g>);
+}
+
+export function Tank({ burst = false }) {
+  return (<g>
+    <rect x="-60" y="-150" width="120" height="150" fill="#7a7266" />
+    {[0, 1, 2, 3, 4].map((i) => <line key={i} x1="-60" y1={-150 + i * 30} x2="60" y2={-150 + i * 30} stroke="#5e584e" strokeWidth="2" />)}
+    <ellipse cx="0" cy="-150" rx="60" ry="10" fill="#8a8274" />
+    {burst && <path d="M-10 -150 L-25 -100 L-5 -60 L-20 0 L20 0 L8 -60 L28 -110 Z" fill="#2a1408" />}
+  </g>);
+}
+
+export function Wave({ t = 0, color = "#3a1d0c", h = 140 }) {
+  const pts = [];
+  for (let x = -260; x <= 260; x += 20) pts.push(`${x} ${-h + Math.sin(x / 30 + t * 0.3) * 10}`);
+  return (<g><path d={`M-260 40 L${pts.join(" L")} L260 40 Z`} fill={color} />
+    <path d={`M-260 ${-h + 6} ${pts.map((p) => "L" + p).join(" ")}`} stroke="#6b3a1a" strokeWidth="4" fill="none" opacity=".7" /></g>);
+}
+
+export function Shelves({ empty = false }) {
+  return (<g>
+    <rect x="-70" y="-120" width="140" height="120" fill="#4a3624" />
+    {[0, 1, 2].map((r) => <g key={r}><rect x="-66" y={-116 + r * 40} width="132" height="4" fill="#2e2016" />
+      {!empty && [...Array(6)].map((_, i) => <rect key={i} x={-60 + i * 21} y={-108 + r * 40} width="16" height="28" rx="2" fill={["#c9b38a", "#b8a070", "#d8c8a0"][(i + r) % 3]} />)}</g>)}
+  </g>);
+}
+
+export function Smoke({ t = 0, n = 6 }) {
+  return (<g>{[...Array(n)].map((_, i) => {
+    const k = ((t * 0.6 + i * 23) % 120) / 120;
+    return <circle key={i} cx={Math.sin(i * 2.1 + k * 3) * 10} cy={-k * 120} r={6 + k * 22} fill="#cfcfcf" opacity={0.45 * (1 - k)} />;
+  })}</g>);
+}
+
+export function Stage({ }) {
+  return (<g><rect x="-80" y="-24" width="160" height="24" fill="#6b4a2a" /><rect x="-80" y="-28" width="160" height="5" fill="#8a643a" /></g>);
+}
+
+export function Letter() {
+  return (<g><rect x="-12" y="-8" width="24" height="16" fill="#efe6cf" /><path d="M-12 -8 L0 2 L12 -8" stroke="#9a8f78" fill="none" /></g>);
+}

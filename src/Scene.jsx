@@ -246,7 +246,7 @@ function HookTitle({ seg, f, font }) {
         const shake = Math.sin(f * 1.8) * 6 * clamp(1 - (f - i * 4 - 6) / 10);
         return (
           <div key={i} style={{
-            fontFamily: font, fontWeight: 900, fontSize: 126, lineHeight: 1.02, textAlign: "center", textTransform: "uppercase",
+            fontFamily: font, fontWeight: 900, fontSize: Math.min(126, 960 / Math.max(4, line.replace(/\*/g, "").length * 0.8)), lineHeight: 1.02, textAlign: "center", textTransform: "uppercase",
             transform: `scale(${clamp(p, 0, 1.4)}) translateX(${shake}px)`, opacity: clamp(p * 2), ...outline(18),
           }}>
             {parseWords(line).map((w, k) => (
