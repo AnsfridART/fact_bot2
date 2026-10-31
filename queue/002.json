@@ -1,79 +1,770 @@
 [
  {
+  "title": "Армия с пулемётами проиграла войну… птицам 🐦",
+  "intro": {
+   "title": "АРМИЯ|*ПРОИГРАЛА*|ПТИЦАМ",
+   "text": "Знаешь, как армия с пулемётами проиграла войну… птицам? Слушай."
+  },
+  "scenes": [
+   {
+    "text": "Австралия, тысяча девятьсот тридцать второй год.",
+    "bg": "field_dusk",
+    "actors": [
+     {
+      "kind": "house",
+      "x": 70,
+      "y": 330,
+      "s": 0.7
+     },
+     {
+      "kind": "fence",
+      "x": 150,
+      "y": 345,
+      "s": 0.8
+     }
+    ],
+    "cam": "in",
+    "tag": "1932 · АВСТРАЛИЯ",
+    "tint": "warm"
+   },
+   {
+    "text": "Бывшие солдаты стали фермерами и выращивают пшеницу.",
+    "bg": "field_dusk",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E2AE84",
+       "shirt": "#7B6A4A",
+       "pants": "#4A4038",
+       "hat": "wide",
+       "hatColor": "#8A6A40"
+      },
+      "x": 105,
+      "y": 380,
+      "anim": "idle",
+      "talk": true
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#D9A27A",
+       "shirt": "#5E6E7A",
+       "pants": "#3E3A36",
+       "hat": "wide",
+       "hatColor": "#6E5A3A"
+      },
+      "x": 170,
+      "y": 375,
+      "anim": "idle",
+      "s": 0.95
+     }
+    ],
+    "cam": "in",
+    "tag": "ФЕРМЕРЫ",
+    "focus": 0,
+    "tint": "warm"
+   },
+   {
+    "text": "И тут на горизонте появляются *они*.",
+    "bg": "field_dusk",
+    "actors": [
+     {
+      "kind": "flock",
+      "x": 135,
+      "y": 335,
+      "to": {
+       "x": 135,
+       "y": 345
+      },
+      "s": 0.55,
+      "count": 18,
+      "spread": 300,
+      "depth": 30
+     }
+    ],
+    "cam": "in",
+    "alert": "20 000",
+    "tint": "warm"
+   },
+   {
+    "text": "Двадцать тысяч эму топчут и съедают урожай.",
+    "bg": "field_dusk",
+    "actors": [
+     {
+      "kind": "fence",
+      "x": 135,
+      "y": 350,
+      "props": {
+       "broken": true
+      }
+     },
+     {
+      "kind": "emu",
+      "x": 90,
+      "y": 385,
+      "anim": "eat"
+     },
+     {
+      "kind": "emu",
+      "x": 185,
+      "y": 395,
+      "anim": "eat",
+      "phase": 3
+     },
+     {
+      "kind": "emu",
+      "x": 140,
+      "y": 370,
+      "anim": "walk",
+      "s": 0.8
+     }
+    ],
+    "cam": "shake",
+    "tag": "УРОЖАЙ",
+    "alert": "УНИЧТОЖЕН",
+    "tint": "warm"
+   },
+   {
+    "text": "Фермеры просят помощи у правительства.",
+    "bg": "office",
+    "actors": [
+     {
+      "kind": "desk",
+      "x": 175,
+      "y": 375
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#2E3440",
+       "pants": "#22262e",
+       "hairStyle": "bald",
+       "hair": "#888",
+       "coat": true,
+       "tie": "#7a2a2a",
+       "glasses": true
+      },
+      "x": 190,
+      "y": 330,
+      "anim": "idle",
+      "s": 0.9,
+      "z": 300
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E2AE84",
+       "shirt": "#7B6A4A",
+       "pants": "#4A4038",
+       "hat": "wide",
+       "hatColor": "#8A6A40"
+      },
+      "x": 85,
+      "y": 385,
+      "anim": "talk",
+      "talk": true
+     }
+    ],
+    "cam": "in",
+    "tag": "ПРОСЬБА",
+    "focus": 2
+   },
+   {
+    "text": "И правительство отправляет… *армию*.",
+    "bg": "outback",
+    "actors": [
+     {
+      "kind": "truck",
+      "x": -40,
+      "y": 370,
+      "to": {
+       "x": 150,
+       "y": 370
+      },
+      "props": {
+       "moving": true
+      }
+     }
+    ],
+    "cam": "right",
+    "alert": "АРМИЯ"
+   },
+   {
+    "text": "Два пулемёта. Десять тысяч патронов.",
+    "bg": "outback",
+    "actors": [
+     {
+      "kind": "gun",
+      "x": 110,
+      "y": 380,
+      "s": 1.3
+     },
+     {
+      "kind": "ammo",
+      "x": 195,
+      "y": 385
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E4B48C",
+       "shirt": "#5E5D3C",
+       "pants": "#5A5A3A",
+       "hat": "army",
+       "hatColor": "#5E5D3C"
+      },
+      "x": 200,
+      "y": 372,
+      "anim": "point",
+      "talk": true,
+      "s": 0.95,
+      "flip": true
+     }
+    ],
+    "cam": "in",
+    "tag": "ОРУЖИЕ",
+    "focus": 2
+   },
+   {
+    "text": "Но эму хитрее. Они разбегаются в разные стороны.",
+    "bg": "outback",
+    "actors": [
+     {
+      "kind": "emu",
+      "x": 135,
+      "y": 380,
+      "to": {
+       "x": 290,
+       "y": 395
+      },
+      "anim": "run"
+     },
+     {
+      "kind": "emu",
+      "x": 130,
+      "y": 370,
+      "to": {
+       "x": -30,
+       "y": 360
+      },
+      "anim": "run",
+      "flip": true
+     },
+     {
+      "kind": "emu",
+      "x": 140,
+      "y": 360,
+      "to": {
+       "x": 250,
+       "y": 340
+      },
+      "anim": "run",
+      "s": 0.8
+     },
+     {
+      "kind": "emu",
+      "x": 125,
+      "y": 390,
+      "to": {
+       "x": 10,
+       "y": 420
+      },
+      "anim": "run",
+      "flip": true,
+      "s": 1.1
+     }
+    ],
+    "cam": "out"
+   },
+   {
+    "text": "А пулемёт заклинивает в самый важный момент.",
+    "bg": "outback",
+    "actors": [
+     {
+      "kind": "gun",
+      "x": 120,
+      "y": 385,
+      "s": 1.4,
+      "props": {
+       "jammed": true
+      }
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E4B48C",
+       "shirt": "#6B6A45",
+       "pants": "#5A5A3A",
+       "hat": "army",
+       "hatColor": "#6B6A45"
+      },
+      "x": 60,
+      "y": 385,
+      "anim": "shock",
+      "expr": "shock"
+     }
+    ],
+    "cam": "shake",
+    "alert": "ЗАКЛИНИЛО",
+    "focus": 1,
+    "tint": "red"
+   },
+   {
+    "text": "Солдаты гонятся за птицами на грузовике, но не могут их догнать.",
+    "bg": "outback",
+    "actors": [
+     {
+      "kind": "emu",
+      "x": 150,
+      "y": 380,
+      "to": {
+       "x": 330,
+       "y": 380
+      },
+      "anim": "run"
+     },
+     {
+      "kind": "emu",
+      "x": 110,
+      "y": 395,
+      "to": {
+       "x": 300,
+       "y": 395
+      },
+      "anim": "run",
+      "phase": 2
+     },
+     {
+      "kind": "truck",
+      "x": -60,
+      "y": 400,
+      "to": {
+       "x": 120,
+       "y": 400
+      },
+      "props": {
+       "moving": true
+      },
+      "s": 0.9
+     }
+    ],
+    "cam": "left"
+   },
+   {
+    "text": "Почти десять тысяч патронов… а эму всё ещё тысячи.",
+    "bg": "field_dusk",
+    "actors": [
+     {
+      "kind": "casings",
+      "x": 135,
+      "y": 410,
+      "props": {
+       "n": 40,
+       "spread": 200
+      }
+     },
+     {
+      "kind": "flock",
+      "x": 135,
+      "y": 340,
+      "s": 0.5,
+      "count": 14,
+      "spread": 280,
+      "depth": 20,
+      "anim": "eat"
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E4B48C",
+       "shirt": "#6B6A45",
+       "pants": "#5A5A3A",
+       "hat": "army",
+       "hatColor": "#6B6A45"
+      },
+      "x": 135,
+      "y": 400,
+      "anim": "worried",
+      "expr": "sad"
+     }
+    ],
+    "cam": "up",
+    "tag": "ДЕКАБРЬ 1932",
+    "focus": 2,
+    "tint": "warm"
+   }
+  ],
+  "punch": {
+   "big": "ПТИЦЫ|*ПОБЕДИЛИ*",
+   "text": "Армия отступила. Войну выиграли эму."
+  },
+  "outro": {
+   "text": "Подпишись! Завтра расскажу, как украли самую известную картину в мире."
+  },
+  "source": "M. Johnson, Journal of Australian Studies, 2006; Национальный архив Австралии",
+  "description": "В 1932 году Австралия отправила солдат с пулемётами воевать с эму. Угадай, кто победил.",
+  "hashtags": [
+   "факты",
+   "истории",
+   "знаешьли",
+   "shorts",
+   "интересно",
+   "история",
+   "австралия"
+  ]
+ },
+ {
   "title": "Как Мону Лизу вынесли из Лувра под халатом",
   "intro": {
    "title": "КАК УКРАЛИ|*МОНУ ЛИЗУ*",
-   "text": "Знаешь, что самую известную картину в мире однажды просто вынесли из Лувра под одеждой?"
+   "text": "Знаешь, что самую известную картину в мире однажды просто вынесли из Лувра… под одеждой?"
   },
   "scenes": [
    {
     "text": "Париж, август тысяча девятьсот одиннадцатого года.",
-    "prompt": "Paris street in 1911 early morning, light fog, grand museum building",
-    "cam": "in",
-    "tag": "1911 · ПАРИЖ"
+    "bg": "museum",
+    "actors": [
+     {
+      "kind": "frame",
+      "x": 135,
+      "y": 290,
+      "s": 1.2
+     }
+    ],
+    "cam": "out",
+    "tag": "1911 · ПАРИЖ",
+    "tint": "warm"
    },
    {
-    "text": "Понедельник. Лувр закрыт для посетителей.",
-    "prompt": "empty grand museum gallery hall with paintings, quiet morning light",
-    "cam": "out",
-    "tag": "ЛУВР · ПОНЕДЕЛЬНИК"
+    "text": "Понедельник. Лувр закрыт, в залах ни души.",
+    "bg": "museum",
+    "actors": [],
+    "cam": "left",
+    "tag": "ЛУВР · ПОНЕДЕЛЬНИК",
+    "tint": "dark"
    },
    {
     "text": "По пустым залам идёт рабочий в белом халате.",
-    "prompt": "man in white worker smock walking alone through an empty museum hall",
-    "cam": "left"
+    "bg": "museum",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E6B993",
+       "shirt": "#E8E4DC",
+       "pants": "#3a3a40",
+       "hair": "#2a1d14",
+       "hairStyle": "short"
+      },
+      "x": 20,
+      "y": 390,
+      "to": {
+       "x": 200,
+       "y": 380
+      },
+      "anim": "walk"
+     }
+    ],
+    "cam": "right",
+    "tint": "dark"
    },
    {
     "text": "Это Винченцо Перуджа. Когда-то он сам ставил стёкла на картины в этом музее.",
-    "prompt": "worker installing protective glass over a painting in a museum",
+    "bg": "museum",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E6B993",
+       "shirt": "#E8E4DC",
+       "pants": "#3a3a40",
+       "hair": "#2a1d14",
+       "hairStyle": "short"
+      },
+      "x": 120,
+      "y": 390,
+      "anim": "idle",
+      "expr": "neutral"
+     }
+    ],
     "cam": "in",
-    "tag": "ВИНЧЕНЦО ПЕРУДЖА"
+    "tag": "ВИНЧЕНЦО ПЕРУДЖА",
+    "focus": 0,
+    "tint": "dark"
    },
    {
     "text": "Он подходит к *Моне Лизе*.",
-    "prompt": "dark museum wall with a renaissance portrait painting under a spotlight, silhouette of a man approaching",
-    "cam": "in"
+    "bg": "museum",
+    "actors": [
+     {
+      "kind": "frame",
+      "x": 175,
+      "y": 300,
+      "s": 1.3
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E6B993",
+       "shirt": "#E8E4DC",
+       "pants": "#3a3a40",
+       "hair": "#2a1d14",
+       "hairStyle": "short"
+      },
+      "x": 80,
+      "y": 390,
+      "to": {
+       "x": 110,
+       "y": 390
+      },
+      "anim": "point"
+     }
+    ],
+    "cam": "in",
+    "tint": "dark"
    },
    {
     "text": "Снимает её со стены.",
-    "prompt": "hands lifting a framed painting off a museum wall",
+    "bg": "museum",
+    "actors": [
+     {
+      "kind": "frame",
+      "x": 175,
+      "y": 300,
+      "s": 1.3,
+      "props": {
+       "empty": true
+      }
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E6B993",
+       "shirt": "#E8E4DC",
+       "pants": "#3a3a40",
+       "hair": "#2a1d14",
+       "hairStyle": "short"
+      },
+      "x": 120,
+      "y": 390,
+      "anim": "carry",
+      "held": "painting",
+      "expr": "worried"
+     }
+    ],
     "cam": "shake",
-    "alert": "СНЯЛ"
+    "alert": "СНЯЛ",
+    "focus": 1,
+    "tint": "red"
    },
    {
-    "text": "На лестнице вынимает из рамы и прячет под халат.",
-    "prompt": "man hiding a wooden panel painting under his white smock in a dark stairwell",
-    "cam": "in"
+    "text": "На тёмной лестнице прячет картину под халат.",
+    "bg": "room",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E6B993",
+       "shirt": "#E8E4DC",
+       "pants": "#3a3a40",
+       "hair": "#2a1d14",
+       "hairStyle": "short"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "worried",
+      "expr": "worried"
+     }
+    ],
+    "cam": "in",
+    "focus": 0,
+    "tint": "night"
    },
    {
     "text": "Дверь заперта. И проходящий мимо сантехник *сам* открывает её вору.",
-    "prompt": "friendly plumber opening a locked old door for a man in a white smock",
-    "cam": "right",
-    "alert": "ДВЕРЬ"
+    "bg": "room",
+    "actors": [
+     {
+      "kind": "door",
+      "x": 135,
+      "y": 350,
+      "props": {
+       "open": true
+      },
+      "z": 100
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#DDA982",
+       "shirt": "#3D5A80",
+       "pants": "#2E3A50",
+       "hat": "cap",
+       "hatColor": "#3D5A80"
+      },
+      "x": 70,
+      "y": 390,
+      "anim": "talk",
+      "talk": true,
+      "expr": "happy"
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E6B993",
+       "shirt": "#E8E4DC",
+       "pants": "#3a3a40",
+       "hair": "#2a1d14",
+       "hairStyle": "short"
+      },
+      "x": 200,
+      "y": 392,
+      "anim": "worried",
+      "expr": "worried"
+     }
+    ],
+    "cam": "in",
+    "alert": "ДВЕРЬ",
+    "focus": 1,
+    "tint": "night"
    },
    {
     "text": "Пропажу замечают только на следующий день.",
-    "prompt": "museum wall with four iron hooks and an empty space where a painting hung, shocked artist with easel",
+    "bg": "museum",
+    "actors": [
+     {
+      "kind": "frame",
+      "x": 135,
+      "y": 290,
+      "s": 1.4,
+      "props": {
+       "empty": true
+      }
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#6a4a6a",
+       "pants": "#2a2a30",
+       "hat": "beret",
+       "hatColor": "#2a2a2a",
+       "beard": true,
+       "beardColor": "#5a4030"
+      },
+      "x": 135,
+      "y": 400,
+      "anim": "shock"
+     }
+    ],
     "cam": "out",
-    "alert": "ПУСТАЯ СТЕНА"
+    "alert": "ПУСТАЯ СТЕНА",
+    "focus": 1
    },
    {
     "text": "Под подозрение попадает даже молодой *Пикассо*.",
-    "prompt": "young painter in 1911 being questioned by a police detective in an office",
-    "cam": "left",
-    "tag": "ПОДОЗРЕВАЕМЫЙ"
+    "bg": "office",
+    "actors": [
+     {
+      "kind": "desk",
+      "x": 175,
+      "y": 380
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E2B48E",
+       "shirt": "#4a4038",
+       "pants": "#2e2a26",
+       "coat": true,
+       "hat": "wide",
+       "hatColor": "#3a332c",
+       "tie": "#2a2a2a"
+      },
+      "x": 200,
+      "y": 335,
+      "anim": "point",
+      "s": 0.9,
+      "flip": true,
+      "z": 300
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#D9A27A",
+       "shirt": "#e8e4dc",
+       "pants": "#2a2a30",
+       "hair": "#1a1410",
+       "hairStyle": "short"
+      },
+      "x": 80,
+      "y": 390,
+      "anim": "worried",
+      "expr": "worried"
+     }
+    ],
+    "cam": "in",
+    "tag": "ПОДОЗРЕВАЕМЫЙ",
+    "focus": 2,
+    "tint": "dark"
    },
    {
     "text": "А картина два года лежит в сундуке в обычной комнате.",
-    "prompt": "small shabby room, open wooden trunk with a hidden painting inside",
+    "bg": "room",
+    "actors": [
+     {
+      "kind": "trunk",
+      "x": 135,
+      "y": 390,
+      "s": 1.5
+     }
+    ],
     "cam": "in",
-    "tag": "2 ГОДА СПУСТЯ"
+    "tag": "2 ГОДА СПУСТЯ",
+    "tint": "night"
    },
    {
     "text": "Вора ловят, когда он пытается продать её во Флоренции.",
-    "prompt": "art dealer in Florence examining a painting, suspicious look",
-    "cam": "right",
-    "tag": "1913 · ФЛОРЕНЦИЯ"
+    "bg": "office",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#3a3440",
+       "pants": "#22222a",
+       "hairStyle": "bald",
+       "hair": "#777",
+       "glasses": true,
+       "coat": true,
+       "tie": "#6a2a2a"
+      },
+      "x": 90,
+      "y": 390,
+      "anim": "carry",
+      "held": "painting",
+      "expr": "shock"
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E6B993",
+       "shirt": "#E8E4DC",
+       "pants": "#3a3a40",
+       "hair": "#2a1d14",
+       "hairStyle": "short"
+      },
+      "x": 200,
+      "y": 392,
+      "anim": "talk",
+      "talk": true
+     }
+    ],
+    "cam": "in",
+    "tag": "1913 · ФЛОРЕНЦИЯ",
+    "focus": 0
    }
   ],
   "punch": {
@@ -99,70 +790,291 @@
   "title": "Вороны помнят твоё лицо. И рассказывают другим 🐦‍⬛",
   "intro": {
    "title": "ВОРОНЫ|*ПОМНЯТ*|ТВОЁ ЛИЦО",
-   "text": "Знаешь, что вороны могут годами помнить твоё лицо? И рассказать о тебе другим."
+   "text": "Знаешь, что вороны могут годами помнить твоё лицо? И рассказать о тебе… другим."
   },
   "scenes": [
    {
     "text": "Сиэтл, две тысячи шестой год. Университетский кампус.",
-    "prompt": "university campus with trees and old brick buildings, overcast day, crows on branches",
-    "cam": "in",
-    "tag": "2006 · СИЭТЛ"
+    "bg": "campus",
+    "actors": [
+     {
+      "kind": "crows",
+      "x": 135,
+      "y": 375,
+      "count": 5,
+      "spread": 200,
+      "depth": 30,
+      "anim": "idle"
+     }
+    ],
+    "cam": "out",
+    "tag": "2006 · СИЭТЛ",
+    "tint": "cold"
    },
    {
     "text": "Учёные надевают жуткую *маску* пещерного человека.",
-    "prompt": "scientist wearing a creepy caveman rubber mask on a campus lawn",
+    "bg": "campus",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E9B98F",
+       "shirt": "#e8e8e4",
+       "pants": "#3a3a44",
+       "coat": true,
+       "hair": "#4a3a2a",
+       "mask": "cave"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "idle"
+     }
+    ],
     "cam": "in",
-    "alert": "МАСКА"
+    "alert": "МАСКА",
+    "focus": 0,
+    "tint": "cold"
    },
    {
     "text": "В этой маске они ловят семь ворон, кольцуют и отпускают.",
-    "prompt": "researcher in a caveman mask holding a crow and putting a ring on its leg",
-    "cam": "right",
-    "tag": "7 ВОРОН"
+    "bg": "campus",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E9B98F",
+       "shirt": "#e8e8e4",
+       "pants": "#3a3a44",
+       "coat": true,
+       "hair": "#4a3a2a",
+       "mask": "cave"
+      },
+      "x": 110,
+      "y": 395,
+      "anim": "carry"
+     },
+     {
+      "kind": "crow",
+      "x": 175,
+      "y": 380,
+      "anim": "fly",
+      "s": 1.4
+     }
+    ],
+    "cam": "in",
+    "tag": "7 ВОРОН",
+    "tint": "cold"
    },
    {
     "text": "Птицам не сделали ничего плохого. Но они *запомнили*.",
-    "prompt": "extreme close-up of a crow eye staring, reflection of a mask in the eye",
-    "cam": "in"
+    "bg": "campus",
+    "actors": [
+     {
+      "kind": "crow",
+      "x": 135,
+      "y": 400,
+      "s": 3.2,
+      "anim": "idle"
+     }
+    ],
+    "cam": "in",
+    "focus": 0,
+    "tint": "cold"
    },
    {
     "text": "Теперь каждый раз, когда человек в этой маске идёт по кампусу…",
-    "prompt": "lonely person in a caveman mask walking along a campus path, crows watching from trees",
-    "cam": "left"
+    "bg": "campus",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E9B98F",
+       "shirt": "#e8e8e4",
+       "pants": "#3a3a44",
+       "coat": true,
+       "hair": "#4a3a2a",
+       "mask": "cave"
+      },
+      "x": 30,
+      "y": 395,
+      "to": {
+       "x": 170,
+       "y": 390
+      },
+      "anim": "walk"
+     },
+     {
+      "kind": "crows",
+      "x": 200,
+      "y": 360,
+      "count": 4,
+      "spread": 90,
+      "depth": 15,
+      "anim": "idle"
+     }
+    ],
+    "cam": "right",
+    "tint": "cold"
    },
    {
     "text": "Вороны кричат и пикируют на него.",
-    "prompt": "many crows diving and screaming at a masked man",
+    "bg": "campus",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E9B98F",
+       "shirt": "#e8e8e4",
+       "pants": "#3a3a44",
+       "coat": true,
+       "hair": "#4a3a2a",
+       "mask": "cave"
+      },
+      "x": 135,
+      "y": 400,
+      "anim": "shock"
+     },
+     {
+      "kind": "crows",
+      "x": 135,
+      "y": 300,
+      "count": 8,
+      "spread": 220,
+      "depth": 60,
+      "anim": "fly"
+     }
+    ],
     "cam": "shake",
-    "alert": "АТАКА"
+    "alert": "АТАКА",
+    "tint": "red"
    },
    {
     "text": "А на человека в другой маске они не обращают внимания.",
-    "prompt": "person in a neutral face mask walking calmly, crows ignoring him",
+    "bg": "campus",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E9B98F",
+       "shirt": "#e8e8e4",
+       "pants": "#3a3a44",
+       "coat": true,
+       "hair": "#4a3a2a",
+       "mask": "plain"
+      },
+      "x": 40,
+      "y": 395,
+      "to": {
+       "x": 150,
+       "y": 392
+      },
+      "anim": "walk"
+     },
+     {
+      "kind": "crows",
+      "x": 200,
+      "y": 370,
+      "count": 3,
+      "spread": 60,
+      "depth": 10,
+      "anim": "idle"
+     }
+    ],
     "cam": "right",
-    "tag": "ДРУГАЯ МАСКА"
+    "tag": "ДРУГАЯ МАСКА",
+    "tint": "cold"
    },
    {
     "text": "Проходят годы.",
-    "prompt": "campus trees changing through seasons, time passing",
+    "bg": "night_field",
+    "actors": [
+     {
+      "kind": "crows",
+      "x": 135,
+      "y": 360,
+      "count": 6,
+      "spread": 220,
+      "depth": 20,
+      "anim": "idle"
+     }
+    ],
     "cam": "out",
-    "tag": "ГОДЫ СПУСТЯ"
+    "tag": "ГОДЫ СПУСТЯ",
+    "tint": "night"
    },
    {
     "text": "Ворон, которые кричат на маску, становится только *больше*.",
-    "prompt": "large crowd of crows on power lines all looking down",
-    "cam": "up"
+    "bg": "campus",
+    "actors": [
+     {
+      "kind": "crows",
+      "x": 135,
+      "y": 380,
+      "count": 18,
+      "spread": 260,
+      "depth": 70,
+      "anim": "scream"
+     }
+    ],
+    "cam": "up",
+    "tint": "cold"
    },
    {
     "text": "Среди них есть птицы, которых никто никогда не ловил.",
-    "prompt": "young crow among older crows on a branch, all staring at the viewer",
+    "bg": "campus",
+    "actors": [
+     {
+      "kind": "crows",
+      "x": 135,
+      "y": 370,
+      "count": 7,
+      "spread": 220,
+      "depth": 20,
+      "anim": "idle"
+     },
+     {
+      "kind": "crow",
+      "x": 135,
+      "y": 410,
+      "s": 1.6,
+      "anim": "scream"
+     }
+    ],
     "cam": "in",
-    "alert": "НИКТО НЕ ТРОГАЛ"
+    "alert": "НИКТО НЕ ТРОГАЛ",
+    "focus": 1,
+    "tint": "cold"
    },
    {
     "text": "Они узнали о враге от других ворон.",
-    "prompt": "crows gathered together as if talking, one crow pointing its beak at a masked man",
-    "cam": "left"
+    "bg": "campus",
+    "actors": [
+     {
+      "kind": "crows",
+      "x": 90,
+      "y": 385,
+      "count": 6,
+      "spread": 120,
+      "depth": 30,
+      "anim": "scream"
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E9B98F",
+       "shirt": "#e8e8e4",
+       "pants": "#3a3a44",
+       "coat": true,
+       "hair": "#4a3a2a",
+       "mask": "cave"
+      },
+      "x": 210,
+      "y": 395,
+      "anim": "worried"
+     }
+    ],
+    "cam": "left",
+    "tint": "cold"
    }
   ],
   "punch": {
