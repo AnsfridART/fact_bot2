@@ -111,10 +111,10 @@ def build_props(s):
         dur = max(frames + int(gap * FPS), int(1.6 * FPS))
         seg = {"kind": p["kind"], "start": start, "dur": dur, "audio": wav, "env": env,
                "words": word_timings(p["text"].replace("|", " "), first, last)}
-        for k in ("title", "emotion", "tag", "alert", "cam", "big"):
+        for k in ("title", "emotion", "tag", "alert", "cam", "big", "bg", "actors", "focus", "tint", "camY"):
             if p.get(k):
                 seg[k] = p[k]
-        if p["kind"] == "scene":
+        if p["kind"] == "scene" and not (p.get("bg") or p.get("actors")):
             img = f"img{i}.jpg"
             try:
                 images.generate(p["prompt"], os.path.join(config.PUBLIC_DIR, img), seed, p.get("stock", ""))
@@ -128,28 +128,35 @@ def build_props(s):
         start += dur
 
     props = {"segments": segments, "totalFrames": start}
-    # музыка: свои треки из папки music/, иначе генерируем загадочный эмбиент
+    # музыка: свои треки из папки music/, иначе генерируем загадочный эмбиент (подмешивается после рендера)
     tracks = glob.glob(os.path.join(config.MUSIC_DIR, "*.mp3"))
     try:
         if tracks:
-            shutil.copy(random.choice(tracks), os.path.join(config.PUBLIC_DIR, "music.mp3"))
-            props["music"] = "music.mp3"
+            shutil.copy(random.choice(tracks), "work_music.audio")
         else:
-            music.generate(os.path.join(config.PUBLIC_DIR, "music.wav"), start / FPS + 1, seed)
-            props["music"] = "music.wav"
+            music.generate("work_music.audio.wav", start / FPS + 1, seed)
+            shutil.move("work_music.audio.wav", "work_music.audio")
     except Exception as e:
         print("Музыка не получилась:", e)
-    # громкость музыки приглушается, когда звучит голос (сглаженно, без «качелей»)
-    voice = np.zeros(start)
-    for sg in segments:
-        e = np.array(sg["env"][: max(0, start - sg["start"])])
-        voice[sg["start"]: sg["start"] + len(e)] = e
-    win = np.ones(15) / 15
-    duck = np.convolve(voice, win, mode="same")
-    props["duck"] = [round(float(min(1.0, x * 1.6)), 2) for x in duck]
     with open("props.json", "w", encoding="utf-8") as f:
         json.dump(props, f, ensure_ascii=False)
     return props
+
+
+def add_music(video):
+    """Подмешивает музыку: она приглушается, когда звучит голос, и громче в паузах."""
+    if not os.path.exists("work_music.audio"):
+        return video
+    out = video.replace(".mp4", "_music.mp4")
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", video, "-stream_loop", "-1", "-i", "work_music.audio",
+                    "-filter_complex",
+                    "[0:a]asplit=2[v][sc];"
+                    "[1:a]volume=1.6[m];"
+                    "[m][sc]sidechaincompress=threshold=0.03:ratio=5:attack=60:release=700[md];"
+                    "[v][md]amix=inputs=2:duration=first:normalize=0,alimiter=limit=0.95[a]",
+                    "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-shortest", out],
+                   check=True)
+    return out
 
 
 def render():
@@ -157,6 +164,11 @@ def render():
     subprocess.run(["npx", "remotion", "render", "src/index.jsx", "Main", config.OUTPUT,
                     "--props=./props.json", "--concurrency=100%", "--crf=20",
                     "--timeout=120000", "--log=warn"], check=True)
+    try:
+        final = add_music(config.OUTPUT)
+        shutil.move(final, config.OUTPUT)
+    except Exception as e:
+        print("Не удалось подмешать музыку:", e)
     # Telegram-боты отправляют файлы до 50 МБ: если больше, пережимаем
     if os.path.getsize(config.OUTPUT) > 48 * 1024 * 1024:
         small = config.OUTPUT.replace(".mp4", "_tg.mp4")

@@ -32,6 +32,18 @@ PRESETS["deep"] = ",".join([
     "aecho=0.85:0.6:35|60|95|140:0.16|0.11|0.07|0.04",
     "loudnorm=I=-14:TP=-1.5:LRA=6",
 ])
+# «мудрый дед»: тёплый, мягкий, лёгкая дрожь в голосе, уютная комната
+PRESETS["grandpa"] = ",".join([
+    "highpass=f=65",
+    "equalizer=f=160:t=q:w=1.0:g=3",
+    "equalizer=f=350:t=q:w=1.2:g=-2",
+    "equalizer=f=2200:t=q:w=1.0:g=2",
+    "equalizer=f=7500:t=q:w=1.0:g=-1",
+    "vibrato=f=5.2:d=0.035",
+    "acompressor=threshold=-21dB:ratio=3.5:attack=6:release=140:makeup=3",
+    "aecho=0.85:0.6:32|55|88|130:0.15|0.10|0.06|0.035",
+    "loudnorm=I=-15:TP=-1.5:LRA=8",
+])
 STUDIO = PRESETS["studio"]
 
 
@@ -77,7 +89,7 @@ def _silero_sentence(text, path, voice, speed, pitch):
         _silero = torch.package.PackageImporter("models/silero_ru.pt").load_pickle("tts_models", "model")
         _silero.to(torch.device("cpu"))
     rate = {True: "slow", False: "medium"}[speed >= 1.15]
-    tone = "x-low" if pitch < 0.85 else "low" if pitch < 0.95 else "medium"
+    tone = "x-low" if pitch < 0.85 else "low" if pitch < 0.95 else "medium" if pitch < 1.05 else "high"
     ssml = f'<speak><prosody rate="{rate}" pitch="{tone}">{text}</prosody></speak>'
     audio = _silero.apply_tts(ssml_text=ssml, speaker=voice, sample_rate=48000, put_accent=True, put_yo=True)
     _write_wav(path, (audio.numpy() * 32767).astype(np.int16), 48000)
