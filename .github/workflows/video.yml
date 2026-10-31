@@ -34,10 +34,11 @@ jobs:
       YC_FOLDER_ID: ${{ secrets.YC_FOLDER_ID }}
       MODE: ${{ github.event.inputs.mode || 'video' }}
       TTS_ENGINE: ${{ vars.TTS_ENGINE || 'silero' }}
-      VOICE: ${{ vars.VOICE || 'aidar' }}
-      VOICE_SPEED: ${{ vars.VOICE_SPEED || '1.2' }}
+      VOICE: ${{ vars.VOICE || 'eugene' }}
+      VOICE_SPEED: ${{ vars.VOICE_SPEED || '1.0' }}
       VOICE_PITCH: ${{ vars.VOICE_PITCH || '1.0' }}
-      VOICE_POST_PITCH: ${{ vars.VOICE_POST_PITCH || '1.03' }}
+      VOICE_TEMPO: ${{ vars.VOICE_TEMPO || '0.96' }}
+      VOICE_POST_PITCH: ${{ vars.VOICE_POST_PITCH || '1.0' }}
       VOICE_PRESET: ${{ vars.VOICE_PRESET || 'grandpa' }}
     steps:
       - uses: actions/checkout@v4
