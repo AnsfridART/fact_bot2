@@ -35,10 +35,10 @@ jobs:
       MODE: ${{ github.event.inputs.mode || 'video' }}
       TTS_ENGINE: ${{ vars.TTS_ENGINE || 'silero' }}
       VOICE: ${{ vars.VOICE || 'aidar' }}
-      VOICE_SPEED: ${{ vars.VOICE_SPEED || '1.0' }}
-      VOICE_PITCH: ${{ vars.VOICE_PITCH || '0.9' }}
-      VOICE_POST_PITCH: ${{ vars.VOICE_POST_PITCH || '0.97' }}
-      VOICE_PRESET: ${{ vars.VOICE_PRESET || 'deep' }}
+      VOICE_SPEED: ${{ vars.VOICE_SPEED || '1.2' }}
+      VOICE_PITCH: ${{ vars.VOICE_PITCH || '1.0' }}
+      VOICE_POST_PITCH: ${{ vars.VOICE_POST_PITCH || '1.03' }}
+      VOICE_PRESET: ${{ vars.VOICE_PRESET || 'grandpa' }}
     steps:
       - uses: actions/checkout@v4
 
