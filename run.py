@@ -18,6 +18,9 @@ import music
 FPS = config.FPS
 
 
+WARNINGS = []  # проблемы, о которых стоит написать в Telegram вместе с роликом
+
+
 # ---------- Telegram ----------
 def tg(method, **kwargs):
     r = requests.post(f"https://api.telegram.org/bot{config.TELEGRAM_BOT_TOKEN}/{method}", timeout=300, **kwargs)
@@ -93,13 +96,17 @@ def build_props(s):
         shutil.rmtree(config.PUBLIC_DIR)
     os.makedirs(config.PUBLIC_DIR)
 
-    plan = [{"kind": "intro", "text": s["intro"]["text"], "title": s["intro"].get("title"), "emotion": "enter"}]
+    # холодный старт: сразу сцена с действием и крупным заголовком; старый формат — профессор во вступлении
+    if s.get("hook"):
+        plan = [{"kind": "hook", **s["hook"]}]
+    else:
+        plan = [{"kind": "intro", "text": s["intro"]["text"], "title": s["intro"].get("title"), "emotion": "enter"}]
     for sc in s["scenes"]:
         plan.append({"kind": "scene", **sc})
     if s.get("punch"):
         plan.append({"kind": "punch", "text": s["punch"]["text"], "big": s["punch"]["big"]})
     plan.append({"kind": "outro", "emotion": "wave",
-                 "text": (s.get("outro") or {}).get("text", "Подпишись, завтра расскажу историю ещё безумнее!")})
+                 "text": (s.get("outro") or {}).get("text", "Это был Доктор Боб. Подпишись, завтра история ещё безумнее!")})
 
     seed = random.randint(1, 10_000_000)
     segments, start = [], 0
@@ -107,14 +114,14 @@ def build_props(s):
         wav = f"seg{i}.wav"
         tts.synthesize(clean(p["text"]), os.path.join(config.PUBLIC_DIR, wav))
         frames, env, first, last = audio_info(os.path.join(config.PUBLIC_DIR, wav))
-        gap = 0.12 if p["kind"] == "scene" else 0.35
+        gap = 0.12 if p["kind"] in ("scene", "hook") else 0.35
         dur = max(frames + int(gap * FPS), int(1.6 * FPS))
         seg = {"kind": p["kind"], "start": start, "dur": dur, "audio": wav, "env": env,
                "words": word_timings(p["text"].replace("|", " "), first, last)}
         for k in ("title", "emotion", "tag", "alert", "cam", "big", "bg", "actors", "focus", "tint", "camY"):
             if p.get(k):
                 seg[k] = p[k]
-        if p["kind"] == "scene" and not (p.get("bg") or p.get("actors")):
+        if p["kind"] in ("scene", "hook") and not (p.get("bg") or p.get("actors")):
             img = f"img{i}.jpg"
             try:
                 images.generate(p["prompt"], os.path.join(config.PUBLIC_DIR, img), seed, p.get("stock", ""))
@@ -138,6 +145,7 @@ def build_props(s):
             shutil.move("work_music.audio.wav", "work_music.audio")
     except Exception as e:
         print("Музыка не получилась:", e)
+        WARNINGS.append(f"музыка не сгенерировалась: {e}")
     with open("props.json", "w", encoding="utf-8") as f:
         json.dump(props, f, ensure_ascii=False)
     return props
@@ -146,17 +154,23 @@ def build_props(s):
 def add_music(video):
     """Подмешивает музыку: она приглушается, когда звучит голос, и громче в паузах."""
     if not os.path.exists("work_music.audio"):
-        return video
+        raise RuntimeError("файл музыки не найден")
     out = video.replace(".mp4", "_music.mp4")
-    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", video, "-stream_loop", "-1", "-i", "work_music.audio",
-                    "-filter_complex",
-                    "[0:a]asplit=2[v][sc];"
-                    "[1:a]volume=1.6[m];"
-                    "[m][sc]sidechaincompress=threshold=0.03:ratio=5:attack=60:release=700[md];"
-                    "[v][md]amix=inputs=2:duration=first:normalize=0,alimiter=limit=0.95[a]",
-                    "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-shortest", out],
-                   check=True)
-    return out
+    fmt = "aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo"
+    ducked = (f"[0:a]{fmt},asplit=2[v][sc];[1:a]{fmt},volume=1.6[m];"
+              "[m][sc]sidechaincompress=threshold=0.03:ratio=5:attack=60:release=700[md];"
+              "[v][md]amix=inputs=2:duration=first:normalize=0,alimiter=limit=0.95[a]")
+    simple = f"[0:a]{fmt}[v];[1:a]{fmt},volume=0.55[m];[v][m]amix=inputs=2:duration=first:normalize=0,alimiter=limit=0.95[a]"
+    last_err = None
+    for graph in (ducked, simple):  # если «умное» приглушение не сработает, просто тихий фон
+        r = subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", video, "-stream_loop", "-1", "-i", "work_music.audio",
+                            "-filter_complex", graph, "-map", "0:v", "-map", "[a]", "-c:v", "copy",
+                            "-c:a", "aac", "-b:a", "192k", "-shortest", out], capture_output=True, text=True)
+        if r.returncode == 0:
+            return out
+        last_err = r.stderr[-400:]
+        print("Смешивание не удалось:", last_err)
+    raise RuntimeError(last_err)
 
 
 def render():
@@ -169,6 +183,7 @@ def render():
         shutil.move(final, config.OUTPUT)
     except Exception as e:
         print("Не удалось подмешать музыку:", e)
+        WARNINGS.append(f"музыка не добавлена: {str(e)[:300]}")
     # Telegram-боты отправляют файлы до 50 МБ: если больше, пережимаем
     if os.path.getsize(config.OUTPUT) > 48 * 1024 * 1024:
         small = config.OUTPUT.replace(".mp4", "_tg.mp4")
@@ -209,6 +224,8 @@ def main():
         os.remove(path)
     with open(config.DONE_FILE, "a", encoding="utf-8") as f:
         f.write(s["title"] + "\n")
+    if WARNINGS:
+        say("⚠️ " + html.escape("; ".join(WARNINGS)))
     left = remaining()
     if left <= 3:
         say(f"⚠️ В очереди осталось сценариев: {left}. Пора попросить у Claude новую пачку.")

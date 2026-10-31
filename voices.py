@@ -6,15 +6,14 @@ import config
 import tts
 import music
 
-PHRASE = ("Гренландская акула может прожить около четырёхсот лет… "
+PHRASE = ("Знаешь, сколько может прожить акула? Четыреста лет… "
           "Представь: некоторые из них плавали в океане ещё до рождения Петра Первого!")
 
-# (голос, тон Silero, доп. сдвиг тона, скорость, обработка, описание)
+# (голос, тон Silero, доп. сдвиг тона, темп, обработка, описание)
 VARIANTS = [
-    ("aidar", 1.0, 1.03, 1.2, "grandpa", "мудрый дед (по умолчанию)"),
-    ("aidar", 1.0, 1.07, 1.2, "grandpa", "мудрый дед, ещё выше"),
-    ("aidar", 1.1, 1.0, 1.2, "grandpa", "мудрый дед, высокий тон Silero"),
-    ("eugene", 1.0, 1.0, 1.2, "grandpa", "другой голос (eugene), обработка деда"),
+    ("eugene", 1.0, 1.0, 0.96, "grandpa", "eugene, живая интонация (по умолчанию)"),
+    ("eugene", 1.0, 1.0, 1.04, "grandpa", "eugene, чуть бодрее"),
+    ("aidar", 1.0, 1.0, 0.96, "grandpa", "aidar, живая интонация"),
 ]
 
 
@@ -26,11 +25,12 @@ def tg(method, **kw):
 def main():
     os.makedirs("work", exist_ok=True)
     music.generate("work/music.wav", 20, 7)
-    for n, (voice, pitch, post, speed, preset, desc) in enumerate(VARIANTS, 1):
+    for n, (voice, pitch, post, tempo, preset, desc) in enumerate(VARIANTS, 1):
+        config.VOICE_TEMPO = tempo
         label = f"Вариант {n}: {desc}"
         try:
             wav, mp3 = f"work/v{n}.wav", f"work/v{n}.mp3"
-            tts.render(PHRASE, wav, "silero", voice, speed=speed, pitch=pitch, post_pitch=post, preset=preset)
+            tts.render(PHRASE, wav, "silero", voice, speed=1.0, pitch=pitch, post_pitch=post, preset=preset)
             subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", "work/music.wav", "-i", wav, "-filter_complex",
                             "[1:a]adelay=1500|1500,apad,asplit=2[v][sc];[0:a]volume=1.6[m];"
                             "[m][sc]sidechaincompress=threshold=0.03:ratio=5:attack=60:release=700[md];"

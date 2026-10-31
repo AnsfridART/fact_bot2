@@ -35,14 +35,13 @@ PRESETS["deep"] = ",".join([
 # «мудрый дед»: тёплый, мягкий, лёгкая дрожь в голосе, уютная комната
 PRESETS["grandpa"] = ",".join([
     "highpass=f=65",
-    "equalizer=f=160:t=q:w=1.0:g=3",
+    "equalizer=f=160:t=q:w=1.0:g=2.5",
     "equalizer=f=350:t=q:w=1.2:g=-2",
-    "equalizer=f=2200:t=q:w=1.0:g=2",
-    "equalizer=f=7500:t=q:w=1.0:g=-1",
-    "vibrato=f=5.2:d=0.035",
-    "acompressor=threshold=-21dB:ratio=3.5:attack=6:release=140:makeup=3",
-    "aecho=0.85:0.6:32|55|88|130:0.15|0.10|0.06|0.035",
-    "loudnorm=I=-15:TP=-1.5:LRA=8",
+    "equalizer=f=2400:t=q:w=1.0:g=2",
+    "equalizer=f=6500:t=q:w=1.5:g=-2",      # мягче «металл» синтезатора
+    "acompressor=threshold=-18dB:ratio=2.2:attack=10:release=180:makeup=2",
+    "aecho=0.85:0.6:32|55|88|130:0.13|0.09|0.05|0.03",
+    "loudnorm=I=-15:TP=-1.5:LRA=11",
 ])
 STUDIO = PRESETS["studio"]
 
@@ -81,22 +80,46 @@ def split_sentences(text):
 _silero = None
 
 
-def _silero_sentence(text, path, voice, speed, pitch):
-    """pitch < 0.85 = x-low, < 0.95 = low, иначе обычный тон."""
+def _silero_sentence(text, path, voice, speed, pitch, mood="plain"):
+    """Интонация меняется по предложению: вопрос выше, восклицание ярче, «…» медленнее и с паузой."""
     global _silero
     import torch
     if _silero is None:
         _silero = torch.package.PackageImporter("models/silero_ru.pt").load_pickle("tts_models", "model")
         _silero.to(torch.device("cpu"))
-    rate = {True: "slow", False: "medium"}[speed >= 1.15]
-    tone = "x-low" if pitch < 0.85 else "low" if pitch < 0.95 else "medium" if pitch < 1.05 else "high"
-    ssml = f'<speak><prosody rate="{rate}" pitch="{tone}">{text}</prosody></speak>'
+    tones = ["x-low", "low", "medium", "high", "x-high"]
+    base = 0 if pitch < 0.85 else 1 if pitch < 0.95 else 2 if pitch < 1.05 else 3
+    rate = "slow" if speed >= 1.15 else "medium"
+    if mood == "question":
+        base, rate = base + 1, "medium"
+    elif mood == "exclaim":
+        base, rate = base + 1, "fast" if rate == "medium" else "medium"
+    elif mood == "suspense":
+        base, rate = max(0, base - 1), "slow"
+    elif mood == "low":
+        base = max(0, base - 1)
+    tone = tones[min(base, len(tones) - 1)]
+    tail = '<break time="450ms"/>' if mood == "suspense" else ""
+    ssml = f'<speak><prosody rate="{rate}" pitch="{tone}">{text}</prosody>{tail}</speak>'
     audio = _silero.apply_tts(ssml_text=ssml, speaker=voice, sample_rate=48000, put_accent=True, put_yo=True)
     _write_wav(path, (audio.numpy() * 32767).astype(np.int16), 48000)
 
 
+def sentence_mood(sentence, i, total):
+    s = sentence.strip()
+    if s.endswith("?"):
+        return "question"
+    if s.endswith("!"):
+        return "exclaim"
+    if s.endswith("…") or s.endswith("..."):
+        return "suspense"
+    if total > 1 and i == total - 1 and len(s) < 40:
+        return "low"  # короткий финальный вывод — чуть ниже, весомее
+    return "plain"
+
+
 # ---------- Yandex SpeechKit ----------
-def _yandex_sentence(text, path, voice, speed, pitch):
+def _yandex_sentence(text, path, voice, speed, pitch, mood="plain"):
     data = {"text": text, "lang": "ru-RU", "voice": voice, "speed": f"{1 / speed:.2f}",
             "format": "lpcm", "sampleRateHertz": "48000"}
     if config.YC_FOLDER_ID:
@@ -112,7 +135,7 @@ def _yandex_sentence(text, path, voice, speed, pitch):
 _piper_voices = {}
 
 
-def _piper_sentence(text, path, voice, speed, pitch):
+def _piper_sentence(text, path, voice, speed, pitch, mood="plain"):
     from piper import PiperVoice
     if voice not in _piper_voices:
         _piper_voices[voice] = PiperVoice.load(f"models/{voice}.onnx")
@@ -139,15 +162,21 @@ def render(text, wav_path, engine, voice, speed=None, pitch=None, post_pitch=Non
         text = numbers_to_words(text)
     silence = b"\x00\x00" * int(SR * config.SENTENCE_PAUSE)
     chunks = []
-    for i, part in enumerate(split_sentences(text)):
+    parts = split_sentences(text)
+    for i, part in enumerate(parts):
         raw, norm = f"{wav_path}.{i}.raw.wav", f"{wav_path}.{i}.wav"
-        fn(part, raw, voice, speed, pitch)
-        shift = post_pitch * (pitch if engine == "piper" else 1.0)  # у Piper тон понижаем только вручную
-        af = "anull"
-        if abs(shift - 1.0) > 0.001:  # ниже тон при той же скорости речи
-            af = f"aresample=48000,asetrate={int(48000 * shift)},aresample={SR},atempo={1 / shift:.4f}"
-        _ffmpeg(raw, norm, af)
+        mood = sentence_mood(part, i, len(parts))
+        fn(part, raw, voice, speed, pitch, mood=mood)
+        shift = post_pitch * (pitch if engine == "piper" else 1.0)  # у Piper тон меняем только вручную
+        filters = ["aresample=48000"]
+        if abs(shift - 1.0) > 0.001:
+            filters += [f"asetrate={int(48000 * shift)}", "aresample=48000", f"atempo={1 / shift:.4f}"]
+        if abs(config.VOICE_TEMPO - 1.0) > 0.001:
+            filters.append(f"atempo={config.VOICE_TEMPO}")
+        _ffmpeg(raw, norm, ",".join(filters))
         chunks.append(_read(norm))
+        if mood == "suspense":
+            chunks[-1] += b"\x00\x00" * int(SR * 0.25)
         os.remove(raw)
         os.remove(norm)
     dry = wav_path + ".dry.wav"
@@ -156,7 +185,8 @@ def render(text, wav_path, engine, voice, speed=None, pitch=None, post_pitch=Non
         out.setsampwidth(2)
         out.setframerate(SR)
         out.writeframes(silence.join(chunks) + silence[: len(silence) // 2])
-    _ffmpeg(dry, wav_path, PRESETS.get(preset, STUDIO))
+    trim = "silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.02,"
+    _ffmpeg(dry, wav_path, trim + PRESETS.get(preset, STUDIO))
     os.remove(dry)
     return wav_path
 
