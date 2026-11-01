@@ -34,8 +34,8 @@ jobs:
       YC_FOLDER_ID: ${{ secrets.YC_FOLDER_ID }}
       MODE: ${{ github.event.inputs.mode || 'video' }}
       TTS_ENGINE: ${{ vars.TTS_ENGINE || 'edge' }}
-      YANDEX_VOICE: ${{ vars.YANDEX_VOICE || 'ermil' }}
-      YANDEX_EMOTION: ${{ vars.YANDEX_EMOTION || 'good' }}
+      YANDEX_VOICE: ${{ vars.YANDEX_VOICE || 'madirus' }}
+      YANDEX_EMOTION: ${{ vars.YANDEX_EMOTION || 'none' }}
       YANDEX_SPEED: ${{ vars.YANDEX_SPEED || '1.05' }}
       EDGE_VOICE: ${{ vars.EDGE_VOICE || 'ru-RU-DmitryNeural' }}
       EDGE_RATE: ${{ vars.EDGE_RATE || '+6%' }}
