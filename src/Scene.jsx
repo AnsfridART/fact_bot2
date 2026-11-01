@@ -421,3 +421,30 @@ export function Scene({ frame, data, src, ImgComp, font = "Montserrat, DejaVu Sa
     </div>
   );
 }
+
+// Обложка ролика: кадр из начала истории, плашка «ИСТОРИЯ #N», крупный заголовок.
+export function Cover({ data, font = "Montserrat, DejaVu Sans, Arial" }) {
+  const seg = (data.segments || [])[0];
+  if (!seg) return <div style={{ width: 1080, height: 1920, background: "#000" }} />;
+  const lines = (seg.title || "").split("|").filter(Boolean);
+  const shot = { ...seg, kind: "scene", focus: undefined, alert: undefined, tag: undefined, cam: "in", camY: (seg.camY ?? 305) - 50 };
+  return (
+    <div style={{ position: "absolute", inset: 0, width: 1080, height: 1920, overflow: "hidden", background: "#000" }}>
+      <Stage seg={shot} f={30} mouth={0} transition="none" />
+      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(rgba(0,0,0,.2), rgba(0,0,0,.62) 34%, rgba(0,0,0,0) 62%)" }} />
+      <div style={{ position: "absolute", top: 330, left: 0, right: 0, textAlign: "center" }}>
+        <span style={{ background: GOLD, color: NAVY, fontFamily: font, fontWeight: 900, fontSize: 46, padding: "10px 30px", borderRadius: 14, letterSpacing: 2 }}>
+          ИСТОРИЯ #{data.coverNumber || 1}
+        </span>
+      </div>
+      <div style={{ position: "absolute", top: 440, left: 50, right: 50, textAlign: "center", fontFamily: font, fontWeight: 900,
+        textTransform: "uppercase", lineHeight: 1.02, ...outline(18) }}>
+        {lines.map((line, i) => (
+          <div key={i} style={{ fontSize: Math.min(124, 960 / Math.max(4, line.replace(/\*/g, "").length * 0.72)) }}>
+            {parseWords(line).map((w, k) => <span key={k} style={{ color: w.key ? RED : "#fff" }}>{(k ? " " : "") + w.w}</span>)}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}

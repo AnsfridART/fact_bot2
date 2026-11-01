@@ -145,8 +145,12 @@ def build_props(s):
         if tracks:
             shutil.copy(random.choice(tracks), "work_music.audio")
         else:
-            music.generate("work_music.audio.wav", start / FPS + 1, seed)
-            shutil.move("work_music.audio.wav", "work_music.audio")
+            music.generate("work_music.audio.wav", start / FPS + 1, seed, s.get("mood", "mystery"))
+            # атмосфера мест подмешивается к музыке, чтобы вместе приглушаться под голос
+            music.ambience_track("work_amb.wav", segments, FPS, start / FPS)
+            subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", "work_music.audio.wav", "-i", "work_amb.wav",
+                            "-filter_complex", "[1:a]volume=0.45,aresample=44100,aformat=channel_layouts=stereo[a];"
+                            "[0:a][a]amix=inputs=2:duration=first:normalize=0", "-f", "wav", "work_music.audio"], check=True)
     except Exception as e:
         print("Музыка не получилась:", e)
         WARNINGS.append(f"музыка не сгенерировалась: {e}")
@@ -161,8 +165,20 @@ def build_props(s):
                 ev.append((t0, "boom", 0.9))
             if sg.get("alert"):
                 ev.append((t0 + 0.3, "tick", 0.5))
-            if sg.get("insert"):  # свуш на вставке крупного плана
-                ev.append((t0 + sg["dur"] * sg["insert"].get("at", 0.55) / FPS - 0.1, "whoosh", 0.35))
+            if sg.get("insert"):  # свуш на вставке крупного плана + звук предмета
+                ti = t0 + sg["dur"] * sg["insert"].get("at", 0.55) / FPS
+                ev.append((ti - 0.1, "whoosh", 0.35))
+                name = sg["insert"].get("name")
+                extra = {"document": [(6 / FPS, "stamp", 0.8), (0.0, "paper", 0.5)], "money": [(0.1, "paper", 0.6)],
+                         "letter": [(0.2, "paper", 0.6)], "seeds": [(0.1, "paper", 0.4)], "rope": [(18 / FPS, "snap", 0.9)],
+                         "clock": [(0.0, "clock", 0.6)], "fire": [(0.0, "fire", 0.7)]}.get(name, [])
+                ev += [(ti + dt, kind, vol) for dt, kind, vol in extra]
+            for a in sg.get("actors", []) or []:
+                if a.get("kind") == "lightning":  # гром на каждой вспышке молнии
+                    every = (a.get("props") or {}).get("every", 40)
+                    ev += [(t0 + k / FPS, "thunder", 0.8) for k in range(0, sg["dur"], every)]
+                if a.get("anim") == "fly" and a.get("kind") in ("crow", "crows"):
+                    ev.append((t0 + 0.1, "wings", 0.6))
             if sg.get("count"):   # тиканье счётчика и удар в конце
                 c0 = t0 + sg["dur"] * sg["count"].get("at", 0.12) / FPS
                 ev += [(c0 + i * 0.07, "tick", 0.25) for i in range(16)]
@@ -232,6 +248,33 @@ def render():
     return config.OUTPUT
 
 
+COVER_FILE = "cover_number.txt"
+
+
+def cover_number():
+    try:
+        with open(COVER_FILE) as f:
+            return int(f.read().strip())
+    except Exception:
+        return int(os.getenv("COVER_START", "1"))
+
+
+def make_cover(s):
+    """Обложка в стиле канала: кадр из начала истории, плашка «ИСТОРИЯ #N» и заголовок."""
+    n = cover_number()
+    with open("props.json", encoding="utf-8") as f:
+        props = json.load(f)
+    props["coverNumber"] = n
+    with open("props_cover.json", "w", encoding="utf-8") as f:
+        json.dump(props, f, ensure_ascii=False)
+    out = "output/cover.png"
+    subprocess.run(["npx", "remotion", "still", "src/index.jsx", "Cover", out, "--props=./props_cover.json",
+                    "--timeout=120000", "--log=warn"], check=True)
+    with open(COVER_FILE, "w") as f:
+        f.write(str(n + 1))
+    return out
+
+
 def caption(s):
     tags = " ".join("#" + t.lstrip("#").replace(" ", "") for t in s.get("hashtags", []))
     q = f"\n\n{s['question']}" if s.get("question") else ""
@@ -253,6 +296,14 @@ def main():
     with open(video, "rb") as fh:
         tg("sendVideo", data={"chat_id": config.TELEGRAM_CHAT_ID, "supports_streaming": "true"},
            files={"video": ("video.mp4", fh, "video/mp4")})
+    try:
+        cover = make_cover(s)
+        with open(cover, "rb") as fh:  # файлом, чтобы TikTok получил полное качество
+            tg("sendDocument", data={"chat_id": config.TELEGRAM_CHAT_ID, "caption": "Обложка для ролика"},
+               files={"document": ("cover.png", fh, "image/png")})
+    except Exception as e:
+        print("Обложка не получилась:", e)
+        WARNINGS.append(f"обложка не получилась: {str(e)[:200]}")
     say("Подпись для публикации:\n\n"
         f"<code>{html.escape(caption(s))}</code>\n\n"
         f"Описание для YouTube:\n<code>{html.escape(s.get('description', ''))}</code>")

@@ -1,7 +1,7 @@
 import React from "react";
 import { AbsoluteFill, Audio, Img, Sequence, staticFile, useCurrentFrame } from "remotion";
 import { loadFont } from "@remotion/google-fonts/Montserrat";
-import { Scene } from "./Scene.jsx";
+import { Scene, Cover } from "./Scene.jsx";
 
 const { fontFamily } = loadFont();
 
@@ -25,3 +25,9 @@ export const Main = (props) => {
     </AbsoluteFill>
   );
 };
+
+export const CoverMain = (props) => (
+  <AbsoluteFill style={{ backgroundColor: "#000" }}>
+    <Cover data={props} font={fontFamily} />
+  </AbsoluteFill>
+);
