@@ -101,5 +101,5 @@ jobs:
         run: |
           git config user.name "factbot"
           git config user.email "factbot@users.noreply.github.com"
-          git add -A queue done.txt
+          git add -A queue done.txt cover_number.txt
           git diff --cached --quiet || (git commit -m "Использован сценарий" && git push)
