@@ -49,11 +49,19 @@ function Face({ expr, mouth, blink, look }) {
   };
   return (
     <g>
-      <ellipse cx="-9" cy="-138" rx={eyeR} ry={ry} fill="#fff" />
-      <ellipse cx="9" cy="-138" rx={eyeR} ry={ry} fill="#fff" />
-      {!blink && <><circle cx={-9 + px} cy={-138 + py} r="2.3" fill="#1d1d1d" /><circle cx={9 + px} cy={-138 + py} r="2.3" fill="#1d1d1d" /></>}
-      <path d={`M-15 ${-147 + brow[0] * 0.5} L-4 ${-147 - brow[1] * 0.4 + brow[0] * 0.5}`} stroke="#2a2a2a" strokeWidth="2.6" strokeLinecap="round" />
-      <path d={`M15 ${-147 + brow[0] * 0.5} L4 ${-147 - brow[1] * 0.4 + brow[0] * 0.5}`} stroke="#2a2a2a" strokeWidth="2.6" strokeLinecap="round" />
+      <ellipse cx="-13" cy="-127" rx="5" ry="3" fill="#e8907e" opacity=".35" />
+      <ellipse cx="13" cy="-127" rx="5" ry="3" fill="#e8907e" opacity=".28" />
+      <ellipse cx="-9" cy="-138" rx={eyeR} ry={ry * 1.08} fill="#fff" />
+      <ellipse cx="9" cy="-138" rx={eyeR} ry={ry * 1.08} fill="#fff" />
+      {!blink && <>
+        <circle cx={-9 + px} cy={-137.5 + py} r="2.8" fill="#1a1410" />
+        <circle cx={9 + px} cy={-137.5 + py} r="2.8" fill="#1a1410" />
+        <circle cx={-8 + px} cy={-139 + py} r="1" fill="#fff" />
+        <circle cx={10 + px} cy={-139 + py} r="1" fill="#fff" />
+      </>}
+      <path d={`M-15 ${-147 + brow[0] * 0.5} L-4 ${-147 - brow[1] * 0.4 + brow[0] * 0.5}`} stroke="#2a1d14" strokeWidth="3.2" strokeLinecap="round" />
+      <path d={`M15 ${-147 + brow[0] * 0.5} L4 ${-147 - brow[1] * 0.4 + brow[0] * 0.5}`} stroke="#2a1d14" strokeWidth="3.2" strokeLinecap="round" />
+      <path d="M1 -134 Q4.5 -127 0 -125" stroke="#b07a5a" strokeWidth="2" fill="none" strokeLinecap="round" opacity=".8" />
       {mouthEl()}
     </g>
   );
@@ -79,17 +87,21 @@ function pose(anim, t, phase) {
   }
 }
 
-export function Person({ look = {}, anim = "idle", t = 0, mouth = 0, expr, phase = 0, held }) {
+export function Person({ look = {}, anim = "idle", t = 0, mouth = 0, expr, phase = 0, held, light = -1, gaze = 0 }) {
+  // light: -1 свет слева, 1 справа; gaze: -1/1 смотрит в сторону собеседника
   const L = { ...DEF, ...look };
   const p = pose(anim, t, phase);
   const blink = (t + phase * 37) % 110 < 4;
   const e = expr || (anim === "shock" ? "shock" : anim === "worried" ? "worried" : "neutral");
-  const arm = (side, ang) => (
-    <g transform={`translate(${side * 27} -104) rotate(${ang})`}>
-      <rect x="-6" y="-2" width="12" height="50" rx="6" fill={L.coat ? shade(L.shirt, 0.92) : L.shirt} />
-      <circle cx="0" cy="50" r="6.5" fill={L.skin} />
-    </g>
-  );
+  const arm = (side, ang) => {
+    const far = side === -light ? 0.8 : 1;  // рука в тени темнее
+    return (
+      <g transform={`translate(${side * 27} -104) rotate(${ang})`}>
+        <rect x="-6" y="-2" width="12" height="50" rx="6" fill={shade(L.shirt, (L.coat ? 0.92 : 1) * far)} />
+        <circle cx="0" cy="50" r="6.5" fill={shade(L.skin, far)} />
+      </g>
+    );
+  };
   const leg = (side, ang) => (
     <g transform={`translate(${side * 10} -56) rotate(${ang})`}>
       <rect x="-7" y="0" width="14" height="52" rx="5" fill={L.pants} />
@@ -109,14 +121,21 @@ export function Person({ look = {}, anim = "idle", t = 0, mouth = 0, expr, phase
         ) : <>{leg(-1, p.ll)}{leg(1, p.rl)}</>}
         {arm(-1, p.la)}
         <rect x="-26" y="-112" width="52" height="60" rx="14" fill={L.shirt} />
-        <rect x="-26" y="-80" width="52" height="28" rx="10" fill={shade(L.shirt, 0.85)} opacity=".6" />
-        {L.coat && <path d="M-4 -112 L-4 -52 M4 -112 L4 -52" stroke={shade(L.shirt, 0.7)} strokeWidth="2" />}
+        <path d={light < 0 ? "M2 -112 L12 -112 Q26 -112 26 -98 L26 -66 Q26 -52 12 -52 L2 -52 Z" : "M-2 -112 L-12 -112 Q-26 -112 -26 -98 L-26 -66 Q-26 -52 -12 -52 L-2 -52 Z"}
+          fill="#000" opacity=".2" />
+        <path d={light < 0 ? "M-25 -100 L-25 -60" : "M25 -100 L25 -60"} stroke="#ffd6a0" strokeWidth="2" opacity=".45" strokeLinecap="round" />
+        {L.coat && <g><path d="M-10 -112 L-2 -90 L-6 -70" stroke={shade(L.shirt, 0.6)} strokeWidth="2" fill="none" />
+          <path d="M10 -112 L2 -90 L6 -70" stroke={shade(L.shirt, 0.6)} strokeWidth="2" fill="none" /></g>}
+        {!L.coat && !L.dress && <path d="M-8 -112 L0 -104 L8 -112" stroke={shade(L.shirt, 0.7)} strokeWidth="2" fill="none" />}
         {L.tie && <path d="M0 -110 L-4 -100 L0 -80 L4 -100 Z" fill={L.tie} />}
         {held === "rifle" && <g transform="translate(-4 -88) rotate(-12)"><rect x="-6" y="-4" width="60" height="6" rx="2" fill="#3a2d20" /><rect x="40" y="-6" width="26" height="4" fill="#222" /></g>}
         {held === "painting" && <g transform="translate(0 -92)"><rect x="-24" y="-18" width="48" height="58" rx="2" fill="#6b4a22" /><rect x="-19" y="-13" width="38" height="48" fill="#3f5a3f" /><ellipse cx="0" cy="4" rx="9" ry="12" fill="#c49a6c" /></g>}
         {arm(1, p.ra)}
         <rect x="-8" y="-120" width="16" height="12" fill={shade(L.skin, 0.9)} />
         <circle cx="0" cy="-140" r="26" fill={L.skin} />
+        <path d={light < 0 ? "M3 -166 A26 26 0 0 1 3 -114 A21 26 0 0 0 3 -166 Z" : "M-3 -166 A26 26 0 0 0 -3 -114 A21 26 0 0 1 -3 -166 Z"}
+          fill="#000" opacity=".13" />
+        <path d={light < 0 ? "M-24 -148 A26 26 0 0 1 -14 -162" : "M24 -148 A26 26 0 0 0 14 -162"} stroke="#ffd6a0" strokeWidth="2.4" fill="none" opacity=".55" strokeLinecap="round" />
         <ellipse cx="-26" cy="-137" rx="4" ry="6" fill={shade(L.skin, 0.9)} />
         <ellipse cx="26" cy="-137" rx="4" ry="6" fill={shade(L.skin, 0.9)} />
         <Hair style={L.hat && L.hairStyle !== "long" ? "none" : L.hairStyle} color={L.hair} />
@@ -130,7 +149,7 @@ export function Person({ look = {}, anim = "idle", t = 0, mouth = 0, expr, phase
         ) : L.mask === "plain" ? (
           <g><ellipse cx="0" cy="-140" rx="24" ry="26" fill="#d9d4cc" /><circle cx="-9" cy="-142" r="3" fill="#333" /><circle cx="9" cy="-142" r="3" fill="#333" /><line x1="-5" y1="-123" x2="5" y2="-123" stroke="#555" strokeWidth="2" /></g>
         ) : (
-          <Face expr={e} mouth={mouth} blink={blink} look={anim === "point" ? { x: 2, y: -1 } : null} />
+          <Face expr={e} mouth={mouth} blink={blink} look={anim === "point" ? { x: 2, y: -1 } : gaze ? { x: gaze * 1.8, y: 0 } : null} />
         )}
         {L.glasses && <g fill="none" stroke="#2a2a2a" strokeWidth="2"><circle cx="-9" cy="-138" r="8" /><circle cx="9" cy="-138" r="8" /><line x1="-1" y1="-138" x2="1" y2="-138" /></g>}
         <Hat type={L.hat} color={L.hatColor} />

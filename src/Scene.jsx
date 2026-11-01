@@ -263,9 +263,18 @@ function StoryScene({ seg, f, src, ImgComp, font }) {
   if (seg.actors || seg.bg) {
     const env = seg.env || [];
     const mouth = clamp(env[Math.min(f, env.length - 1)] || 0);
+    // переход в сцену: вспышка, «смаз» вбок, наезд с размытием или затемнение
+    const kinds = ["whip", "zoom", "flash", "dip"];
+    const tr = seg.kind === "hook" ? "none" : kinds[Math.floor(seg.start / 13) % kinds.length];
+    const k = 1 - easeOut(prog(f, 0, 7));
+    const dir = Math.floor(seg.start / 7) % 2 ? 1 : -1;
+    const wrap = tr === "whip" ? { transform: `translateX(${dir * 55 * k}%)`, filter: `blur(${18 * k}px)` }
+      : tr === "zoom" ? { transform: `scale(${1 + 0.35 * k})`, filter: `blur(${14 * k}px)` } : {};
     return (
       <div style={{ position: "absolute", inset: 0, overflow: "hidden", background: "#000" }}>
-        <Stage seg={seg} f={f} mouth={mouth} />
+        <div style={{ position: "absolute", inset: 0, ...wrap }}>
+          <Stage seg={seg} f={f} mouth={mouth} transition={tr === "dip" ? "dip" : tr === "flash" ? "flash" : "none"} />
+        </div>
         <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: 700, background: "linear-gradient(rgba(0,0,0,0), rgba(0,0,0,.45))" }} />
         {seg.kind === "hook" ? <div style={{ position: "absolute", left: 0, right: 0, top: 0, height: 900, background: "linear-gradient(rgba(0,0,0,.55), rgba(0,0,0,0))" }} /> : null}
         <Tags seg={seg} f={f} font={font} />

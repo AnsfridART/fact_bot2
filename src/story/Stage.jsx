@@ -1,6 +1,6 @@
 // Сцена истории: фон + персонажи + предметы + камера + атмосфера (тон, зерно, пыль, виньетка).
 import React from "react";
-import { clamp, lerp, prog, easeOut, easeInOut } from "./util.js";
+import { clamp, lerp, prog, easeOut, easeInOut, backOut as backOutLocal } from "./util.js";
 import { Person } from "./Person.jsx";
 import { Emu, Crow } from "./Animals.jsx";
 import { Truck, MachineGun, Fence, House, Desk, AmmoBox, Casings, Paper, Trunk, Door, Frame, LawnChair, Briefcase, Tank, Wave, Shelves, Smoke, Stage as Podium, Letter } from "./Props.jsx";
@@ -8,14 +8,92 @@ import { Background } from "./Backgrounds.jsx";
 
 const PROPS = { truck: Truck, gun: MachineGun, fence: Fence, house: House, desk: Desk, ammo: AmmoBox, casings: Casings, paper: Paper, trunk: Trunk, door: Door, frame: Frame, chair: LawnChair, briefcase: Briefcase, tank: Tank, wave: Wave, shelves: Shelves, smoke: Smoke, podium: Podium, letter: Letter };
 
+// Источник света для каждого места: координаты, цвет, сила
+const LIGHTS = {
+  field_dusk: [190, 250, "#ffb070", 1], outback: [220, 150, "#ffe0a0", 0.4], office: [195, 205, "#cfe0ff", 0.6],
+  night_field: [60, 110, "#c8d8ff", 0.6], museum: [135, 90, "#ffd090", 0.8], room: [200, 190, "#9ab0ff", 0.6],
+  campus: [230, 150, "#f0f0ff", 0.3], old_street: [220, 120, "#ffe0b0", 0.8], paris: [200, 300, "#ffb070", 1],
+  jungle: [180, 120, "#e0ffb0", 0.8], sky: [220, 80, "#fff8e0", 0.35], war: [100, 200, "#e0d8c0", 0.5],
+  beach_night: [200, 100, "#c8d8ff", 0.6], winter_city: [150, 120, "#d0e0ff", 0.5], harbor: [200, 150, "#fff0d0", 0.3],
+  town: [60, 150, "#ffd0a0", 0.35],
+};
+const PARTICLES = { winter_city: "snow", town: "embers", night_field: "fireflies", beach_night: "none", sky: "none" };
+const FOREGROUND = {
+  paris: "post", old_street: "post", harbor: "post", jungle: "leaves", campus: "trunk",
+  field_dusk: "grass", outback: "grass", war: "wire", town: "post", museum: "column", office: "plant", room: "curtain",
+};
+
+function LightLayer({ name, f }) {
+  const L = LIGHTS[name];
+  if (!L) return null;
+  const [x, y, c, k] = L;
+  const flick = 1 + Math.sin(f / 17) * 0.04;
+  return (
+    <g style={{ mixBlendMode: "screen" }}>
+      <circle cx={x} cy={y} r={110 * flick} fill={c} opacity={0.05 * k} />
+      <circle cx={x} cy={y} r={55 * flick} fill={c} opacity={0.09 * k} />
+      <circle cx={x} cy={y} r={22} fill={c} opacity={0.16 * k} />
+      {[-70, -20, 40].map((dx, i) => (
+        <polygon key={i} points={`${x},${y} ${x + dx - 14},${y + 420} ${x + dx + 10},${y + 420}`} fill={c}
+          opacity={(0.035 + 0.015 * Math.sin(f / 23 + i)) * k} />
+      ))}
+    </g>
+  );
+}
+
+function Particles({ name, f }) {
+  const type = PARTICLES[name] || "dust";
+  if (type === "none") return null;
+  const items = [];
+  for (let i = 0; i < 22; i++) {
+    const seed = i * 97.13;
+    let x, y, r, c, o;
+    if (type === "snow") {
+      x = (seed + f * (0.3 + (i % 3) * 0.15) + Math.sin(f / 20 + i) * 8) % 290 - 10; y = (i * 53 + f * (1 + (i % 4) * 0.3)) % 500 - 10;
+      r = 0.8 + (i % 3) * 0.6; c = "#ffffff"; o = 0.75;
+    } else if (type === "embers") {
+      x = (seed + Math.sin(f / 15 + i) * 10) % 270; y = 480 - ((i * 61 + f * (0.8 + (i % 3) * 0.4)) % 500);
+      r = 0.7 + (i % 3) * 0.5; c = i % 2 ? "#ffb050" : "#ff7a30"; o = 0.8;
+    } else if (type === "fireflies") {
+      x = (seed + Math.sin(f / 30 + i) * 20) % 270; y = 250 + ((i * 37) % 200) + Math.cos(f / 25 + i) * 10;
+      r = 1.2; c = "#fff2a0"; o = 0.4 + 0.4 * Math.abs(Math.sin(f / 12 + i));
+    } else {
+      x = (seed + f * 0.12 * ((i % 3) + 1)) % 270; y = (i * 97 - f * 0.2 * ((i % 2) + 1) + 480) % 480;
+      r = 0.5 + (i % 3) * 0.4; c = "#fff3d8"; o = 0.22;
+    }
+    items.push(<circle key={i} cx={x} cy={y} r={r} fill={c} opacity={o} />);
+  }
+  return <g>{items}</g>;
+}
+
+function Foreground({ name, f }) {
+  const t = FOREGROUND[name];
+  const dark = "#0d0a12";
+  if (t === "post") return (<g opacity=".9"><rect x="-6" y="40" width="16" height="460" fill={dark} />
+    <rect x="-14" y="120" width="34" height="10" fill={dark} /><circle cx="3" cy="112" r="10" fill="#ffcf80" opacity=".5" /><circle cx="3" cy="112" r="4" fill="#ffe6b0" /></g>);
+  if (t === "trunk") return <g opacity=".9"><rect x="244" y="0" width="40" height="500" fill={dark} /><circle cx="250" cy="20" r="50" fill={dark} /></g>;
+  if (t === "leaves") return (<g fill={dark} opacity=".85">{[0, 1, 2, 3].map((i) => (
+    <ellipse key={i} cx={i < 2 ? -10 + i * 20 : 260 + (i - 2) * 15} cy={30 + i * 40 + Math.sin(f / 30 + i) * 3} rx="40" ry="14" transform={`rotate(${i < 2 ? 30 : -30})`} />))}</g>);
+  if (t === "grass") return (<g fill={dark} opacity=".85">{[...Array(14)].map((_, i) => (
+    <path key={i} d={`M${i * 21 - 5} 480 q${4 + Math.sin(f / 20 + i) * 3} -${30 + (i % 3) * 14} ${8} -${40 + (i % 4) * 10} q2 30 8 40 Z`} />))}</g>);
+  if (t === "wire") return <g stroke={dark} strokeWidth="2.5" fill="none" opacity=".85"><path d="M-10 440 Q60 420 130 450 T280 430" /><path d="M-10 460 Q80 445 150 470 T280 452" />
+    {[20, 70, 120, 170, 220].map((x) => <path key={x} d={`M${x} ${438 + (x % 40) / 4} l6 -6 m-6 0 l6 6`} />)}</g>;
+  if (t === "column") return <g fill={dark} opacity=".9"><rect x="236" y="0" width="44" height="500" /><rect x="228" y="60" width="60" height="12" /></g>;
+  if (t === "plant") return <g fill={dark} opacity=".9"><rect x="234" y="420" width="30" height="60" />{[0, 1, 2, 3, 4].map((i) => <ellipse key={i} cx={240 + i * 6} cy={400 - i * 14} rx="22" ry="8" transform={`rotate(${-40 + i * 20} ${240 + i * 6} ${400 - i * 14})`} />)}</g>;
+  if (t === "curtain") return <g fill={dark} opacity=".85"><path d={`M-10 0 L40 0 Q${30 + Math.sin(f / 40) * 4} 240 50 480 L-10 480 Z`} /></g>;
+  return null;
+}
+
 function actorPos(a, t) {
   const k = a.to ? easeInOut(clamp(t)) : 0;
   return { x: lerp(a.x ?? 135, a.to?.x ?? a.x ?? 135, k), y: lerp(a.y ?? 360, a.to?.y ?? a.y ?? 360, k) };
 }
 
-function Actor({ a, f, t, mouth, idx }) {
+function Actor({ a, f, t, mouth, idx, light, gaze }) {
   const { x, y } = actorPos(a, t);
-  const s = a.s ?? 1;
+  const living = ["person", "emu", "crow"].includes(a.kind);
+  const pop = living ? 0.9 + 0.1 * backOutLocal(prog(f, idx * 2, 9)) : 1;
+  const s = (a.s ?? 1) * pop;
   const flip = a.flip ? -1 : 1;
   const common = { t: f, phase: idx * 1.7 + (a.phase || 0) };
   let body = null;
@@ -27,7 +105,8 @@ function Actor({ a, f, t, mouth, idx }) {
       items.push({ dy, el: <g key={i} transform={`translate(${dx} ${dy}) scale(${0.6 + dy / (a.depth || 40) * 0.35})`}><Person t={f} phase={i * 1.9} look={lk} anim={a.anim || "idle"} /></g> });
     }
     body = <g>{items.sort((p, q) => p.dy - q.dy).map((p) => p.el)}</g>;
-  } else if (a.kind === "person") body = <Person {...common} look={a.look} anim={a.anim} expr={a.expr} held={a.held} mouth={a.talk ? mouth : 0} />;
+  } else if (a.kind === "person") body = <Person {...common} look={a.look} anim={a.anim} expr={a.expr} held={a.held} mouth={a.talk ? mouth : 0}
+    light={a.flip ? -light : light} gaze={a.flip ? -gaze : gaze} />;
   else if (a.kind === "emu") body = <Emu {...common} anim={a.anim} angry={a.angry} />;
   else if (a.kind === "crow") body = <Crow {...common} anim={a.anim} color={a.color} />;
   else if (a.kind === "flock" || a.kind === "crows") {
@@ -73,31 +152,55 @@ function cameraFor(seg, f, actors) {
 
 const TINTS = { warm: ["#ff9a40", 0.14], cold: ["#3a5cff", 0.14], night: ["#0a1430", 0.4], red: ["#ff2a1a", 0.16], dark: ["#000", 0.3] };
 
-export function Stage({ seg, f, mouth }) {
+export function Stage({ seg, f, mouth, transition = "flash" }) {
   const actors = seg.actors || [];
   const t = f / Math.max(1, seg.dur);
   const cam = cameraFor(seg, f, actors);
+  // тряска, когда выскакивает красная плашка
+  if (seg.alert) {
+    const k = clamp(1 - (f - 9) / 8) * (f >= 9 ? 1 : 0);
+    cam.cx += Math.sin(f * 2.7) * 2.2 * k;
+    cam.cy += Math.cos(f * 3.1) * 2.2 * k;
+  }
   const order = actors.map((a, i) => ({ a, i })).sort((p, q) => (p.a.z ?? actorPos(p.a, t).y) - (q.a.z ?? actorPos(q.a, t).y));
   const tint = TINTS[seg.tint];
   const half = seg.focus !== undefined && seg.dur > 70 ? Math.floor(seg.dur / 2) : -99;
   const cutFlash = f >= half && half > 0 ? 1 - easeOut(prog(f, half, 3)) : 0;
+  const L = LIGHTS[seg.bg];
+  const people = actors.map((a, i) => ({ a, i, p: actorPos(a, t) })).filter((o) => o.a.kind === "person");
+  const lightFor = (a) => (L ? (L[0] < actorPos(a, t).x ? -1 : 1) : -1);
+  const gazeFor = (a, i) => {
+    const me = actorPos(a, t);
+    const others = people.filter((o) => o.i !== i);
+    if (!others.length) return 0;
+    const near = others.reduce((b, o) => (Math.abs(o.p.x - me.x) < Math.abs(b.p.x - me.x) ? o : b));
+    return near.p.x > me.x ? 1 : -1;
+  };
+  const zb = 1 + (cam.z - 1) * 0.55, cxb = 135 + (cam.cx - 135) * 0.5;      // дальний план медленнее
+  const enter = transition === "flash" ? 1 - easeOut(prog(f, 0, 4)) : transition === "dip" ? 1 - easeOut(prog(f, 0, 7)) : 0;
   return (
     <svg width="1080" height="1920" viewBox="0 0 270 480" style={{ position: "absolute", inset: 0 }}>
       <defs>
         <radialGradient id="vig" cx="50%" cy="48%" r="70%"><stop offset="55%" stopColor="#000" stopOpacity="0" /><stop offset="100%" stopColor="#000" stopOpacity=".75" /></radialGradient>
+        <linearGradient id="haze" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#fff" stopOpacity="0" /><stop offset=".6" stopColor="#fff" stopOpacity=".06" /><stop offset="1" stopColor="#fff" stopOpacity="0" /></linearGradient>
         <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="1.6" numOctaves="1" seed={f % 50} /><feColorMatrix type="saturate" values="0" /></filter>
       </defs>
-      <g transform={`translate(135 240) scale(${cam.z}) translate(${-cam.cx} ${-cam.cy})`}>
+      <g transform={`translate(135 240) scale(${zb}) translate(${-cxb} ${-cam.cy})`}>
         <Background name={seg.bg} t={f} />
-        {order.map(({ a, i }) => <Actor key={i} a={a} f={f} t={t} mouth={mouth} idx={i} />)}
       </g>
-      {[...Array(14)].map((_, i) => (
-        <circle key={i} cx={(i * 61 + f * (0.15 + (i % 3) * 0.1)) % 270} cy={(i * 97 - f * 0.2 * ((i % 2) + 1) + 480) % 480} r={0.6 + (i % 3) * 0.4} fill="#fff" opacity=".18" />
-      ))}
+      <rect width="270" height="480" fill="url(#haze)" opacity=".6" />
+      <g transform={`translate(135 240) scale(${cam.z}) translate(${-cam.cx} ${-cam.cy})`}>
+        <LightLayer name={seg.bg} f={f} />
+        {order.map(({ a, i }) => <Actor key={i} a={a} f={f} t={t} mouth={mouth} idx={i} light={lightFor(a)} gaze={a.kind === "person" ? gazeFor(a, i) : 0} />)}
+      </g>
+      <g transform={`translate(${-(cam.cx - 135) * 0.8} 0)`}>
+        <Foreground name={seg.bg} f={f} />
+      </g>
+      <Particles name={seg.bg} f={f} />
       {tint && <rect width="270" height="480" fill={tint[0]} opacity={tint[1]} style={{ mixBlendMode: "multiply" }} />}
       <rect width="270" height="480" filter="url(#grain)" opacity=".07" />
       <rect width="270" height="480" fill="url(#vig)" />
-      <rect width="270" height="480" fill="#000" opacity={Math.max(seg.kind === "hook" ? 0 : 1 - easeOut(prog(f, 0, 4)), cutFlash) * 0.55} />
+      <rect width="270" height="480" fill="#000" opacity={Math.max(seg.kind === "hook" ? 0 : enter * (transition === "dip" ? 1 : 0.55), cutFlash * 0.55)} />
     </svg>
   );
 }
