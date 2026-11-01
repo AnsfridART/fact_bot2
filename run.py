@@ -38,8 +38,12 @@ def next_script():
     for path in sorted(glob.glob(os.path.join(config.QUEUE_DIR, "*.json"))):
         with open(path, encoding="utf-8") as f:
             items = json.load(f)
-        # сценарии старого формата (без сцен) пропускаем
-        while items and "scenes" not in items[0]:
+        # пропускаем старый формат и уже вышедшие истории
+        done = set()
+        if os.path.exists(config.DONE_FILE):
+            with open(config.DONE_FILE, encoding="utf-8") as fh:
+                done = {line.strip() for line in fh}
+        while items and ("scenes" not in items[0] or items[0]["title"].strip() in done):
             items = items[1:]
         if items:
             return items[0], path, items[1:]
@@ -146,26 +150,55 @@ def build_props(s):
     except Exception as e:
         print("Музыка не получилась:", e)
         WARNINGS.append(f"музыка не сгенерировалась: {e}")
+    # звуковые эффекты: удар + свуш на первом кадре, свуш на смене сцен, удар на финальной фразе
+    try:
+        ev = [(0.0, "boom", 0.8), (0.0, "whoosh", 0.6)]
+        for sg in segments[1:]:
+            t0 = sg["start"] / FPS
+            if sg["kind"] == "scene":
+                ev.append((max(0, t0 - 0.15), "whoosh", 0.28))
+            elif sg["kind"] == "punch":
+                ev.append((t0, "boom", 0.9))
+            if sg.get("alert"):
+                ev.append((t0 + 0.3, "tick", 0.5))
+        music.sfx_track("work_sfx.wav", start / FPS, ev)
+    except Exception as e:
+        print("Звуковые эффекты не получились:", e)
     with open("props.json", "w", encoding="utf-8") as f:
         json.dump(props, f, ensure_ascii=False)
     return props
 
 
 def add_music(video):
-    """Подмешивает музыку: она приглушается, когда звучит голос, и громче в паузах."""
-    if not os.path.exists("work_music.audio"):
-        raise RuntimeError("файл музыки не найден")
+    """Подмешивает музыку (приглушается под голос) и звуковые эффекты."""
+    has_music = os.path.exists("work_music.audio")
+    has_sfx = os.path.exists("work_sfx.wav")
+    if not has_music and not has_sfx:
+        raise RuntimeError("нет ни музыки, ни эффектов")
     out = video.replace(".mp4", "_music.mp4")
     fmt = "aresample=48000,aformat=sample_fmts=fltp:channel_layouts=stereo"
-    ducked = (f"[0:a]{fmt},asplit=2[v][sc];[1:a]{fmt},volume=1.6[m];"
-              "[m][sc]sidechaincompress=threshold=0.03:ratio=5:attack=60:release=700[md];"
-              "[v][md]amix=inputs=2:duration=first:normalize=0,alimiter=limit=0.95[a]")
-    simple = f"[0:a]{fmt}[v];[1:a]{fmt},volume=0.55[m];[v][m]amix=inputs=2:duration=first:normalize=0,alimiter=limit=0.95[a]"
+    inputs = ["-i", video]
+    if has_music:
+        inputs += ["-stream_loop", "-1", "-i", "work_music.audio"]
+    if has_sfx:
+        inputs += ["-i", "work_sfx.wav"]
+    fx_in = f"[{2 if has_music else 1}:a]{fmt},volume=0.9[fx];" if has_sfx else ""
+    fx = "[fx]" if has_sfx else ""
+    n = 1 + int(has_music) + int(has_sfx)
+    tail = f"amix=inputs={n}:duration=first:normalize=0,alimiter=limit=0.95[a]"
+    if has_music:
+        graphs = (
+            f"[0:a]{fmt},asplit=2[v][sc];[1:a]{fmt},volume=1.6[m];{fx_in}"
+            f"[m][sc]sidechaincompress=threshold=0.03:ratio=5:attack=60:release=700[md];[v][md]{fx}{tail}",
+            f"[0:a]{fmt}[v];[1:a]{fmt},volume=0.55[m];{fx_in}[v][m]{fx}{tail}",
+        )
+    else:
+        graphs = (f"[0:a]{fmt}[v];{fx_in}[v]{fx}{tail}",)
     last_err = None
-    for graph in (ducked, simple):  # если «умное» приглушение не сработает, просто тихий фон
-        r = subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", video, "-stream_loop", "-1", "-i", "work_music.audio",
-                            "-filter_complex", graph, "-map", "0:v", "-map", "[a]", "-c:v", "copy",
-                            "-c:a", "aac", "-b:a", "192k", "-shortest", out], capture_output=True, text=True)
+    for graph in graphs:
+        r = subprocess.run(["ffmpeg", "-y", "-loglevel", "error", *inputs, "-filter_complex", graph,
+                            "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-shortest", out],
+                           capture_output=True, text=True)
         if r.returncode == 0:
             return out
         last_err = r.stderr[-400:]
@@ -195,7 +228,8 @@ def render():
 
 def caption(s):
     tags = " ".join("#" + t.lstrip("#").replace(" ", "") for t in s.get("hashtags", []))
-    return f"{s['title']}\n\n{tags}"
+    q = f"\n\n{s['question']}" if s.get("question") else ""
+    return f"{s['title']}{q}\n\n{tags}"
 
 
 def main():

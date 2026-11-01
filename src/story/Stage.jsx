@@ -57,7 +57,7 @@ function cameraFor(seg, f, actors) {
   if (seg.cam === "up") cy = lerp(325, 285, t);
   let sx = 0, sy = 0;
   if (seg.cam === "shake") { sx = Math.sin(f * 1.7) * 1.6; sy = Math.cos(f * 2.3) * 1.6; }
-  z += 0.06 * (1 - easeOut(prog(f, 0, 6)));
+  z += (seg.kind === "hook" ? 0.28 : 0.06) * (1 - easeOut(prog(f, 0, seg.kind === "hook" ? 9 : 6)));  // резкий наезд на первом кадре
   // крупный план на второй половине длинной сцены
   const fi = seg.focus;
   if (fi !== undefined && fi !== null && d > 70 && f >= d / 2 && actors[fi]) {

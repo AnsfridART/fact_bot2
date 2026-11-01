@@ -67,6 +67,14 @@ PRESETS["smooth"] = ",".join([
     "aecho=0.85:0.55:30|52|80:0.12|0.08|0.04",
     "loudnorm=I=-15:TP=-1.5:LRA=10",
 ])
+PRESETS["clean"] = ",".join([
+    "highpass=f=70",
+    "equalizer=f=200:t=q:w=1.0:g=1.5",
+    "equalizer=f=6000:t=q:w=1.5:g=-1.5",
+    "acompressor=threshold=-20dB:ratio=2:attack=15:release=200:makeup=2",
+    "aecho=0.85:0.5:28|50:0.08|0.04",
+    "loudnorm=I=-14:TP=-1.5:LRA=9",
+])
 STUDIO = PRESETS["studio"]
 
 
@@ -115,9 +123,7 @@ def _silero_sentence(text, path, voice, speed, pitch, mood="plain"):
     base = 0 if pitch < 0.85 else 1 if pitch < 0.95 else 2 if pitch < 1.05 else 3
     rate = "slow" if speed >= 1.15 else "medium"
     if mood == "question":
-        base, rate = base + 1, "medium"
-    elif mood == "exclaim":
-        base = base + 1
+        rate = "medium"
     elif mood == "suspense":
         base, rate = max(0, base - 1), "slow"
     elif mood == "low":
@@ -215,17 +221,77 @@ def render(text, wav_path, engine, voice, speed=None, pitch=None, post_pitch=Non
     return wav_path
 
 
-def _edge(text, wav_path):
+def _edge(text, wav_path, voice=None, rate=None, preset=None):
+    """Нейроголос Microsoft: естественная дикторская интонация. Повторяем при сбоях сервиса."""
     import edge_tts
+    import time
+    voice = voice or config.EDGE_VOICE
+    rate = rate or config.EDGE_RATE
     mp3 = wav_path + ".mp3"
-    asyncio.run(edge_tts.Communicate(text, config.FALLBACK_VOICE, rate="-5%", pitch="-8Hz").save(mp3))
-    _ffmpeg(mp3, wav_path, STUDIO)
+    last = None
+    for attempt, pause in enumerate([0, 2, 4, 8, 15]):
+        time.sleep(pause)
+        try:
+            asyncio.run(edge_tts.Communicate(text, voice, rate=rate, pitch=config.EDGE_PITCH).save(mp3))
+            if os.path.getsize(mp3) > 2000:
+                break
+        except Exception as e:
+            last = e
+            print(f"edge-tts попытка {attempt + 1}: {e}")
+    else:
+        raise RuntimeError(f"edge-tts не ответил: {last}")
+    trim = "silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.02,"
+    _ffmpeg(mp3, wav_path, trim + PRESETS.get(preset or "clean", STUDIO))
     os.remove(mp3)
+    return wav_path
+
+
+def _yandex_full(text, wav_path, voice=None, emotion=None, speed=None):
+    """Yandex SpeechKit: вся фраза одним запросом — так интонация естественнее."""
+    data = {"text": text, "lang": "ru-RU", "voice": voice or config.YANDEX_VOICE,
+            "speed": str(speed or config.YANDEX_SPEED), "format": "lpcm", "sampleRateHertz": "48000"}
+    emo = emotion if emotion is not None else config.YANDEX_EMOTION
+    if emo:
+        data["emotion"] = emo
+    if config.YC_FOLDER_ID:
+        data["folderId"] = config.YC_FOLDER_ID
+    r = None
+    for pause in (0, 2, 5):
+        import time
+        time.sleep(pause)
+        r = requests.post("https://tts.api.cloud.yandex.net/speech/v1/tts:synthesize",
+                          headers={"Authorization": f"Api-Key {config.SPEECHKIT_API_KEY}"}, data=data, timeout=60)
+        if r.ok:
+            break
+        if r.status_code in (400, 401, 403):
+            break  # ошибка ключа или параметров — повтор не поможет
+    if not r.ok:
+        raise RuntimeError(f"SpeechKit {r.status_code}: {r.text[:300]}")
+    raw = wav_path + ".raw.wav"
+    _write_wav(raw, np.frombuffer(r.content, dtype=np.int16), 48000)
+    trim = "silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.02,"
+    _ffmpeg(raw, wav_path, trim + PRESETS["clean"])
+    os.remove(raw)
+    return wav_path
 
 
 def synthesize(text: str, wav_path: str) -> str:
-    order = [(config.TTS_ENGINE, config.VOICE)]
-    order += [("silero", "aidar"), ("piper", "dmitri")]
+    if config.TTS_ENGINE == "yandex" and config.SPEECHKIT_API_KEY:
+        try:
+            return _yandex_full(text, wav_path)
+        except Exception as e:
+            print("SpeechKit не сработал, запасной голос Microsoft:", e)
+            try:
+                return _edge(text, wav_path)
+            except Exception as e2:
+                print("edge-tts тоже не сработал:", e2)
+    if config.TTS_ENGINE == "edge":
+        try:
+            return _edge(text, wav_path)
+        except Exception as e:
+            print("edge-tts не сработал, запасной голос Silero:", e)
+    order = [(config.TTS_ENGINE if config.TTS_ENGINE != "edge" else "silero", config.VOICE),
+             ("silero", "eugene"), ("piper", "dmitri")]
     for engine, voice in order:
         try:
             if engine == "yandex" and not config.SPEECHKIT_API_KEY:
@@ -233,5 +299,4 @@ def synthesize(text: str, wav_path: str) -> str:
             return render(text, wav_path, engine, voice)
         except Exception as e:
             print(f"{engine}/{voice} не сработал: {e}")
-    _edge(text, wav_path)
-    return wav_path
+    raise RuntimeError("ни один синтезатор речи не сработал")

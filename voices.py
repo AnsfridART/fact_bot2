@@ -6,14 +6,25 @@ import config
 import tts
 import music
 
-PHRASE = ("Знаешь, сколько может прожить акула? Четыреста лет… "
-          "Представь: некоторые из них плавали в океане ещё до рождения Петра Первого!")
+PHRASE = ("Он продал Эйфелеву башню. Дважды! "
+          "Представь: торговец металлом поверил каждому слову… и сам отдал ему деньги.")
 
-# (голос, тон Silero, доп. сдвиг тона, темп, обработка, описание)
+YANDEX_VARIANTS = [
+    ("ermil", "good", "Яндекс: Ермил, дружелюбный"),
+    ("ermil", "neutral", "Яндекс: Ермил, нейтральный"),
+    ("filipp", "", "Яндекс: Филипп"),
+    ("alexander", "", "Яндекс: Александр"),
+    ("kirill", "", "Яндекс: Кирилл"),
+    ("zahar", "", "Яндекс: Захар"),
+    ("madirus", "", "Яндекс: Мадирус"),
+]
+
+# (движок, голос, темп, тон, описание)
 VARIANTS = [
-    ("eugene", 1.0, 1.0, 0.96, "grandpa", "eugene, живая интонация (по умолчанию)"),
-    ("eugene", 1.0, 1.0, 1.04, "grandpa", "eugene, чуть бодрее"),
-    ("aidar", 1.0, 1.0, 0.96, "grandpa", "aidar, живая интонация"),
+    ("edge", "ru-RU-DmitryNeural", "+0%", "-2Hz", "Дмитрий (Microsoft), спокойный темп"),
+    ("edge", "ru-RU-DmitryNeural", "+6%", "-2Hz", "Дмитрий (Microsoft), чуть бодрее — по умолчанию"),
+    ("edge", "ru-RU-DmitryNeural", "+10%", "+0Hz", "Дмитрий (Microsoft), энергично"),
+    ("silero", "eugene", None, None, "Silero eugene — нынешний голос, для сравнения"),
 ]
 
 
@@ -25,12 +36,20 @@ def tg(method, **kw):
 def main():
     os.makedirs("work", exist_ok=True)
     music.generate("work/music.wav", 20, 7)
-    for n, (voice, pitch, post, tempo, preset, desc) in enumerate(VARIANTS, 1):
-        config.VOICE_TEMPO = tempo
+    variants = VARIANTS
+    if config.SPEECHKIT_API_KEY:
+        variants = [("yandex", v, emo, None, d) for v, emo, d in YANDEX_VARIANTS]
+    for n, (engine, voice, rate, pitch, desc) in enumerate(variants, 1):
         label = f"Вариант {n}: {desc}"
         try:
             wav, mp3 = f"work/v{n}.wav", f"work/v{n}.mp3"
-            tts.render(PHRASE, wav, "silero", voice, speed=1.0, pitch=pitch, post_pitch=post, preset=preset)
+            if engine == "yandex":
+                tts._yandex_full(PHRASE, wav, voice=voice, emotion=rate)
+            elif engine == "edge":
+                config.EDGE_PITCH = pitch
+                tts._edge(PHRASE, wav, voice=voice, rate=rate)
+            else:
+                tts.render(PHRASE, wav, "silero", voice, preset="smooth")
             subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", "work/music.wav", "-i", wav, "-filter_complex",
                             "[1:a]adelay=1500|1500,apad,asplit=2[v][sc];[0:a]volume=1.6[m];"
                             "[m][sc]sidechaincompress=threshold=0.03:ratio=5:attack=60:release=700[md];"

@@ -36,9 +36,11 @@ def soft_saw(f, t, partials=10, detune=0.0):
 
 def envelope(n, attack, release):
     env = np.ones(n)
-    a, r = int(attack * SR), int(release * SR)
-    env[:a] = np.linspace(0, 1, a) ** 2
-    env[-r:] *= np.linspace(1, 0, r) ** 2
+    a, r = min(int(attack * SR), n // 2), min(int(release * SR), n // 2)  # короткий хвост не ломает генерацию
+    if a:
+        env[:a] = np.linspace(0, 1, a) ** 2
+    if r:
+        env[-r:] *= np.linspace(1, 0, r) ** 2
     return env
 
 
@@ -116,3 +118,57 @@ def generate(path, seconds, seed=None):
 if __name__ == "__main__":
     import sys
     generate(sys.argv[1] if len(sys.argv) > 1 else "music_test.wav", 45)
+
+
+# ---------- Звуковые эффекты (генерируются кодом, без авторских прав) ----------
+def _boom(sr):
+    t = np.arange(int(sr * 1.4)) / sr
+    f = 70 * np.exp(-t * 3) + 32
+    phase = 2 * np.pi * np.cumsum(f) / sr
+    body = np.sin(phase) * np.exp(-t * 3.2)
+    noise = np.random.default_rng(1).standard_normal(len(t)) * np.exp(-t * 25) * 0.35
+    return (body + noise) * 0.9
+
+
+def _whoosh(sr, length=0.55):
+    n = int(sr * length)
+    t = np.arange(n) / sr
+    noise = np.random.default_rng(2).standard_normal(n)
+    env = np.sin(np.pi * np.clip(t / length, 0, 1)) ** 2
+    # «полёт» частоты: простой резонансный фильтр с плывущей частотой
+    out = np.zeros(n)
+    y1 = y2 = 0.0
+    for i in range(n):
+        fc = 300 + 2500 * (t[i] / length)
+        w = 2 * np.pi * fc / sr
+        r = 0.97
+        y = noise[i] * (1 - r) + 2 * r * np.cos(w) * y1 - r * r * y2
+        y2, y1 = y1, y
+        out[i] = y
+    out = out / (np.max(np.abs(out)) + 1e-9)
+    return out * env * 0.7
+
+
+def _tick(sr):
+    t = np.arange(int(sr * 0.12)) / sr
+    return np.sin(2 * np.pi * 1800 * t) * np.exp(-t * 60) * 0.35
+
+
+def sfx_track(path, seconds, events, sr=44100):
+    """events: список (время в секундах, вид: boom / whoosh / tick, громкость)."""
+    track = np.zeros(int(sr * (seconds + 2)))
+    cache = {"boom": _boom(sr), "whoosh": _whoosh(sr), "tick": _tick(sr)}
+    for t0, kind, vol in events:
+        s = cache[kind] * vol
+        i = int(t0 * sr)
+        if i >= len(track):
+            continue
+        e = min(len(track), i + len(s))
+        track[i:e] += s[: e - i]
+    track = np.clip(track, -1, 1)
+    with wave.open(path, "wb") as w:
+        w.setnchannels(1)
+        w.setsampwidth(2)
+        w.setframerate(sr)
+        w.writeframes((track * 32767).astype(np.int16).tobytes())
+    return path
