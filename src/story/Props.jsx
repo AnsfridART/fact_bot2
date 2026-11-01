@@ -171,3 +171,52 @@ export function Stage({ }) {
 export function Letter() {
   return (<g><rect x="-12" y="-8" width="24" height="16" fill="#efe6cf" /><path d="M-12 -8 L0 2 L12 -8" stroke="#9a8f78" fill="none" /></g>);
 }
+
+export function Lightning({ t = 0, every = 40 }) {
+  const k = t % every;
+  if (k > 6) return null;
+  return (<g>
+    <rect x="-400" y="-700" width="800" height="900" fill="#e8f0ff" opacity={0.35 * (1 - k / 6)} />
+    <path d="M10 -420 L-14 -250 L8 -250 L-20 -60 L30 -280 L8 -280 L34 -420 Z" fill="#fffbe0" opacity={1 - k / 7} />
+  </g>);
+}
+
+export function Stones({ n = 16 }) {
+  return (<g>{[...Array(n)].map((_, i) => {
+    const x = Math.sin(i * 12.9) * 40, y = -((i * 7) % 26), r = 6 + (i % 4) * 2;
+    return <ellipse key={i} cx={x} cy={y} rx={r} ry={r * 0.75} fill={["#9a8a78", "#b0a090", "#857565", "#c0b0a0"][i % 4]} />;
+  })}</g>);
+}
+
+export function Wheelbarrow({ t = 0, moving = false }) {
+  return (<g>
+    <circle cx="34" cy="-12" r="12" fill="#2a2420" /><circle cx="34" cy="-12" r="4" fill="#666" transform={`rotate(${moving ? t * 10 : 0} 34 -12)`} />
+    <path d="M-30 -40 L30 -40 L20 -16 L-20 -16 Z" fill="#6a5a4a" /><path d="M-30 -40 L-56 -28" stroke="#5a4a38" strokeWidth="4" />
+    <path d="M-20 -16 L-24 0" stroke="#5a4a38" strokeWidth="4" />
+    {[-14, 0, 14].map((x, i) => <ellipse key={i} cx={x} cy="-44" rx="8" ry="6" fill={["#9a8a78", "#b0a090", "#857565"][i]} />)}
+  </g>);
+}
+
+export function Palace({ built = 1 }) {
+  const h = 160 * built;
+  return (<g>
+    <rect x="-110" y={-h * 0.55} width="220" height={h * 0.55} fill="#b8a080" />
+    {[-90, -40, 10, 60].map((x, i) => <rect key={i} x={x} y={-h * 0.45} width="22" height={h * 0.3} rx="11" fill="#5a4a38" />)}
+    {built > 0.6 && <g fill="#a89070">
+      <path d="M-110 -88 L-90 -150 L-70 -88 Z" /><path d="M-30 -88 Q0 -170 30 -88 Z" /><path d="M70 -88 L90 -140 L110 -88 Z" />
+      <circle cx="0" cy="-150" r="14" fill="#c8b090" /><rect x="-4" y="-180" width="8" height="30" fill="#a89070" />
+    </g>}
+    {[...Array(14)].map((_, i) => <circle key={i} cx={-100 + i * 15} cy={-h * 0.55 + 6} r="5" fill="#d0b890" />)}
+  </g>);
+}
+
+export function Desks({ n = 3 }) {
+  return (<g>{[...Array(n)].map((_, i) => <g key={i} transform={`translate(${(i - (n - 1) / 2) * 80} 0)`}>
+    <rect x="-30" y="-36" width="60" height="8" fill="#7a5a3a" /><rect x="-26" y="-28" width="5" height="28" fill="#5a4028" /><rect x="21" y="-28" width="5" height="28" fill="#5a4028" /></g>)}</g>);
+}
+
+export function Fence2({ w = 260 }) {
+  return (<g><rect x={-w / 2} y="-36" width={w} height="3" fill="#8a7a6a" /><rect x={-w / 2} y="-20" width={w} height="3" fill="#8a7a6a" />
+    {[...Array(Math.floor(w / 20) + 1)].map((_, i) => <rect key={i} x={-w / 2 + i * 20} y="-44" width="3" height="44" fill="#6a5a48" />)}
+    <path d={`M${-w / 2} -30 L${w / 2} -30`} stroke="#9a9a9a" strokeWidth="1" strokeDasharray="3 2" /></g>);
+}

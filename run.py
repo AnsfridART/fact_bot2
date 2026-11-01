@@ -122,8 +122,8 @@ def build_props(s):
         dur = max(frames + int(gap * FPS), int(1.6 * FPS))
         seg = {"kind": p["kind"], "start": start, "dur": dur, "audio": wav, "env": env,
                "words": word_timings(p["text"].replace("|", " "), first, last)}
-        for k in ("title", "emotion", "tag", "alert", "cam", "big", "bg", "actors", "focus", "tint", "camY"):
-            if p.get(k):
+        for k in ("title", "emotion", "tag", "alert", "cam", "big", "bg", "actors", "focus", "tint", "camY", "insert", "count"):
+            if p.get(k) is not None:  # focus=0 — тоже значение
                 seg[k] = p[k]
         if p["kind"] in ("scene", "hook") and not (p.get("bg") or p.get("actors")):
             img = f"img{i}.jpg"
@@ -161,6 +161,12 @@ def build_props(s):
                 ev.append((t0, "boom", 0.9))
             if sg.get("alert"):
                 ev.append((t0 + 0.3, "tick", 0.5))
+            if sg.get("insert"):  # свуш на вставке крупного плана
+                ev.append((t0 + sg["dur"] * sg["insert"].get("at", 0.55) / FPS - 0.1, "whoosh", 0.35))
+            if sg.get("count"):   # тиканье счётчика и удар в конце
+                c0 = t0 + sg["dur"] * sg["count"].get("at", 0.12) / FPS
+                ev += [(c0 + i * 0.07, "tick", 0.25) for i in range(16)]
+                ev.append((c0 + 34 / FPS, "boom", 0.5))
         music.sfx_track("work_sfx.wav", start / FPS, ev)
     except Exception as e:
         print("Звуковые эффекты не получились:", e)
@@ -185,7 +191,7 @@ def add_music(video):
     fx_in = f"[{2 if has_music else 1}:a]{fmt},volume=0.9[fx];" if has_sfx else ""
     fx = "[fx]" if has_sfx else ""
     n = 1 + int(has_music) + int(has_sfx)
-    tail = f"amix=inputs={n}:duration=first:normalize=0,alimiter=limit=0.95[a]"
+    tail = f"amix=inputs={n}:duration=first:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=11,alimiter=limit=0.95[a]"  # громкость как у роликов в TikTok
     if has_music:
         graphs = (
             f"[0:a]{fmt},asplit=2[v][sc];[1:a]{fmt},volume=1.6[m];{fx_in}"

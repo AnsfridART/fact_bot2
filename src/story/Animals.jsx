@@ -56,3 +56,45 @@ export function Crow({ t = 0, anim = "idle", phase = 0, color = "#1f2128" }) {
     </g>
   );
 }
+
+// Рыжий кот, сидит (вид сбоку, смотрит вправо). anim: idle, proud
+export function Cat({ t = 0, anim = "idle", phase = 0, color = "#d8893a" }) {
+  const tail = Math.sin(t * 0.12 + phase) * 14;
+  const blink = (t + phase * 20) % 90 < 4;
+  return (
+    <g>
+      <ellipse cx="0" cy="2" rx="26" ry="5" fill="#000" opacity=".25" />
+      <path d={`M-18 -6 Q-40 ${-20 + tail * 0.3} -34 ${-46 + tail}`} stroke={color} strokeWidth="7" fill="none" strokeLinecap="round" />
+      <ellipse cx="-2" cy="-24" rx="22" ry="24" fill={color} />
+      <ellipse cx="4" cy="-14" rx="10" ry="12" fill="#f2d2a8" />
+      <g transform={`rotate(${anim === "proud" ? -8 : Math.sin(t * 0.05 + phase) * 4} 6 -48)`}>
+        <circle cx="6" cy="-56" r="17" fill={color} />
+        <path d="M-6 -66 L-4 -82 L6 -70 Z" fill={color} /><path d="M12 -70 L22 -82 L22 -64 Z" fill={color} />
+        <path d="M-3 -70 L-3 -77 L3 -71 Z" fill="#f2a8a0" /><path d="M15 -69 L20 -77 L20 -66 Z" fill="#f2a8a0" />
+        <ellipse cx="0" cy="-58" rx="3.2" ry={blink ? 0.4 : 4} fill="#2a2a10" /><ellipse cx="14" cy="-58" rx="3.2" ry={blink ? 0.4 : 4} fill="#2a2a10" />
+        <path d="M5 -50 L9 -50 L7 -47 Z" fill="#c46464" />
+        <path d="M-6 -50 L-16 -52 M-6 -48 L-16 -46 M20 -50 L30 -52 M20 -48 L30 -46" stroke="#fff" strokeWidth=".8" />
+      </g>
+      {[-10, 6].map((x, i) => <ellipse key={i} cx={x} cy="-2" rx="6" ry="4" fill={color} />)}
+    </g>
+  );
+}
+
+// Кролик (вид сбоку). anim: idle, hop
+export function Rabbit({ t = 0, anim = "hop", phase = 0, color = "#a8988a" }) {
+  const hop = anim === "hop" ? Math.max(0, Math.sin(t * 0.45 + phase)) * 12 : 0;
+  return (
+    <g>
+      <ellipse cx="0" cy="2" rx={14 - hop * 0.4} ry="3" fill="#000" opacity=".22" />
+      <g transform={`translate(0 ${-hop})`}>
+        <ellipse cx="-2" cy="-12" rx="14" ry="11" fill={color} />
+        <circle cx="-15" cy="-14" r="4" fill="#efe8e0" />
+        <circle cx="10" cy="-20" r="8" fill={color} />
+        <ellipse cx="8" cy="-36" rx="3" ry="10" fill={color} transform="rotate(-12 8 -36)" />
+        <ellipse cx="13" cy="-35" rx="3" ry="10" fill={color} transform="rotate(10 13 -35)" />
+        <circle cx="13" cy="-21" r="1.6" fill="#1a1410" /><circle cx="18" cy="-18" r="1.4" fill="#c47a7a" />
+        <ellipse cx="4" cy="-2" rx="7" ry="3" fill={color} />
+      </g>
+    </g>
+  );
+}

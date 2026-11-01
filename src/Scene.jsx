@@ -2,6 +2,7 @@
 // поэтому кадр можно отрендерить и в Remotion, и в обычном браузере для превью.
 import React from "react";
 import { Stage } from "./story/Stage.jsx";
+import { Insert } from "./story/Inserts.jsx";
 
 const S = 4; // сцена рисуется в координатах 270x480, а выводится в 1080x1920
 const GOLD = "#F2B84B";
@@ -259,6 +260,28 @@ function HookTitle({ seg, f, font }) {
   );
 }
 
+function fmtNum(n) {
+  return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, "\u00a0");
+}
+
+function Counter({ seg, f, font }) {
+  const c = seg.count;
+  if (!c) return null;
+  const start = Math.floor(seg.dur * (c.at ?? 0.12)), len = 34;
+  if (f < start) return null;
+  const k = easeOut(prog(f, start, len));
+  const done = f >= start + len;
+  const pop = done ? backOut(prog(f, start + len, 8)) : 1;
+  const shake = done ? Math.sin(f * 2.3) * 7 * clamp(1 - (f - start - len) / 10) : 0;
+  return (
+    <div style={{ position: "absolute", top: 330, left: 0, right: 0, textAlign: "center", fontFamily: font, fontWeight: 900,
+      transform: `translateX(${shake}px) scale(${done ? 0.9 + 0.1 * pop + 0.12 * (1 - clamp((f - start - len) / 8)) : 0.9})`, ...outline(16) }}>
+      <div style={{ fontSize: 180, lineHeight: 1, color: done ? RED : "#fff" }}>{fmtNum((c.from || 0) + ((c.to - (c.from || 0)) * k))}</div>
+      {c.label ? <div style={{ fontSize: 74, color: GOLD, marginTop: 6 }}>{c.label}</div> : null}
+    </div>
+  );
+}
+
 function StoryScene({ seg, f, src, ImgComp, font }) {
   if (seg.actors || seg.bg) {
     const env = seg.env || [];
@@ -268,6 +291,7 @@ function StoryScene({ seg, f, src, ImgComp, font }) {
     const tr = seg.kind === "hook" ? "none" : kinds[Math.floor(seg.start / 13) % kinds.length];
     const k = 1 - easeOut(prog(f, 0, 7));
     const dir = Math.floor(seg.start / 7) % 2 ? 1 : -1;
+    const insAt = seg.insert ? Math.floor(seg.dur * (seg.insert.at ?? 0.55)) : 1e9;
     const wrap = tr === "whip" ? { transform: `translateX(${dir * 55 * k}%)`, filter: `blur(${18 * k}px)` }
       : tr === "zoom" ? { transform: `scale(${1 + 0.35 * k})`, filter: `blur(${14 * k}px)` } : {};
     return (
@@ -275,6 +299,13 @@ function StoryScene({ seg, f, src, ImgComp, font }) {
         <div style={{ position: "absolute", inset: 0, ...wrap }}>
           <Stage seg={seg} f={f} mouth={mouth} transition={tr === "dip" ? "dip" : tr === "flash" ? "flash" : "none"} />
         </div>
+        {seg.insert && f >= insAt ? (
+          <div style={{ position: "absolute", inset: 0, transform: `scale(${1 + 0.12 * (1 - easeOut(prog(f, insAt, 6)))})` }}>
+            <Insert name={seg.insert.name} tone={seg.insert.tone} f={f - insAt} />
+            <div style={{ position: "absolute", inset: 0, background: "#fff", opacity: 0.35 * (1 - easeOut(prog(f, insAt, 4))) }} />
+          </div>
+        ) : null}
+        <Counter seg={seg} f={f} font={font} />
         <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: 700, background: "linear-gradient(rgba(0,0,0,0), rgba(0,0,0,.45))" }} />
         {seg.kind === "hook" ? <div style={{ position: "absolute", left: 0, right: 0, top: 0, height: 900, background: "linear-gradient(rgba(0,0,0,.55), rgba(0,0,0,0))" }} /> : null}
         <Tags seg={seg} f={f} font={font} />
@@ -375,5 +406,18 @@ export function Scene({ frame, data, src, ImgComp, font = "Montserrat, DejaVu Sa
   if (seg.kind === "intro" || seg.kind === "outro") body = <HostScene seg={seg} f={f} frame={frame} font={font} />;
   else if (seg.kind === "punch") body = <Punch seg={seg} f={f} font={font} />;
   else body = <StoryScene seg={seg} f={f} src={src} ImgComp={ImgComp} font={font} />;  // scene и hook
-  return <div style={{ position: "absolute", inset: 0, width: 1080, height: 1920, overflow: "hidden", background: "#000" }}>{body}</div>;
+  const total = data.totalFrames || 0;
+  const loopLen = 14;
+  const first = segs[0];
+  const loop = total && frame >= total - loopLen && first && first.kind === "hook" ? easeOut(prog(frame, total - loopLen, loopLen)) : 0;
+  return (
+    <div style={{ position: "absolute", inset: 0, width: 1080, height: 1920, overflow: "hidden", background: "#000" }}>
+      {body}
+      {loop > 0 ? (
+        <div style={{ position: "absolute", inset: 0, opacity: loop }}>
+          <StoryScene seg={first} f={0} src={src} ImgComp={ImgComp} font={font} />
+        </div>
+      ) : null}
+    </div>
+  );
 }

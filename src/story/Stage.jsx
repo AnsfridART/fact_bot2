@@ -2,11 +2,11 @@
 import React from "react";
 import { clamp, lerp, prog, easeOut, easeInOut, backOut as backOutLocal } from "./util.js";
 import { Person } from "./Person.jsx";
-import { Emu, Crow } from "./Animals.jsx";
-import { Truck, MachineGun, Fence, House, Desk, AmmoBox, Casings, Paper, Trunk, Door, Frame, LawnChair, Briefcase, Tank, Wave, Shelves, Smoke, Stage as Podium, Letter } from "./Props.jsx";
+import { Emu, Crow, Cat, Rabbit } from "./Animals.jsx";
+import { Truck, MachineGun, Fence, House, Desk, AmmoBox, Casings, Paper, Trunk, Door, Frame, LawnChair, Briefcase, Tank, Wave, Shelves, Smoke, Stage as Podium, Letter, Lightning, Stones, Wheelbarrow, Palace, Desks, Fence2 } from "./Props.jsx";
 import { Background } from "./Backgrounds.jsx";
 
-const PROPS = { truck: Truck, gun: MachineGun, fence: Fence, house: House, desk: Desk, ammo: AmmoBox, casings: Casings, paper: Paper, trunk: Trunk, door: Door, frame: Frame, chair: LawnChair, briefcase: Briefcase, tank: Tank, wave: Wave, shelves: Shelves, smoke: Smoke, podium: Podium, letter: Letter };
+const PROPS = { truck: Truck, gun: MachineGun, fence: Fence, house: House, desk: Desk, ammo: AmmoBox, casings: Casings, paper: Paper, trunk: Trunk, door: Door, frame: Frame, chair: LawnChair, briefcase: Briefcase, tank: Tank, wave: Wave, shelves: Shelves, smoke: Smoke, podium: Podium, letter: Letter, lightning: Lightning, stones: Stones, wheelbarrow: Wheelbarrow, palace: Palace, desks: Desks, fence2: Fence2 };
 
 // Источник света для каждого места: координаты, цвет, сила
 const LIGHTS = {
@@ -15,12 +15,13 @@ const LIGHTS = {
   campus: [230, 150, "#f0f0ff", 0.3], old_street: [220, 120, "#ffe0b0", 0.8], paris: [200, 300, "#ffb070", 1],
   jungle: [180, 120, "#e0ffb0", 0.8], sky: [220, 80, "#fff8e0", 0.35], war: [100, 200, "#e0d8c0", 0.5],
   beach_night: [200, 100, "#c8d8ff", 0.6], winter_city: [150, 120, "#d0e0ff", 0.5], harbor: [200, 150, "#fff0d0", 0.3],
-  town: [60, 150, "#ffd0a0", 0.35],
+  town: [60, 150, "#ffd0a0", 0.35], classroom: [210, 170, "#fff2d0", 0.5], london: [60, 140, "#e8d8a0", 0.5], forest: [200, 100, "#e8f0d0", 0.6],
 };
-const PARTICLES = { winter_city: "snow", town: "embers", night_field: "fireflies", beach_night: "none", sky: "none" };
+const PARTICLES = { london: "dust", forest: "dust", winter_city: "snow", town: "embers", night_field: "fireflies", beach_night: "none", sky: "none" };
 const FOREGROUND = {
   paris: "post", old_street: "post", harbor: "post", jungle: "leaves", campus: "trunk",
   field_dusk: "grass", outback: "grass", war: "wire", town: "post", museum: "column", office: "plant", room: "curtain",
+  london: "post", forest: "trunk", classroom: "plant",
 };
 
 function LightLayer({ name, f }) {
@@ -84,6 +85,36 @@ function Foreground({ name, f }) {
   return null;
 }
 
+// Живые детали фона: птицы, облака, дым из труб
+const AMBIENT = {
+  field_dusk: ["birds", "clouds"], outback: ["birds", "clouds"], harbor: ["birds", "smoke"], campus: ["birds", "clouds"],
+  sky: ["birds"], old_street: ["smoke", "birds"], town: ["smoke"], paris: ["birds", "clouds"], war: ["smoke"],
+  winter_city: ["smoke"], jungle: ["birds"], london: ["smoke"], forest: ["birds", "clouds"],
+};
+const CHIMNEYS = { harbor: [[-60, 200], [250, 205]], old_street: [[-20, 105], [150, 115], [240, 110]], town: [[-120, 222], [190, 228]],
+  war: [[40, 300], [210, 290]], winter_city: [[-40, 150], [190, 150]], london: [[-90, 150], [60, 160], [230, 140]] };
+
+function Ambient({ name, f }) {
+  const kinds = AMBIENT[name] || [];
+  return (
+    <g>
+      {kinds.includes("clouds") && [0, 1, 2].map((i) => (
+        <g key={"c" + i} transform={`translate(${((i * 160 + f * (0.12 + i * 0.05)) % 640) - 200} ${70 + i * 45})`} fill="#fff" opacity={0.12 + i * 0.03}>
+          <ellipse cx="0" cy="0" rx="46" ry="12" /><ellipse cx="22" cy="-8" rx="26" ry="12" /><ellipse cx="-20" cy="-5" rx="20" ry="9" />
+        </g>))}
+      {kinds.includes("birds") && [0, 1, 2, 3].map((i) => {
+        const x = ((f * (0.9 + i * 0.15) + i * 140) % 560) - 150, y = 120 + i * 18 + Math.sin(f / 9 + i) * 6;
+        const w = Math.sin(f / 3 + i * 2) * 3;
+        return <path key={"b" + i} d={`M${x - 6} ${y - w} Q${x - 3} ${y - 3} ${x} ${y} Q${x + 3} ${y - 3} ${x + 6} ${y - w}`} stroke="#1a1418" strokeWidth="1.4" fill="none" opacity=".7" />;
+      })}
+      {kinds.includes("smoke") && (CHIMNEYS[name] || []).map(([cx, cy], j) => [0, 1, 2, 3].map((i) => {
+        const k = ((f * 0.5 + i * 25 + j * 11) % 100) / 100;
+        return <circle key={`s${j}${i}`} cx={cx + k * 20 + Math.sin(k * 5 + j) * 4} cy={cy - k * 70} r={4 + k * 14} fill="#d8d4cc" opacity={0.35 * (1 - k)} />;
+      }))}
+    </g>
+  );
+}
+
 function actorPos(a, t) {
   const k = a.to ? easeInOut(clamp(t)) : 0;
   return { x: lerp(a.x ?? 135, a.to?.x ?? a.x ?? 135, k), y: lerp(a.y ?? 360, a.to?.y ?? a.y ?? 360, k) };
@@ -91,7 +122,7 @@ function actorPos(a, t) {
 
 function Actor({ a, f, t, mouth, idx, light, gaze }) {
   const { x, y } = actorPos(a, t);
-  const living = ["person", "emu", "crow"].includes(a.kind);
+  const living = ["person", "emu", "crow", "cat", "rabbit"].includes(a.kind);
   const pop = living ? 0.9 + 0.1 * backOutLocal(prog(f, idx * 2, 9)) : 1;
   const s = (a.s ?? 1) * pop;
   const flip = a.flip ? -1 : 1;
@@ -109,14 +140,16 @@ function Actor({ a, f, t, mouth, idx, light, gaze }) {
     light={a.flip ? -light : light} gaze={a.flip ? -gaze : gaze} />;
   else if (a.kind === "emu") body = <Emu {...common} anim={a.anim} angry={a.angry} />;
   else if (a.kind === "crow") body = <Crow {...common} anim={a.anim} color={a.color} />;
-  else if (a.kind === "flock" || a.kind === "crows") {
+  else if (a.kind === "cat") body = <Cat {...common} anim={a.anim} color={a.color} />;
+  else if (a.kind === "rabbit") body = <Rabbit {...common} anim={a.anim} color={a.color} />;
+  else if (a.kind === "flock" || a.kind === "crows" || a.kind === "rabbits") {
     const n = a.count || 12, spread = a.spread || 220;
     const items = [];
     for (let i = 0; i < n; i++) {
       const dx = ((i * 73) % 100) / 100 * spread - spread / 2;
       const dy = ((i * 37) % 100) / 100 * (a.depth || 60);
       const sc = 0.55 + dy / (a.depth || 60) * 0.5;
-      const El = a.kind === "flock" ? Emu : Crow;
+      const El = a.kind === "flock" ? Emu : a.kind === "rabbits" ? Rabbit : Crow;
       items.push({ dy, el: <g key={i} transform={`translate(${dx} ${dy}) scale(${sc})`}><El t={f} phase={i * 2.3} anim={a.anim || "walk"} color={a.color} /></g> });
     }
     body = <g>{items.sort((p, q) => p.dy - q.dy).map((p) => p.el)}</g>;
@@ -177,16 +210,19 @@ export function Stage({ seg, f, mouth, transition = "flash" }) {
     return near.p.x > me.x ? 1 : -1;
   };
   const zb = 1 + (cam.z - 1) * 0.55, cxb = 135 + (cam.cx - 135) * 0.5;      // дальний план медленнее
+  const closeUp = cam.z > 1.9;                                             // на крупном плане фон уходит в размытие
   const enter = transition === "flash" ? 1 - easeOut(prog(f, 0, 4)) : transition === "dip" ? 1 - easeOut(prog(f, 0, 7)) : 0;
   return (
     <svg width="1080" height="1920" viewBox="0 0 270 480" style={{ position: "absolute", inset: 0 }}>
       <defs>
         <radialGradient id="vig" cx="50%" cy="48%" r="70%"><stop offset="55%" stopColor="#000" stopOpacity="0" /><stop offset="100%" stopColor="#000" stopOpacity=".75" /></radialGradient>
         <linearGradient id="haze" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#fff" stopOpacity="0" /><stop offset=".6" stopColor="#fff" stopOpacity=".06" /><stop offset="1" stopColor="#fff" stopOpacity="0" /></linearGradient>
+        <filter id="dof"><feGaussianBlur stdDeviation="2.2" /></filter>
         <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="1.6" numOctaves="1" seed={f % 50} /><feColorMatrix type="saturate" values="0" /></filter>
       </defs>
-      <g transform={`translate(135 240) scale(${zb}) translate(${-cxb} ${-cam.cy})`}>
+      <g transform={`translate(135 240) scale(${zb}) translate(${-cxb} ${-cam.cy})`} filter={closeUp ? "url(#dof)" : undefined}>
         <Background name={seg.bg} t={f} />
+        <Ambient name={seg.bg} f={f} />
       </g>
       <rect width="270" height="480" fill="url(#haze)" opacity=".6" />
       <g transform={`translate(135 240) scale(${cam.z}) translate(${-cam.cx} ${-cam.cy})`}>

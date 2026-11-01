@@ -142,6 +142,34 @@ export function Background({ name, t = 0 }) {
         <path d="M-200 340 L470 340 L470 680 L-200 680 Z" fill="#6a6258" />
         <path d="M30 340 L60 380 L40 420 L80 470" stroke="#3a3028" strokeWidth="4" fill="none" />
       </g>);
+    case "classroom":
+      return (<g>
+        <rect x="-200" y="-200" width="670" height="880" fill="#c8b890" />
+        <rect x="-200" y="330" width="670" height="350" fill="#7a5a3a" />
+        <rect x="40" y="150" width="140" height="90" fill="#2e4a3a" stroke="#6a4a2a" strokeWidth="6" />
+        <path d="M60 175 L120 175 M60 195 L150 195 M60 215 L100 215" stroke="#e8e8d8" strokeWidth="2" opacity=".7" />
+        <rect x="200" y="140" width="60" height="90" fill="#cfe0f0" opacity=".8" /><path d="M230 140 L230 230 M200 185 L260 185" stroke="#c8b890" strokeWidth="4" />
+        <rect x="-200" y="320" width="670" height="10" fill="#5a4028" />
+      </g>);
+    case "london":
+      return (<g>
+        <Sky top="#8a8470" bottom="#b8a880" id="g_ld" />
+        {[[-150, 170], [-70, 150], [10, 180], [90, 140], [170, 165], [250, 150]].map(([x, y], i) => <g key={i}>
+          <rect x={x} y={y} width="72" height={300 - y} fill={["#6a5a50", "#7a6a5a", "#5e5048"][i % 3]} />
+          {[0, 1].map((r) => <rect key={r} x={x + 12 + r * 30} y={y + 20} width="14" height="20" fill="#3a3430" />)}
+          <rect x={x + 50} y={y - 18} width="8" height="18" fill="#4a3a30" /></g>)}
+        <path d="M-200 300 L470 300 L470 340 L-200 340 Z" fill="#5a5038" />
+        <path d="M-200 340 L470 340 L470 680 L-200 680 Z" fill="#4a4230" />
+        {[...Array(8)].map((_, i) => <path key={i} d={`M${-180 + i * 80 + (t * 0.3) % 80} ${320 + (i % 2) * 8} q15 -4 30 0`} stroke="#6a6040" strokeWidth="2" fill="none" />)}
+      </g>);
+    case "forest":
+      return (<g>
+        <Sky top="#4a5a6a" bottom="#9aa8a0" id="g_fr" />
+        {[...Array(12)].map((_, i) => { const x = -170 + i * 56, h = 150 + (i % 3) * 40; return (
+          <g key={i}><rect x={x - 4} y={330 - 40} width="8" height="40" fill="#3a2a1a" />
+            <path d={`M${x} ${330 - h} L${x - 30} ${330 - 30} L${x + 30} ${330 - 30} Z`} fill={i % 2 ? "#2e4a34" : "#36563a"} /></g>); })}
+        <path d="M-200 330 L470 330 L470 680 L-200 680 Z" fill="#4a5a3a" />
+      </g>);
     case "black":
     default:
       return <rect x="-200" y="-200" width="670" height="880" fill="#060608" />;
