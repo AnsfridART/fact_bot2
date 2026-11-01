@@ -251,7 +251,7 @@ def _yandex_full(text, wav_path, voice=None, emotion=None, speed=None):
     data = {"text": text, "lang": "ru-RU", "voice": voice or config.YANDEX_VOICE,
             "speed": str(speed or config.YANDEX_SPEED), "format": "lpcm", "sampleRateHertz": "48000"}
     emo = emotion if emotion is not None else config.YANDEX_EMOTION
-    if emo:
+    if emo and emo.lower() not in ("none", "-", "нет"):
         data["emotion"] = emo
     if config.YC_FOLDER_ID:
         data["folderId"] = config.YC_FOLDER_ID
