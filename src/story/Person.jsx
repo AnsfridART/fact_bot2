@@ -23,6 +23,10 @@ function Hat({ type, color }) {
     <path d="M-4 -152 L34 -150 Q30 -144 -4 -146 Z" fill={shade(color, 0.75)} />
   </g>);
   if (type === "beret") return <ellipse cx="4" cy="-160" rx="26" ry="10" fill={color} />;
+  if (type === "helmet") return (<g>
+    <circle cx="0" cy="-140" r="36" fill="#cfe8ff" opacity=".28" stroke="#e8eef4" strokeWidth="5" />
+    <path d="M-26 -170 A36 36 0 0 1 10 -176" stroke="#fff" strokeWidth="3" fill="none" opacity=".7" />
+  </g>);
   if (type === "hood") return <path d="M-31 -120 Q-34 -178 0 -180 Q34 -178 31 -120 Q24 -150 0 -150 Q-24 -150 -31 -120 Z" fill={color} />;
   return null;
 }
@@ -153,7 +157,7 @@ export function Person({ look = {}, anim = "idle", t = 0, mouth = 0, expr, phase
   const B = { normal: [1, 1], thin: [0.82, 1.04], fat: [1.32, 0.97], tall: [0.95, 1.14], kid: [0.9, 0.72] }[L.build] || [1, 1];
   return (
     <g>
-      <ellipse cx="0" cy="2" rx={34 * B[0]} ry="6" fill="#000" opacity=".28" />
+      {L.hat !== "helmet" || !look.float ? <ellipse cx="0" cy="2" rx={34 * B[0]} ry="6" fill="#000" opacity=".28" /> : null}
       {anim === "run" && <g stroke="#fff" strokeWidth="2.2" strokeLinecap="round" opacity=".55">
         {[0, 1, 2].map((i) => <line key={i} x1={-40 - i * 6} y1={-120 + i * 26} x2={-70 - i * 6 - ((t * 3 + i * 7) % 12)} y2={-120 + i * 26} />)}</g>}
       <g transform={`scale(${B[0]} ${B[1]}) translate(0 ${p.bob}) rotate(${p.lean})`}>

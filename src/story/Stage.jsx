@@ -3,10 +3,10 @@ import React from "react";
 import { clamp, lerp, prog, easeOut, easeInOut, backOut as backOutLocal } from "./util.js";
 import { Person } from "./Person.jsx";
 import { Emu, Crow, Cat, Rabbit } from "./Animals.jsx";
-import { Truck, MachineGun, Fence, House, Desk, AmmoBox, Casings, Paper, Trunk, Door, Frame, LawnChair, Briefcase, Tank, Wave, Shelves, Smoke, Stage as Podium, Letter, Lightning, Stones, Wheelbarrow, Palace, Desks, Fence2 } from "./Props.jsx";
+import { Truck, MachineGun, Fence, House, Desk, AmmoBox, Casings, Paper, Trunk, Door, Frame, LawnChair, Briefcase, Tank, Wave, Shelves, Smoke, Stage as Podium, Letter, Lightning, Stones, Wheelbarrow, Palace, Desks, Fence2, Rocket, Computer, Aquarium, Coffin, Parachute, Bars } from "./Props.jsx";
 import { Background } from "./Backgrounds.jsx";
 
-const PROPS = { truck: Truck, gun: MachineGun, fence: Fence, house: House, desk: Desk, ammo: AmmoBox, casings: Casings, paper: Paper, trunk: Trunk, door: Door, frame: Frame, chair: LawnChair, briefcase: Briefcase, tank: Tank, wave: Wave, shelves: Shelves, smoke: Smoke, podium: Podium, letter: Letter, lightning: Lightning, stones: Stones, wheelbarrow: Wheelbarrow, palace: Palace, desks: Desks, fence2: Fence2 };
+const PROPS = { truck: Truck, gun: MachineGun, fence: Fence, house: House, desk: Desk, ammo: AmmoBox, casings: Casings, paper: Paper, trunk: Trunk, door: Door, frame: Frame, chair: LawnChair, briefcase: Briefcase, tank: Tank, wave: Wave, shelves: Shelves, smoke: Smoke, podium: Podium, letter: Letter, lightning: Lightning, stones: Stones, wheelbarrow: Wheelbarrow, palace: Palace, desks: Desks, fence2: Fence2, rocket: Rocket, computer: Computer, aquarium: Aquarium, coffin: Coffin, parachute: Parachute, bars: Bars };
 
 // Источник света для каждого места: координаты, цвет, сила
 const LIGHTS = {
@@ -15,13 +15,15 @@ const LIGHTS = {
   campus: [230, 150, "#f0f0ff", 0.3], old_street: [220, 120, "#ffe0b0", 0.8], paris: [200, 300, "#ffb070", 1],
   jungle: [180, 120, "#e0ffb0", 0.8], sky: [220, 80, "#fff8e0", 0.35], war: [100, 200, "#e0d8c0", 0.5],
   beach_night: [200, 100, "#c8d8ff", 0.6], winter_city: [150, 120, "#d0e0ff", 0.5], harbor: [200, 150, "#fff0d0", 0.3],
-  town: [60, 150, "#ffd0a0", 0.35], classroom: [210, 170, "#fff2d0", 0.5], london: [60, 140, "#e8d8a0", 0.5], forest: [200, 100, "#e8f0d0", 0.6],
+  town: [60, 150, "#ffd0a0", 0.35], space: [230, 60, "#fff6e0", 0.7], station: [200, 260, "#cfe8ff", 0.4], mission_control: [135, 160, "#3ac8ff", 0.5],
+  hacker_room: [120, 185, "#3aff7a", 0.6], server_room: [135, 200, "#3aa8ff", 0.5], casino: [135, 60, "#ffd23f", 0.5], prison: [215, 170, "#e8f0ff", 0.6],
+  cabin: [135, 170, "#fff0d0", 0.4], vault: [135, 100, "#fff0d0", 0.4], cemetery: [200, 110, "#c8d8ff", 0.6], classroom: [210, 170, "#fff2d0", 0.5], london: [60, 140, "#e8d8a0", 0.5], forest: [200, 100, "#e8f0d0", 0.6],
 };
-const PARTICLES = { london: "dust", forest: "dust", winter_city: "snow", town: "embers", night_field: "fireflies", beach_night: "none", sky: "none" };
+const PARTICLES = { space: "none", station: "none", cemetery: "fireflies", london: "dust", forest: "dust", winter_city: "snow", town: "embers", night_field: "fireflies", beach_night: "none", sky: "none" };
 const FOREGROUND = {
   paris: "post", old_street: "post", harbor: "post", jungle: "leaves", campus: "trunk",
   field_dusk: "grass", outback: "grass", war: "wire", town: "post", museum: "column", office: "plant", room: "curtain",
-  london: "post", forest: "trunk", classroom: "plant",
+  london: "post", forest: "trunk", classroom: "plant", hacker_room: "curtain", casino: "column", prison: "column", vault: "column", cemetery: "grass",
 };
 
 function LightLayer({ name, f }) {
@@ -125,9 +127,10 @@ function Bubble({ a, f, dur, font, pos, cam }) {
   const side = pos.x > 150 ? -1 : 1;
   // облачко не должно вылезать за край кадра
   const half = 135 / (cam?.z || 1) - 6, cx = cam?.cx ?? 135;
-  const bx = clamp(pos.x + side * 14, cx - half + w / 2, cx + half - w / 2), by = pos.y - 205 * s;
+  const fit = Math.min(1, (2 * half - 4) / w);
+  const bx = clamp(pos.x + side * 14, cx - half + (w * fit) / 2, cx + half - (w * fit) / 2), by = pos.y - 205 * s;
   return (
-    <g transform={`translate(${bx} ${by}) scale(${p})`}>
+    <g transform={`translate(${bx} ${by}) scale(${p * fit})`}>
       <path d={`M${-w / 2} ${-h} h${w} v${h} h${-w / 2 + 10} l${-side * 8} 10 l${-2} -10 h${-w / 2 + 2} Z`} fill="#fff" stroke="#1a1410" strokeWidth="1.6" strokeLinejoin="round"
         transform={side < 0 ? "scale(-1 1)" : ""} />
       <text x="0" y="-9" textAnchor="middle" fontSize="12.5" fontWeight="900" fill="#1a1410" fontFamily={font}>{a.say}</text>
@@ -179,8 +182,9 @@ function actorPos(a, t) {
   return { x: lerp(a.x ?? 135, a.to?.x ?? a.x ?? 135, k), y: lerp(a.y ?? 360, a.to?.y ?? a.y ?? 360, k) };
 }
 
-function Actor({ a, f, t, mouth, idx, light, gaze }) {
-  const { x, y } = actorPos(a, t);
+function Actor({ a, f, t, mouth, idx, light, gaze, zeroG }) {
+  const p0 = actorPos(a, t);
+  const x = p0.x + (zeroG ? Math.sin(f / 37 + idx) * 3 : 0), y = p0.y + (zeroG ? Math.sin(f / 23 + idx) * 5 : 0);
   const living = ["person", "emu", "crow", "cat", "rabbit"].includes(a.kind);
   const pop = living ? 0.9 + 0.1 * backOutLocal(prog(f, idx * 2, 9)) : 1;
   const s = (a.s ?? 1) * pop;
@@ -216,7 +220,8 @@ function Actor({ a, f, t, mouth, idx, light, gaze }) {
     const P = PROPS[a.kind];
     body = <P t={f} {...(a.props || {})} />;
   }
-  return <g transform={`translate(${x} ${y}) scale(${s * flip} ${s})`}>{body}</g>;
+  const spin = zeroG ? Math.sin(f / 41 + idx) * 6 : 0;
+  return <g transform={`translate(${x} ${y}) rotate(${spin}) scale(${s * flip} ${s})`}>{body}</g>;
 }
 
 function cameraFor(seg, f, actors) {
@@ -294,7 +299,8 @@ export function Stage({ seg, f, mouth, transition = "flash", font = "DejaVu Sans
       <g transform={`rotate(${dutch} 135 240) translate(135 240) scale(${cam.z}) translate(${-cam.cx} ${-cam.cy})`}>
         <LightLayer name={seg.bg} f={f} />
         <g transform={angleT}>
-          {order.map(({ a, i }) => <Actor key={i} a={a} f={f} t={t} mouth={mouth} idx={i} light={lightFor(a)} gaze={a.kind === "person" ? gazeFor(a, i) : 0} />)}
+          {order.map(({ a, i }) => <Actor key={i} a={a} f={f} t={t} mouth={mouth} idx={i} light={lightFor(a)} gaze={a.kind === "person" ? gazeFor(a, i) : 0}
+            zeroG={seg.bg === "space" && a.kind === "person"} />)}
         </g>
         <NightLights lights={seg.lights} f={f} id={`nl${seg.start}`} />
         <g transform={angleT}>

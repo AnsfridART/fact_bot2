@@ -170,6 +170,97 @@ export function Background({ name, t = 0 }) {
             <path d={`M${x} ${330 - h} L${x - 30} ${330 - 30} L${x + 30} ${330 - 30} Z`} fill={i % 2 ? "#2e4a34" : "#36563a"} /></g>); })}
         <path d="M-200 330 L470 330 L470 680 L-200 680 Z" fill="#4a5a3a" />
       </g>);
+    case "space":
+      return (<g>
+        <rect x="-200" y="-200" width="670" height="880" fill="#04050c" />
+        {[...Array(70)].map((_, i) => <circle key={i} cx={(i * 97) % 470 - 100} cy={(i * 61) % 560 - 40} r={i % 7 ? 0.7 : 1.4} fill="#fff" opacity={0.3 + 0.5 * Math.abs(Math.sin(t / 30 + i))} />)}
+        <circle cx="135" cy="760" r="420" fill="#1e5a9a" />
+        <path d="M-285 760 A420 420 0 0 1 555 760" fill="none" stroke="#7ac8ff" strokeWidth="8" opacity=".5" />
+        {[[-40, 380, 90], [180, 420, 70], [60, 460, 120]].map(([x, y, r], i) => <ellipse key={i} cx={x + t * 0.05} cy={y} rx={r} ry={r * 0.35} fill="#3a8a4a" opacity=".7" />)}
+        {[[0, 400], [140, 380], [250, 430]].map(([x, y], i) => <ellipse key={"c" + i} cx={(x + t * 0.15) % 470 - 100} cy={y} rx="60" ry="12" fill="#fff" opacity=".5" />)}
+      </g>);
+    case "station":
+      return (<g>
+        <rect x="-200" y="-200" width="670" height="880" fill="#c8ccd0" />
+        <path d="M-200 120 L470 120 L470 340 L-200 340 Z" fill="#b0b6bc" />
+        {[...Array(9)].map((_, i) => <g key={i}><rect x={-180 + i * 75} y="140" width="60" height="80" rx="4" fill="#9aa2aa" />
+          <circle cx={-150 + i * 75} cy="160" r="4" fill={i % 3 ? "#3ac85a" : "#e8402a"} opacity={0.6 + 0.4 * Math.abs(Math.sin(t / 10 + i))} />
+          <rect x={-170 + i * 75} y="180" width="40" height="6" fill="#6a727a" /><rect x={-170 + i * 75} y="194" width="30" height="6" fill="#6a727a" /></g>)}
+        <circle cx="200" cy="260" r="34" fill="#0a0e1a" stroke="#8a929a" strokeWidth="8" /><circle cx="200" cy="300" r="30" fill="#1e5a9a" opacity=".6" />
+        <path d="M-200 340 L470 340 L470 680 L-200 680 Z" fill="#9aa0a6" />
+        <path d="M-200 120 L470 120" stroke="#8a929a" strokeWidth="4" />
+      </g>);
+    case "mission_control":
+      return (<g>
+        <rect x="-200" y="-200" width="670" height="880" fill="#1e2228" />
+        <rect x="-60" y="90" width="390" height="150" fill="#0e1a24" stroke="#3a4450" strokeWidth="4" />
+        <path d="M-40 200 Q40 120 135 170 T310 140" stroke="#3ac8ff" strokeWidth="2" fill="none" />
+        <circle cx={135 + Math.sin(t / 20) * 60} cy={160 + Math.cos(t / 20) * 10} r="4" fill="#ffd23f" />
+        {[...Array(6)].map((_, i) => <rect key={i} x={-40 + i * 60} y="110" width="40" height="4" fill="#3ac8ff" opacity=".4" />)}
+        <path d="M-200 330 L470 330 L470 680 L-200 680 Z" fill="#2a2e34" />
+        {[...Array(6)].map((_, i) => <g key={"d" + i}><rect x={-170 + i * 80} y="300" width="66" height="30" fill="#4a4e54" />
+          <rect x={-160 + i * 80} y="282" width="46" height="20" fill="#0e1a24" /><rect x={-156 + i * 80} y="288" width={20 + (i * 7) % 18} height="3" fill="#3ac85a" /></g>)}
+      </g>);
+    case "hacker_room":
+      return (<g>
+        <rect x="-200" y="-200" width="670" height="880" fill="#0a0c12" />
+        {[[40, 180], [120, 160], [200, 185]].map(([x, y], i) => <g key={i}>
+          <rect x={x - 34} y={y} width="68" height="48" rx="3" fill="#10161e" stroke="#2a3440" strokeWidth="3" />
+          {[0, 1, 2, 3, 4].map((r) => <rect key={r} x={x - 28} y={y + 6 + r * 8} width={12 + ((r * 13 + i * 7 + Math.floor(t / 4)) % 40)} height="3" fill="#3aff7a" opacity=".75" />)}
+          <circle cx={x} cy={y + 24} r="60" fill="#3aff7a" opacity=".05" /></g>)}
+        <path d="M-200 330 L470 330 L470 680 L-200 680 Z" fill="#111418" />
+        <rect x="-30" y="300" width="330" height="10" fill="#22262c" />
+        {[...Array(5)].map((_, i) => <path key={"w" + i} d={`M${-160 + i * 30} 0 Q${-150 + i * 30} 200 ${-170 + i * 30} 480`} stroke="#1a1e24" strokeWidth="3" fill="none" />)}
+      </g>);
+    case "server_room":
+      return (<g>
+        <rect x="-200" y="-200" width="670" height="880" fill="#0c1018" />
+        {[...Array(8)].map((_, i) => <g key={i}><rect x={-180 + i * 70} y="90" width="56" height="240" fill="#141a24" stroke="#2a3240" strokeWidth="2" />
+          {[...Array(14)].map((_, j) => <circle key={j} cx={-170 + i * 70 + (j % 3) * 14} cy={105 + j * 15} r="1.8"
+            fill={(i + j) % 5 ? "#3aa8ff" : "#3aff7a"} opacity={Math.abs(Math.sin(t / 5 + i * 3 + j))} />)}</g>)}
+        <path d="M-200 330 L470 330 L470 680 L-200 680 Z" fill="#161c26" />
+        {[...Array(10)].map((_, i) => <path key={"g" + i} d={`M${-200 + i * 70} 330 L${-260 + i * 90} 680`} stroke="#22293a" strokeWidth="2" />)}
+      </g>);
+    case "casino":
+      return (<g>
+        <rect x="-200" y="-200" width="670" height="880" fill="#2a0e14" />
+        {[...Array(7)].map((_, i) => <g key={i}><rect x={-170 + i * 80} y="200" width="50" height="110" rx="6" fill="#6a1a24" stroke="#d8a830" strokeWidth="3" />
+          <rect x={-162 + i * 80} y="220" width="34" height="22" fill="#f2e8c8" /><circle cx={-145 + i * 80} cy="208" r="4" fill={Math.floor(t / 8 + i) % 2 ? "#ffd23f" : "#ff5a3a"} /></g>)}
+        <path d="M-200 330 L470 330 L470 680 L-200 680 Z" fill="#3a1218" />
+        {[...Array(12)].map((_, i) => <circle key={"l" + i} cx={-170 + i * 55} cy="60" r="6" fill="#ffd23f" opacity={0.4 + 0.6 * Math.abs(Math.sin(t / 7 + i))} />)}
+      </g>);
+    case "prison":
+      return (<g>
+        <rect x="-200" y="-200" width="670" height="880" fill="#5a5850" />
+        {[...Array(30)].map((_, i) => <rect key={i} x={-200 + (i % 10) * 70 + (Math.floor(i / 10) % 2) * 35} y={100 + Math.floor(i / 10) * 70} width="66" height="66" fill="none" stroke="#4a4842" strokeWidth="2" />)}
+        <rect x="190" y="150" width="50" height="40" fill="#1a1e2a" /><path d="M200 150 L200 190 M215 150 L215 190 M230 150 L230 190" stroke="#3a3a3a" strokeWidth="3" />
+        <path d="M-200 340 L470 340 L470 680 L-200 680 Z" fill="#46443e" />
+        <rect x="-160" y="300" width="110" height="20" fill="#6a5a48" />
+      </g>);
+    case "cabin":
+      return (<g>
+        <rect x="-200" y="-200" width="670" height="880" fill="#c8c0b0" />
+        {[...Array(6)].map((_, i) => <g key={i}><rect x={-160 + i * 80} y="150" width="34" height="44" rx="14" fill="#1a2238" />
+          <circle cx={-143 + i * 80} cy="172" r="10" fill="#4a5a8a" opacity=".5" /></g>)}
+        <path d="M-200 330 L470 330 L470 680 L-200 680 Z" fill="#5a4a5a" />
+        {[...Array(6)].map((_, i) => <rect key={"s" + i} x={-170 + i * 80} y="270" width="50" height="70" rx="8" fill="#3a4a7a" />)}
+      </g>);
+    case "vault":
+      return (<g>
+        <rect x="-200" y="-200" width="670" height="880" fill="#3a3a3e" />
+        {[...Array(48)].map((_, i) => <g key={i}><rect x={-190 + (i % 12) * 56} y={90 + Math.floor(i / 12) * 56} width="50" height="50" fill="#8a8a8e" stroke="#5a5a5e" strokeWidth="2" />
+          <circle cx={-165 + (i % 12) * 56} cy={115 + Math.floor(i / 12) * 56} r="5" fill="#5a5a5e" /></g>)}
+        <path d="M-200 330 L470 330 L470 680 L-200 680 Z" fill="#2a2a2e" />
+      </g>);
+    case "cemetery":
+      return (<g>
+        <Sky top="#1a1e2e" bottom="#4a4e5e" id="g_cm" />
+        <circle cx="200" cy="110" r="18" fill="#e8e4d0" opacity=".85" />
+        {[[-120, 300], [-50, 310], [30, 295], [190, 305], [260, 300]].map(([x, y], i) => <g key={i}>
+          <path d={`M${x - 14} ${y + 30} L${x - 14} ${y} Q${x} ${y - 16} ${x + 14} ${y} L${x + 14} ${y + 30} Z`} fill="#6a6a72" />
+          <rect x={x - 2} y={y - 4} width="4" height="16" fill="#4a4a52" /></g>)}
+        <path d="M-200 330 L470 330 L470 680 L-200 680 Z" fill="#2a3428" />
+      </g>);
     case "black":
     default:
       return <rect x="-200" y="-200" width="670" height="880" fill="#060608" />;

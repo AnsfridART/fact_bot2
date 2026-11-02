@@ -81,6 +81,51 @@ const ITEMS = {
   </g>),
 };
 
+const MORE = {
+  screen: ({ f }) => (<g>
+    <rect x="25" y="140" width="220" height="160" rx="8" fill="#0a1014" stroke="#3a4450" strokeWidth="6" />
+    {[...Array(10)].map((_, i) => <rect key={i} x="40" y={155 + i * 14} width={30 + ((i * 37 + Math.floor(f / 2)) % 150)} height="6" fill="#3aff7a" opacity={i === Math.floor(f / 3) % 10 ? 1 : 0.6} />)}
+    <rect x={40 + (f * 7) % 170} y="290" width="8" height="3" fill="#3aff7a" opacity={Math.floor(f / 6) % 2} />
+  </g>),
+  phone: ({ f }) => (<g transform={`rotate(${Math.sin(f * 1.4) * (f < 20 ? 4 : 0)} 135 260)`}>
+    <rect x="70" y="220" width="130" height="80" rx="16" fill="#2a2a2e" /><circle cx="135" cy="262" r="26" fill="#d8d0c0" />
+    {[...Array(10)].map((_, i) => <circle key={i} cx={135 + Math.cos(i * 0.6 - 1) * 17} cy={262 + Math.sin(i * 0.6 - 1) * 17} r="3.2" fill="#2a2a2e" />)}
+    <path d="M60 210 Q135 160 210 210 L200 225 Q135 185 70 225 Z" fill="#1a1a1e" />
+  </g>),
+  lemon: ({ f }) => (<g>
+    <ellipse cx="135" cy="250" rx="70" ry="52" fill="#f2d23a" /><ellipse cx="200" cy="250" rx="10" ry="7" fill="#e8c02a" />
+    <ellipse cx="115" cy="232" rx="16" ry="8" fill="#fff6a0" opacity=".6" />
+    {f > 10 && [0, 1, 2, 3].map((i) => <circle key={i} cx={135 + Math.cos(i * 1.6) * (f - 10) * 3} cy={250 + Math.sin(i * 1.6) * (f - 10) * 3} r="3" fill="#fff6a0" opacity={Math.max(0, 1 - (f - 10) / 20)} />)}
+  </g>),
+  diamond: ({ f }) => (<g transform={`translate(135 250) rotate(${f * 0.6}) translate(-135 -250)`}>
+    <path d="M85 230 L110 200 L160 200 L185 230 L135 310 Z" fill="#cfe8ff" stroke="#fff" strokeWidth="2" />
+    <path d="M85 230 L185 230 M110 200 L120 230 L135 310 L150 230 L160 200 M120 230 L135 200 L150 230" stroke="#8ab8e8" strokeWidth="1.5" fill="none" />
+    <path d="M150 205 l6 -10 l2 10 l10 2 l-10 2 l-2 10 l-2 -10 l-10 -2 Z" fill="#fff" opacity={0.5 + 0.5 * Math.sin(f / 3)} />
+  </g>),
+  sandwich: ({ f }) => (<g>
+    <path d="M60 280 Q135 230 210 280 L210 300 L60 300 Z" fill="#d8a860" /><rect x="58" y="300" width="154" height="10" fill="#c84a3a" />
+    <rect x="58" y="310" width="154" height="8" fill="#7ac84a" /><path d="M60 318 L210 318 L210 330 Q135 345 60 330 Z" fill="#d8a860" />
+    <circle cx="200" cy="285" r="22" fill={BGS.dark[0]} />
+  </g>),
+  heartmail: ({ f }) => (<g transform={`translate(0 ${Math.sin(f / 8) * 4})`}>
+    <rect x="55" y="190" width="160" height="110" rx="6" fill="#efe6cf" /><path d="M55 190 L135 250 L215 190" fill="none" stroke="#9a8f78" strokeWidth="3" />
+    <path d="M135 300 C95 270 95 235 120 235 C130 235 135 245 135 250 C135 245 140 235 150 235 C175 235 175 270 135 300 Z" fill="#e8302a" transform="translate(0 -20)" />
+    <text x="135" y="330" textAnchor="middle" fontSize="16" fontWeight="900" fill="#e8302a">I LOVE YOU</text>
+  </g>),
+  tape: ({ f }) => (<g transform={`rotate(${f * 2} 135 250)`}>
+    <circle cx="135" cy="250" r="60" fill="#a8a8a8" /><circle cx="135" cy="250" r="30" fill={BGS.dark[0]} />
+    <path d={`M190 270 L${250 + f} ${300 + f * 0.5} L${245 + f} ${312 + f * 0.5} L186 282 Z`} fill="#b8b8b8" />
+  </g>),
+  ruler: ({ f }) => (<g>
+    <rect x="30" y="200" width="210" height="34" fill="#f2d23a" />{[...Array(22)].map((_, i) => <rect key={i} x={34 + i * 9.5} y="200" width="1.5" height={i % 5 ? 10 : 18} fill="#3a2a1a" />)}
+    <text x="135" y="226" textAnchor="middle" fontSize="13" fontWeight="900" fill="#3a2a1a">МЕТРЫ</text>
+    <rect x="30" y="250" width="210" height="34" fill="#c8a07a" />{[...Array(16)].map((_, i) => <rect key={i} x={34 + i * 13} y="250" width="1.5" height={i % 4 ? 10 : 18} fill="#3a2a1a" />)}
+    <text x="135" y="276" textAnchor="middle" fontSize="13" fontWeight="900" fill="#3a2a1a">ФУТЫ</text>
+    {f > 12 && <text x="135" y="330" textAnchor="middle" fontSize="40" fontWeight="900" fill="#e8302a" opacity={Math.min(1, (f - 12) / 6)}>≠</text>}
+  </g>),
+};
+Object.assign(ITEMS, MORE);
+
 export function Insert({ name, f, tone = "dark" }) {
   const Item = ITEMS[name];
   const [a, b] = BGS[tone] || BGS.dark;

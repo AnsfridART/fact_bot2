@@ -220,3 +220,50 @@ export function Fence2({ w = 260 }) {
     {[...Array(Math.floor(w / 20) + 1)].map((_, i) => <rect key={i} x={-w / 2 + i * 20} y="-44" width="3" height="44" fill="#6a5a48" />)}
     <path d={`M${-w / 2} -30 L${w / 2} -30`} stroke="#9a9a9a" strokeWidth="1" strokeDasharray="3 2" /></g>);
 }
+
+
+export function Rocket({ t = 0, flying = false, label = "" }) {
+  const shake = flying ? Math.sin(t * 2) * 1.2 : 0;
+  return (<g transform={`translate(${shake} 0)`}>
+    {flying && [0, 1, 2, 3, 4].map((i) => { const k = ((t * 0.7 + i * 9) % 40) / 40;
+      return <circle key={i} cx={Math.sin(i * 3) * 10 * k} cy={10 + k * 70} r={10 + k * 30} fill={k < 0.3 ? "#ffcf60" : "#d8d8d8"} opacity={1 - k} />; })}
+    <path d="M-16 0 L-16 -150 Q0 -200 16 -150 L16 0 Z" fill="#eceae4" />
+    <path d="M-16 -110 L16 -110 L16 -100 L-16 -100 Z" fill="#c03028" />{label ? <text x="0" y="-60" textAnchor="middle" fontSize="9" fontWeight="900" fill="#c03028" transform="rotate(-90 0 -60)">{label}</text> : null}
+    <path d="M-16 -30 L-30 4 L-16 0 Z M16 -30 L30 4 L16 0 Z" fill="#a0a0a0" />
+  </g>);
+}
+
+export function Computer({ t = 0, glow = "#3aff7a" }) {
+  return (<g>
+    <rect x="-34" y="-74" width="68" height="48" rx="3" fill="#10161e" stroke="#3a4450" strokeWidth="3" />
+    {[0, 1, 2, 3].map((r) => <rect key={r} x="-28" y={-68 + r * 10} width={14 + ((r * 13 + Math.floor(t / 3)) % 38)} height="4" fill={glow} opacity=".8" />)}
+    <rect x="-6" y="-26" width="12" height="10" fill="#3a4450" /><rect x="-30" y="-16" width="60" height="6" rx="2" fill="#2a3038" />
+    <rect x="-40" y="-8" width="80" height="8" fill="#5a4a3a" />
+  </g>);
+}
+
+export function Aquarium({ t = 0 }) {
+  return (<g>
+    <rect x="-50" y="-80" width="100" height="70" rx="3" fill="#3aa8d8" opacity=".55" stroke="#c8e8f0" strokeWidth="2" />
+    {[0, 1, 2].map((i) => { const x = Math.sin(t / 15 + i * 2) * 30, y = -60 + i * 15;
+      return <g key={i} transform={`translate(${x} ${y}) scale(${Math.cos(t / 15 + i * 2) > 0 ? 1 : -1} 1)`}><ellipse cx="0" cy="0" rx="8" ry="5" fill={["#ff8a3a", "#ffd23f", "#ff5a7a"][i]} /><path d="M-8 0 L-14 -5 L-14 5 Z" fill={["#ff8a3a", "#ffd23f", "#ff5a7a"][i]} /></g>; })}
+    <rect x="30" y="-76" width="6" height="22" rx="3" fill="#e8e8e8" /><circle cx="33" cy="-56" r="4" fill="#e8402a" />
+    <rect x="-55" y="-10" width="110" height="10" fill="#3a2a1a" />
+  </g>);
+}
+
+export function Coffin() {
+  return <g><path d="M-50 0 L-40 -24 L40 -24 L50 0 L40 10 L-40 10 Z" fill="#4a2e1a" stroke="#2a1a0e" strokeWidth="2" /><path d="M-6 -20 L6 -20 M0 -24 L0 -14" stroke="#c9a24a" strokeWidth="2" /></g>;
+}
+
+export function Parachute({ t = 0 }) {
+  const sway = Math.sin(t / 12) * 8;
+  return (<g transform={`rotate(${sway})`}>
+    <path d="M-60 -160 Q0 -230 60 -160 Q30 -175 0 -165 Q-30 -175 -60 -160 Z" fill="#e8e0d0" stroke="#8a8070" strokeWidth="1.5" />
+    {[-60, -20, 20, 60].map((x) => <line key={x} x1={x} y1="-162" x2="0" y2="-80" stroke="#8a8070" strokeWidth="1" />)}
+  </g>);
+}
+
+export function Bars() {
+  return <g>{[...Array(9)].map((_, i) => <rect key={i} x={-160 + i * 40} y="-460" width="7" height="480" fill="#2a2a2e" />)}<rect x="-170" y="-300" width="340" height="7" fill="#2a2a2e" /></g>;
+}

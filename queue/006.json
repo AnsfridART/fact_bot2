@@ -1,0 +1,3100 @@
+[
+ {
+  "title": "Как скотч и носок спасли астронавтов 🚀",
+  "question": "Справился бы ты с такой задачкой? 👇",
+  "mood": "epic",
+  "hook": {
+   "text": "В космосе у астронавтов кончался воздух. И спасли их… скотч и картонка!",
+   "title": "СПАСЛИ|*СКОТЧЕМ*",
+   "bg": "station",
+   "actors": [
+    {
+     "kind": "person",
+     "look": {
+      "skin": "#EBC3A0",
+      "shirt": "#eceae4",
+      "pants": "#d8d6d0",
+      "hat": "helmet",
+      "hair": "#4a3a2a",
+      "build": "normal"
+     },
+     "x": 100,
+     "y": 395,
+     "anim": "shock"
+    },
+    {
+     "kind": "person",
+     "look": {
+      "skin": "#E2B48E",
+      "shirt": "#eceae4",
+      "pants": "#d8d6d0",
+      "hat": "helmet",
+      "hair": "#4a3a2a",
+      "build": "normal"
+     },
+     "x": 190,
+     "y": 395,
+     "anim": "worried"
+    }
+   ],
+   "cam": "shake",
+   "tint": "red"
+  },
+  "scenes": [
+   {
+    "text": "Тысяча девятьсот семидесятый. «Аполлон-13» летит к Луне.",
+    "bg": "space",
+    "actors": [
+     {
+      "kind": "rocket",
+      "x": 135,
+      "y": 400,
+      "s": 0.8,
+      "props": {
+       "flying": true,
+       "label": "USA"
+      }
+     }
+    ],
+    "cam": "up",
+    "tag": "1970 · АПОЛЛОН-13"
+   },
+   {
+    "text": "И вдруг — взрыв кислородного бака. «Хьюстон, у нас проблема».",
+    "bg": "station",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#eceae4",
+       "pants": "#d8d6d0",
+       "hat": "helmet",
+       "hair": "#4a3a2a",
+       "build": "normal"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "shock",
+      "say": "Хьюстон, проблема!"
+     }
+    ],
+    "cam": "shake",
+    "alert": "ВЗРЫВ",
+    "tint": "red",
+    "angle": "dutch"
+   },
+   {
+    "text": "Экипаж прячется в лунном модуле. Но там быстро копится углекислый газ.",
+    "bg": "station",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#eceae4",
+       "pants": "#d8d6d0",
+       "hat": "helmet",
+       "hair": "#4a3a2a",
+       "build": "normal"
+      },
+      "x": 90,
+      "y": 395,
+      "anim": "tired",
+      "expr": "worried"
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E2B48E",
+       "shirt": "#eceae4",
+       "pants": "#d8d6d0",
+       "hat": "helmet",
+       "hair": "#4a3a2a",
+       "build": "normal"
+      },
+      "x": 185,
+      "y": 395,
+      "anim": "tired",
+      "expr": "worried"
+     }
+    ],
+    "cam": "in",
+    "alert": "ГАЗ РАСТЁТ",
+    "lights": [
+     {
+      "x": 135,
+      "y": 250,
+      "r": 90,
+      "color": "#ff7a5a"
+     }
+    ]
+   },
+   {
+    "text": "Запасные фильтры квадратные. А гнездо для них — круглое!",
+    "bg": "mission_control",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E9B98F",
+       "shirt": "#c8d8e8",
+       "pants": "#3a3a44",
+       "hair": "#2a1d14",
+       "glasses": true,
+       "mustache": true,
+       "beardColor": "#2a1d14"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "no",
+      "expr": "shock"
+     }
+    ],
+    "cam": "in",
+    "focus": 0,
+    "insert": {
+     "name": "ruler",
+     "tone": "cold",
+     "at": 0.5
+    }
+   },
+   {
+    "text": "На Земле инженеры собирают переходник из того, что есть на борту: пакетов, картонных обложек и скотча.",
+    "bg": "mission_control",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E9B98F",
+       "shirt": "#c8d8e8",
+       "pants": "#3a3a44",
+       "hair": "#2a1d14",
+       "glasses": true,
+       "mustache": true,
+       "beardColor": "#2a1d14"
+      },
+      "x": 80,
+      "y": 395,
+      "anim": "carry"
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#e8eef4",
+       "pants": "#2a2e38",
+       "tie": "#2a2a2a",
+       "hairStyle": "side",
+       "hair": "#4a3a2a",
+       "glasses": true
+      },
+      "x": 185,
+      "y": 395,
+      "anim": "talk",
+      "talk": true,
+      "say": "Из того, что есть!"
+     }
+    ],
+    "cam": "in",
+    "insert": {
+     "name": "tape",
+     "tone": "cold",
+     "at": 0.6
+    }
+   },
+   {
+    "text": "Астронавты повторяют по инструкции. И воздух снова становится чистым.",
+    "bg": "station",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#eceae4",
+       "pants": "#d8d6d0",
+       "hat": "helmet",
+       "hair": "#4a3a2a",
+       "build": "normal"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "yes",
+      "expr": "happy"
+     }
+    ],
+    "cam": "in"
+   }
+  ],
+  "punch": {
+   "big": "ВСЕ ТРОЕ|*ВЕРНУЛИСЬ*",
+   "text": "Все трое вернулись на Землю живыми. А миссию назвали «успешной неудачей»."
+  },
+  "outro": {
+   "text": "Подпишись на Доктора Боба!"
+  },
+  "loop": "Вот так и вышло, что…",
+  "source": "NASA, Apollo 13 Mission Report",
+  "description": "Как экипаж «Аполлона-13» спасся с помощью фильтра из скотча и картона.",
+  "hashtags": [
+   "факты",
+   "истории",
+   "знаешьли",
+   "shorts",
+   "интересно",
+   "докторбоб",
+   "космос",
+   "nasa"
+  ]
+ },
+ {
+  "title": "Первый человек в открытом космосе едва не застрял там навсегда",
+  "question": "Ты бы решился? 👇",
+  "mood": "tense",
+  "hook": {
+   "text": "Первый человек в открытом космосе… не мог вернуться обратно в корабль.",
+   "title": "НЕ МОГ|*ВЕРНУТЬСЯ*",
+   "bg": "space",
+   "actors": [
+    {
+     "kind": "person",
+     "look": {
+      "skin": "#EBC3A0",
+      "shirt": "#d8d4c8",
+      "pants": "#c8c4b8",
+      "hat": "helmet",
+      "hair": "#3a2a1a",
+      "float": true
+     },
+     "x": 135,
+     "y": 352,
+     "anim": "worried"
+    }
+   ],
+   "cam": "in"
+  },
+  "scenes": [
+   {
+    "text": "Тысяча девятьсот шестьдесят пятый. Алексей Леонов выходит из корабля прямо в космос.",
+    "bg": "space",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#d8d4c8",
+       "pants": "#c8c4b8",
+       "hat": "helmet",
+       "hair": "#3a2a1a",
+       "float": true
+      },
+      "x": 135,
+      "y": 352,
+      "anim": "wave",
+      "expr": "happy"
+     }
+    ],
+    "cam": "in",
+    "tag": "1965 · ВОСХОД-2",
+    "angle": "low"
+   },
+   {
+    "text": "Двенадцать минут невероятного полёта над Землёй.",
+    "bg": "space",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#d8d4c8",
+       "pants": "#c8c4b8",
+       "hat": "helmet",
+       "hair": "#3a2a1a",
+       "float": true
+      },
+      "x": 120,
+      "y": 352,
+      "anim": "idle",
+      "expr": "happy"
+     }
+    ],
+    "cam": "in",
+    "count": {
+     "to": 12,
+     "label": "МИНУТ В КОСМОСЕ"
+    }
+   },
+   {
+    "text": "Но в пустоте скафандр раздувается, как шар. И не пролезает в шлюз!",
+    "bg": "space",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#d8d4c8",
+       "pants": "#c8c4b8",
+       "hat": "helmet",
+       "hair": "#3a2a1a",
+       "build": "fat",
+       "float": true
+      },
+      "x": 135,
+      "y": 352,
+      "anim": "shock"
+     }
+    ],
+    "cam": "shake",
+    "alert": "НЕ ПРОЛЕЗАЕТ",
+    "angle": "dutch"
+   },
+   {
+    "text": "Тогда Леонов сам стравливает воздух из скафандра. Рискуя жизнью.",
+    "bg": "space",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#d8d4c8",
+       "pants": "#c8c4b8",
+       "hat": "helmet",
+       "hair": "#3a2a1a",
+       "float": true
+      },
+      "x": 135,
+      "y": 352,
+      "anim": "worried",
+      "expr": "worried"
+     }
+    ],
+    "cam": "in",
+    "focus": 0,
+    "tint": "red",
+    "insert": {
+     "name": "clock",
+     "tone": "red",
+     "at": 0.6
+    }
+   },
+   {
+    "text": "И протискивается внутрь головой вперёд.",
+    "bg": "station",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#d8d4c8",
+       "pants": "#c8c4b8",
+       "hat": "helmet",
+       "hair": "#3a2a1a"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "tired",
+      "expr": "happy"
+     }
+    ],
+    "cam": "in"
+   },
+   {
+    "text": "А потом корабль садится мимо — в заснеженную тайгу. Ночь среди сугробов.",
+    "bg": "forest",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#5a6a4a",
+       "pants": "#4a5a3a",
+       "hair": "#3a2a1a",
+       "hairStyle": "side"
+      },
+      "x": 100,
+      "y": 395,
+      "anim": "worried"
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#5a6a4a",
+       "pants": "#4a5a3a",
+       "hair": "#3a2a1a",
+       "hairStyle": "side"
+      },
+      "x": 180,
+      "y": 395,
+      "anim": "tired"
+     }
+    ],
+    "cam": "in",
+    "alert": "ТАЙГА",
+    "tint": "cold",
+    "weather": "wind"
+   }
+  ],
+  "punch": {
+   "big": "ОН|*ВЫЖИЛ*",
+   "text": "Их нашли и спасли. А Леонов навсегда вошёл в историю."
+  },
+  "outro": {
+   "text": "Подпишись на Доктора Боба!"
+  },
+  "loop": "Мало кто знает, что…",
+  "source": "Роскосмос; А. Леонов, мемуары",
+  "description": "Как Алексей Леонов едва не остался в открытом космосе в 1965 году.",
+  "hashtags": [
+   "факты",
+   "истории",
+   "знаешьли",
+   "shorts",
+   "интересно",
+   "докторбоб",
+   "космос",
+   "леонов"
+  ]
+ },
+ {
+  "title": "Он улетел из СССР, а вернулся в другую страну 🛰",
+  "question": "А ты бы как себя чувствовал? 👇",
+  "mood": "mystery",
+  "hook": {
+   "text": "Космонавт улетел из одной страны… а вернулся в совсем другую.",
+   "title": "ПОСЛЕДНИЙ|*ГРАЖДАНИН СССР*",
+   "bg": "station",
+   "actors": [
+    {
+     "kind": "person",
+     "look": {
+      "skin": "#EBC3A0",
+      "shirt": "#5a6a4a",
+      "pants": "#4a5a3a",
+      "hair": "#3a2a1a",
+      "hairStyle": "side"
+     },
+     "x": 135,
+     "y": 395,
+     "anim": "worried",
+     "fx": [
+      "question"
+     ]
+    }
+   ],
+   "cam": "in"
+  },
+  "scenes": [
+   {
+    "text": "Май тысяча девятьсот девяносто первого. Сергей Крикалёв улетает на станцию «Мир».",
+    "bg": "space",
+    "actors": [
+     {
+      "kind": "rocket",
+      "x": 135,
+      "y": 400,
+      "s": 0.8,
+      "props": {
+       "flying": true,
+       "label": "СССР"
+      }
+     }
+    ],
+    "cam": "up",
+    "tag": "1991 · СТАНЦИЯ «МИР»"
+   },
+   {
+    "text": "А на Земле в это время распадается Советский Союз.",
+    "bg": "london",
+    "actors": [
+     {
+      "kind": "crowd",
+      "x": 135,
+      "y": 400,
+      "count": 7,
+      "spread": 230,
+      "depth": 30,
+      "anim": "talk",
+      "looks": [
+       {
+        "skin": "#E2B48E",
+        "shirt": "#e8e4dc",
+        "pants": "#2a2a30",
+        "tie": "#3a5a8a",
+        "hairStyle": "side",
+        "hair": "#2a1d14"
+       },
+       {
+        "skin": "#E9C09A",
+        "dress": "#5a6a8a",
+        "shirt": "#e8e4dc",
+        "hairStyle": "bun",
+        "hair": "#4a2a1a"
+       },
+       {
+        "skin": "#E2B48E",
+        "shirt": "#5a6a3a",
+        "pants": "#3a3028",
+        "hat": "cap",
+        "hatColor": "#3a4a2a"
+       }
+      ]
+     }
+    ],
+    "cam": "in",
+    "alert": "СССР БОЛЬШЕ НЕТ",
+    "tint": "dark",
+    "angle": "high"
+   },
+   {
+    "text": "Страна меняется на глазах. Полёты перекраивают, денег не хватает, и замену ему всё откладывают.",
+    "bg": "mission_control",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E2B48E",
+       "shirt": "#e8eef4",
+       "pants": "#2a2e38",
+       "tie": "#5a2a2a",
+       "hairStyle": "bald",
+       "hair": "#888",
+       "build": "fat"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "no",
+      "expr": "worried"
+     }
+    ],
+    "cam": "in",
+    "focus": 0
+   },
+   {
+    "text": "Полёт продлевают. Потом ещё раз.",
+    "bg": "station",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#5a6a4a",
+       "pants": "#4a5a3a",
+       "hair": "#3a2a1a",
+       "hairStyle": "side"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "tired",
+      "expr": "sad"
+     }
+    ],
+    "cam": "in",
+    "insert": {
+     "name": "clock",
+     "tone": "cold",
+     "at": 0.5
+    }
+   },
+   {
+    "text": "Крикалёв проводит на орбите триста одиннадцать дней.",
+    "bg": "station",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#5a6a4a",
+       "pants": "#4a5a3a",
+       "hair": "#3a2a1a",
+       "hairStyle": "side"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "idle"
+     }
+    ],
+    "cam": "in",
+    "count": {
+     "to": 311,
+     "label": "ДНЕЙ НА ОРБИТЕ"
+    }
+   }
+  ],
+  "punch": {
+   "big": "ВЕРНУЛСЯ|*В ДРУГУЮ СТРАНУ*",
+   "text": "Он улетал гражданином СССР, а приземлился уже в России."
+  },
+  "outro": {
+   "text": "Подпишись на Доктора Боба!"
+  },
+  "loop": "Вот так и получилось, что…",
+  "source": "Роскосмос; NASA, биография С. Крикалёва",
+  "description": "Сергей Крикалёв был на станции «Мир», когда распался СССР.",
+  "hashtags": [
+   "факты",
+   "истории",
+   "знаешьли",
+   "shorts",
+   "интересно",
+   "докторбоб",
+   "космос",
+   "ссср"
+  ]
+ },
+ {
+  "title": "Миллионы долларов потеряли из-за метров и футов 📏",
+  "question": "Кто виноват: те, кто в метрах, или в футах? 👇",
+  "mood": "funny",
+  "hook": {
+   "text": "Аппарат за сотни миллионов разбился о Марс… из-за путаницы метров и футов!",
+   "title": "МЕТРЫ|*ПРОТИВ ФУТОВ*",
+   "bg": "mission_control",
+   "actors": [
+    {
+     "kind": "person",
+     "look": {
+      "skin": "#E9B98F",
+      "shirt": "#c8d8e8",
+      "pants": "#3a3a44",
+      "hair": "#2a1d14",
+      "glasses": true,
+      "mustache": true,
+      "beardColor": "#2a1d14"
+     },
+     "x": 100,
+     "y": 395,
+     "anim": "shock"
+    },
+    {
+     "kind": "person",
+     "look": {
+      "skin": "#EBC3A0",
+      "shirt": "#e8eef4",
+      "pants": "#2a2e38",
+      "tie": "#2a2a2a",
+      "hairStyle": "side",
+      "hair": "#4a3a2a",
+      "glasses": true
+     },
+     "x": 190,
+     "y": 395,
+     "anim": "talk",
+     "expr": "angry"
+    }
+   ],
+   "cam": "shake"
+  },
+  "scenes": [
+   {
+    "text": "Тысяча девятьсот девяносто девятый. К Марсу летит зонд «Марс Климат Орбитер».",
+    "bg": "space",
+    "actors": [
+     {
+      "kind": "rocket",
+      "x": 135,
+      "y": 380,
+      "s": 0.6,
+      "props": {
+       "flying": true,
+       "label": "USA"
+      }
+     }
+    ],
+    "cam": "in",
+    "tag": "1999 · NASA"
+   },
+   {
+    "text": "Одна команда инженеров считает силу двигателей в метрической системе…",
+    "bg": "mission_control",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E9B98F",
+       "shirt": "#c8d8e8",
+       "pants": "#3a3a44",
+       "hair": "#2a1d14",
+       "glasses": true,
+       "mustache": true,
+       "beardColor": "#2a1d14"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "talk",
+      "talk": true,
+      "say": "Ньютоны!"
+     }
+    ],
+    "cam": "in",
+    "focus": 0
+   },
+   {
+    "text": "А другая — в американских единицах, в фунтах. И никто этого не замечает!",
+    "bg": "office",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E2B48E",
+       "shirt": "#e8eef4",
+       "pants": "#2a2e38",
+       "tie": "#5a2a2a",
+       "hairStyle": "bald",
+       "hair": "#888",
+       "build": "fat"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "talk",
+      "talk": true,
+      "say": "Фунты!"
+     }
+    ],
+    "cam": "in",
+    "insert": {
+     "name": "ruler",
+     "tone": "cold",
+     "at": 0.5
+    }
+   },
+   {
+    "text": "Зонд подходит к Марсу слишком низко…",
+    "bg": "space",
+    "actors": [
+     {
+      "kind": "rocket",
+      "x": 135,
+      "y": 420,
+      "s": 0.5,
+      "props": {
+       "flying": true,
+       "label": "USA"
+      }
+     }
+    ],
+    "cam": "shake",
+    "alert": "СЛИШКОМ НИЗКО",
+    "tint": "red"
+   },
+   {
+    "text": "…и сгорает в атмосфере. Связи больше нет.",
+    "bg": "mission_control",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E9B98F",
+       "shirt": "#c8d8e8",
+       "pants": "#3a3a44",
+       "hair": "#2a1d14",
+       "glasses": true,
+       "mustache": true,
+       "beardColor": "#2a1d14"
+      },
+      "x": 90,
+      "y": 395,
+      "anim": "tired",
+      "expr": "sad"
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#e8eef4",
+       "pants": "#2a2e38",
+       "tie": "#2a2a2a",
+       "hairStyle": "side",
+       "hair": "#4a3a2a",
+       "glasses": true
+      },
+      "x": 185,
+      "y": 395,
+      "anim": "no",
+      "expr": "sad"
+     }
+    ],
+    "cam": "in",
+    "alert": "СВЯЗЬ ПОТЕРЯНА",
+    "count": {
+     "to": 125,
+     "label": "МЛН $ — СТОИМОСТЬ ЗОНДА",
+     "at": 0.4
+    }
+   }
+  ],
+  "punch": {
+   "big": "ВСЁ ИЗ-ЗА|*ЕДИНИЦ*",
+   "text": "С тех пор в NASA очень внимательно проверяют, в чём именно считают."
+  },
+  "outro": {
+   "text": "Подпишись на Доктора Боба!"
+  },
+  "loop": "Вот почему однажды…",
+  "source": "NASA, Mars Climate Orbiter Mishap Investigation Board, 1999",
+  "description": "Зонд NASA погиб у Марса из-за путаницы метрических и американских единиц.",
+  "hashtags": [
+   "факты",
+   "истории",
+   "знаешьли",
+   "shorts",
+   "интересно",
+   "докторбоб",
+   "космос",
+   "nasa"
+  ]
+ },
+ {
+  "title": "Астронавт уронила сумку в космосе. Её было видно с Земли 🌍",
+  "question": "Ты бы заметил её в небе? 👇",
+  "mood": "funny",
+  "hook": {
+   "text": "Астронавт уронила сумку… и она полгода летала вокруг Земли, как звезда!",
+   "title": "ПОТЕРЯЛА|*СУМКУ В КОСМОСЕ*",
+   "bg": "space",
+   "actors": [
+    {
+     "kind": "person",
+     "look": {
+      "skin": "#EBC3A0",
+      "shirt": "#eceae4",
+      "pants": "#d8d6d0",
+      "hat": "helmet",
+      "hair": "#4a3a2a",
+      "build": "normal",
+      "float": true
+     },
+     "x": 135,
+     "y": 352,
+     "anim": "shock"
+    }
+   ],
+   "cam": "in"
+  },
+  "scenes": [
+   {
+    "text": "Две тысячи восьмой год. Астронавт Хайдемари Стефанишин-Пайпер чинит станцию в открытом космосе.",
+    "bg": "space",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#eceae4",
+       "pants": "#d8d6d0",
+       "hat": "helmet",
+       "hair": "#4a3a2a",
+       "build": "normal",
+       "float": true
+      },
+      "x": 135,
+      "y": 352,
+      "anim": "carry"
+     }
+    ],
+    "cam": "in",
+    "tag": "2008 · МКС"
+   },
+   {
+    "text": "Пистолет со смазкой испачкан. Она чистит его… и сумка с инструментами уплывает!",
+    "bg": "space",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#eceae4",
+       "pants": "#d8d6d0",
+       "hat": "helmet",
+       "hair": "#4a3a2a",
+       "build": "normal",
+       "float": true
+      },
+      "x": 110,
+      "y": 352,
+      "anim": "shock"
+     },
+     {
+      "kind": "briefcase",
+      "x": 190,
+      "y": 330,
+      "to": {
+       "x": 260,
+       "y": 280
+      }
+     }
+    ],
+    "cam": "shake",
+    "alert": "УПЛЫВАЕТ"
+   },
+   {
+    "text": "Поймать её уже нельзя. Сумка становится самым дорогим космическим мусором.",
+    "bg": "mission_control",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#e8eef4",
+       "pants": "#2a2e38",
+       "tie": "#2a2a2a",
+       "hairStyle": "side",
+       "hair": "#4a3a2a",
+       "glasses": true
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "no",
+      "expr": "worried"
+     }
+    ],
+    "cam": "in",
+    "focus": 0
+   },
+   {
+    "text": "Она летит рядом со станцией по своей орбите. И её видно с Земли в бинокль!",
+    "bg": "night_field",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E9B98F",
+       "shirt": "#c84a2a",
+       "pants": "#3a4a6a",
+       "hairStyle": "spiky",
+       "hair": "#a06a2a",
+       "build": "kid"
+      },
+      "x": 135,
+      "y": 405,
+      "anim": "point",
+      "expr": "happy",
+      "say": "Вон она!"
+     }
+    ],
+    "cam": "in",
+    "tint": "night",
+    "weather": null,
+    "lights": [
+     {
+      "x": 200,
+      "y": 120,
+      "r": 30,
+      "color": "#ffffff"
+     }
+    ]
+   },
+   {
+    "text": "Любители астрономии месяцами следят за «звездой-сумкой».",
+    "bg": "night_field",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#8a5a3a",
+       "pants": "#3a3a44",
+       "hair": "#4a3a2a",
+       "glasses": true,
+       "build": "thin"
+      },
+      "x": 90,
+      "y": 395,
+      "anim": "point"
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E9C09A",
+       "dress": "#5a6a8a",
+       "shirt": "#e8e4dc",
+       "hairStyle": "bun",
+       "hair": "#4a2a1a"
+      },
+      "x": 185,
+      "y": 395,
+      "anim": "idle",
+      "expr": "happy"
+     }
+    ],
+    "cam": "in",
+    "tint": "night",
+    "count": {
+     "to": 9,
+     "label": "МЕСЯЦЕВ НА ОРБИТЕ",
+     "at": 0.3
+    }
+   }
+  ],
+  "punch": {
+   "big": "СГОРЕЛА|*В АТМОСФЕРЕ*",
+   "text": "В итоге сумка вошла в атмосферу и сгорела, как метеор."
+  },
+  "outro": {
+   "text": "Подпишись на Доктора Боба!"
+  },
+  "loop": "Так что, если увидишь в небе странную звезду, вспомни:",
+  "source": "NASA, STS-126; Spaceweather.com, 2008",
+  "description": "Сумка с инструментами, упущенная на МКС в 2008 году, была видна с Земли.",
+  "hashtags": [
+   "факты",
+   "истории",
+   "знаешьли",
+   "shorts",
+   "интересно",
+   "докторбоб",
+   "космос",
+   "мкс"
+  ]
+ },
+ {
+  "title": "Самый разыскиваемый хакер взламывал… вежливыми звонками ☎️",
+  "question": "Ты бы поверил такому звонку? 👇",
+  "mood": "tense",
+  "hook": {
+   "text": "Хакера номер один боялись так, что держали в одиночке!",
+   "title": "ХАКЕР|*№1*",
+   "bg": "hacker_room",
+   "actors": [
+    {
+     "kind": "person",
+     "look": {
+      "skin": "#E9B98F",
+      "shirt": "#2a2e38",
+      "pants": "#1e2028",
+      "hat": "hood",
+      "hatColor": "#2a2e38",
+      "build": "thin"
+     },
+     "x": 135,
+     "y": 395,
+     "anim": "idle"
+    },
+    {
+     "kind": "computer",
+     "x": 200,
+     "y": 400
+    }
+   ],
+   "cam": "in"
+  },
+  "scenes": [
+   {
+    "text": "Девяностые. Кевин Митник — самый разыскиваемый хакер в США.",
+    "bg": "hacker_room",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E9B98F",
+       "shirt": "#2a2e38",
+       "pants": "#1e2028",
+       "hat": "hood",
+       "hatColor": "#2a2e38",
+       "build": "thin"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "idle"
+     }
+    ],
+    "cam": "in",
+    "tag": "КЕВИН МИТНИК",
+    "focus": 0
+   },
+   {
+    "text": "Его главное оружие — не программы, а телефон. Он звонит в компании и представляется сотрудником.",
+    "bg": "hacker_room",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E9B98F",
+       "shirt": "#2a2e38",
+       "pants": "#1e2028",
+       "hat": "hood",
+       "hatColor": "#2a2e38",
+       "build": "thin"
+      },
+      "x": 120,
+      "y": 395,
+      "anim": "talk",
+      "talk": true,
+      "say": "Я из техподдержки!"
+     }
+    ],
+    "cam": "in",
+    "insert": {
+     "name": "phone",
+     "tone": "dark",
+     "at": 0.55
+    }
+   },
+   {
+    "text": "И люди сами сообщают ему пароли. Это называют социальной инженерией.",
+    "bg": "office",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E9C09A",
+       "dress": "#5a6a8a",
+       "shirt": "#e8e4dc",
+       "hairStyle": "bun",
+       "hair": "#4a2a1a"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "talk",
+      "talk": true,
+      "expr": "happy"
+     }
+    ],
+    "cam": "in",
+    "alert": "ДОВЕРЧИВОСТЬ"
+   },
+   {
+    "text": "ФБР охотится за ним годами. В тысяча девятьсот девяносто пятом его наконец ловят.",
+    "bg": "hacker_room",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#1e2230",
+       "pants": "#16181e",
+       "coat": true,
+       "tie": "#2a2a2a",
+       "hairStyle": "side",
+       "hair": "#2a1d14"
+      },
+      "x": 70,
+      "y": 395,
+      "anim": "point"
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#D9A27A",
+       "shirt": "#1e2230",
+       "pants": "#16181e",
+       "coat": true,
+       "tie": "#5a1a1a",
+       "hairStyle": "bald",
+       "hair": "#555",
+       "build": "fat"
+      },
+      "x": 125,
+      "y": 395,
+      "anim": "idle"
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E9B98F",
+       "shirt": "#2a2e38",
+       "pants": "#1e2028",
+       "hat": "hood",
+       "hatColor": "#2a2e38",
+       "build": "thin"
+      },
+      "x": 210,
+      "y": 395,
+      "anim": "shock"
+     }
+    ],
+    "cam": "shake",
+    "tag": "1995 · АРЕСТ",
+    "angle": "dutch"
+   },
+   {
+    "text": "В тюрьме его на месяцы сажают в одиночку. Прокуроры уверяют, что он опасен даже с телефоном в руках.",
+    "bg": "prison",
+    "actors": [
+     {
+      "kind": "bars",
+      "x": 135,
+      "y": 480
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E9B98F",
+       "shirt": "#2a2e38",
+       "pants": "#1e2028",
+       "hat": "hood",
+       "hatColor": "#2a2e38",
+       "build": "thin"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "tired",
+      "expr": "sad"
+     }
+    ],
+    "cam": "in",
+    "alert": "ОДИНОЧКА",
+    "tint": "cold"
+   }
+  ],
+  "punch": {
+   "big": "ТЕПЕРЬ ОН|*ЗАЩИЩАЛ КОМПАНИИ*",
+   "text": "После тюрьмы Митник стал консультантом по безопасности и учил компании не попадаться на такие звонки."
+  },
+  "outro": {
+   "text": "Подпишись на Доктора Боба!"
+  },
+  "loop": "Вот почему когда-то…",
+  "source": "K. Mitnick, «Ghost in the Wires», 2011; Министерство юстиции США",
+  "description": "Кевин Митник и его главный приём — обман людей по телефону.",
+  "hashtags": [
+   "факты",
+   "истории",
+   "знаешьли",
+   "shorts",
+   "интересно",
+   "докторбоб",
+   "хакеры",
+   "кибербезопасность"
+  ]
+ },
+ {
+  "title": "Студент случайно сломал десятую часть интернета 💻",
+  "question": "Знал, что так бывает? 👇",
+  "mood": "tense",
+  "hook": {
+   "text": "Студент хотел просто посчитать, какой большой интернет… и сломал десятую часть интернета!",
+   "title": "СЛОМАЛ|*ИНТЕРНЕТ*",
+   "bg": "server_room",
+   "actors": [
+    {
+     "kind": "person",
+     "look": {
+      "skin": "#EBC3A0",
+      "shirt": "#8a5a3a",
+      "pants": "#3a3a44",
+      "hair": "#4a3a2a",
+      "glasses": true,
+      "build": "thin"
+     },
+     "x": 135,
+     "y": 395,
+     "anim": "shock"
+    }
+   ],
+   "cam": "shake",
+   "tint": "red"
+  },
+  "scenes": [
+   {
+    "text": "Тысяча девятьсот восемьдесят восьмой. Аспирант Роберт Моррис пишет маленькую программу.",
+    "bg": "hacker_room",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#8a5a3a",
+       "pants": "#3a3a44",
+       "hair": "#4a3a2a",
+       "glasses": true,
+       "build": "thin"
+      },
+      "x": 120,
+      "y": 395,
+      "anim": "idle"
+     },
+     {
+      "kind": "computer",
+      "x": 195,
+      "y": 400
+     }
+    ],
+    "cam": "in",
+    "tag": "1988 · США",
+    "insert": {
+     "name": "screen",
+     "tone": "green",
+     "at": 0.6
+    }
+   },
+   {
+    "text": "Она должна тихо переходить с компьютера на компьютер и считать их.",
+    "bg": "server_room",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#8a5a3a",
+       "pants": "#3a3a44",
+       "hair": "#4a3a2a",
+       "glasses": true,
+       "build": "thin"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "point",
+      "expr": "happy"
+     }
+    ],
+    "cam": "in",
+    "focus": 0
+   },
+   {
+    "text": "Но в ней ошибка. Программа копирует себя снова и снова.",
+    "bg": "server_room",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#8a5a3a",
+       "pants": "#3a3a44",
+       "hair": "#4a3a2a",
+       "glasses": true,
+       "build": "thin"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "shock"
+     }
+    ],
+    "cam": "shake",
+    "alert": "ОШИБКА"
+   },
+   {
+    "text": "За сутки она заражает около шести тысяч компьютеров. Это десятая часть всего тогдашнего интернета.",
+    "map": {
+     "region": "usa",
+     "spread": {
+      "from": [
+       225,
+       195
+      ],
+      "r": 300,
+      "color": "#ff7a5a"
+     },
+     "pins": [
+      {
+       "x": 225,
+       "y": 195,
+       "label": "Университет Корнелл"
+      }
+     ]
+    },
+    "cam": "in",
+    "alert": "ЗАРАЖЕНЫ",
+    "count": {
+     "to": 6000,
+     "label": "КОМПЬЮТЕРОВ",
+     "at": 0.5
+    }
+   },
+   {
+    "text": "Университеты и военные отключаются от сети. Моррис становится первым осуждённым по закону о компьютерных преступлениях.",
+    "bg": "office",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#1e2230",
+       "pants": "#16181e",
+       "coat": true,
+       "tie": "#2a2a2a",
+       "hairStyle": "side",
+       "hair": "#2a1d14"
+      },
+      "x": 90,
+      "y": 395,
+      "anim": "point"
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#8a5a3a",
+       "pants": "#3a3a44",
+       "hair": "#4a3a2a",
+       "glasses": true,
+       "build": "thin"
+      },
+      "x": 190,
+      "y": 395,
+      "anim": "worried",
+      "expr": "sad"
+     }
+    ],
+    "cam": "in",
+    "tag": "ПЕРВЫЙ ПРИГОВОР"
+   }
+  ],
+  "punch": {
+   "big": "ТЕПЕРЬ ОН|*ПРОФЕССОР*",
+   "text": "А сегодня Роберт Моррис — профессор одного из лучших технических университетов мира."
+  },
+  "outro": {
+   "text": "Подпишись на Доктора Боба!"
+  },
+  "loop": "А всё потому, что однажды…",
+  "source": "ФБР, Morris Worm; Cornell University Commission Report, 1989",
+  "description": "Червь Морриса в 1988 году вывел из строя около 10% интернета.",
+  "hashtags": [
+   "факты",
+   "истории",
+   "знаешьли",
+   "shorts",
+   "интересно",
+   "докторбоб",
+   "хакеры",
+   "интернет"
+  ]
+ },
+ {
+  "title": "Пятнадцатилетний школьник взломал NASA 🧑‍💻",
+  "question": "А ты что делал в 15 лет? 👇",
+  "mood": "tense",
+  "hook": {
+   "text": "Школьник в пятнадцать лет заставил NASA отключить компьютеры на три недели.",
+   "title": "ШКОЛЬНИК|*ПРОТИВ NASA*",
+   "bg": "hacker_room",
+   "actors": [
+    {
+     "kind": "person",
+     "look": {
+      "skin": "#E2B48E",
+      "shirt": "#3a5a8a",
+      "pants": "#2a2a30",
+      "hairStyle": "spiky",
+      "hair": "#2a1a10",
+      "build": "kid"
+     },
+     "x": 135,
+     "y": 395,
+     "anim": "idle",
+     "expr": "happy"
+    },
+    {
+     "kind": "computer",
+     "x": 200,
+     "y": 400
+    }
+   ],
+   "cam": "in"
+  },
+  "scenes": [
+   {
+    "text": "Тысяча девятьсот девяносто девятый. Джонатану Джеймсу пятнадцать лет. Он сидит в своей комнате в Майами.",
+    "bg": "hacker_room",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E2B48E",
+       "shirt": "#3a5a8a",
+       "pants": "#2a2a30",
+       "hairStyle": "spiky",
+       "hair": "#2a1a10",
+       "build": "kid"
+      },
+      "x": 120,
+      "y": 395,
+      "anim": "idle"
+     },
+     {
+      "kind": "computer",
+      "x": 195,
+      "y": 400
+     }
+    ],
+    "cam": "in",
+    "tag": "1999 · МАЙАМИ"
+   },
+   {
+    "text": "Он пробирается в компьютеры военного ведомства и NASA.",
+    "bg": "server_room",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E2B48E",
+       "shirt": "#3a5a8a",
+       "pants": "#2a2a30",
+       "hairStyle": "spiky",
+       "hair": "#2a1a10",
+       "build": "kid"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "point",
+      "expr": "happy"
+     }
+    ],
+    "cam": "in",
+    "insert": {
+     "name": "screen",
+     "tone": "green",
+     "at": 0.5
+    }
+   },
+   {
+    "text": "И скачивает программы, которые следят за жизнеобеспечением космической станции.",
+    "bg": "station",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#eceae4",
+       "pants": "#d8d6d0",
+       "hat": "helmet",
+       "hair": "#4a3a2a",
+       "build": "normal"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "worried",
+      "fx": [
+       "question"
+      ]
+     }
+    ],
+    "cam": "in",
+    "alert": "МКС",
+    "tint": "red"
+   },
+   {
+    "text": "NASA в панике отключает свои системы. На целых три недели.",
+    "bg": "mission_control",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E9B98F",
+       "shirt": "#c8d8e8",
+       "pants": "#3a3a44",
+       "hair": "#2a1d14",
+       "glasses": true,
+       "mustache": true,
+       "beardColor": "#2a1d14"
+      },
+      "x": 90,
+      "y": 395,
+      "anim": "shock"
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#e8eef4",
+       "pants": "#2a2e38",
+       "tie": "#2a2a2a",
+       "hairStyle": "side",
+       "hair": "#4a3a2a",
+       "glasses": true
+      },
+      "x": 185,
+      "y": 395,
+      "anim": "no",
+      "expr": "worried"
+     }
+    ],
+    "cam": "shake",
+    "count": {
+     "to": 21,
+     "label": "ДЕНЬ БЕЗ СИСТЕМ"
+    }
+   },
+   {
+    "text": "Его находят. Он становится первым подростком в США, осуждённым за киберпреступление.",
+    "bg": "office",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#1e2230",
+       "pants": "#16181e",
+       "coat": true,
+       "tie": "#2a2a2a",
+       "hairStyle": "side",
+       "hair": "#2a1d14"
+      },
+      "x": 80,
+      "y": 395,
+      "anim": "point"
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E2B48E",
+       "shirt": "#3a5a8a",
+       "pants": "#2a2a30",
+       "hairStyle": "spiky",
+       "hair": "#2a1a10",
+       "build": "kid"
+      },
+      "x": 185,
+      "y": 395,
+      "anim": "worried",
+      "expr": "sad"
+     }
+    ],
+    "cam": "in",
+    "tag": "ПРИГОВОР",
+    "angle": "high"
+   }
+  ],
+  "punch": {
+   "big": "15 ЛЕТ|*И УЖЕ ЛЕГЕНДА*",
+   "text": "Позже он говорил, что просто хотел понять, как всё устроено."
+  },
+  "outro": {
+   "text": "Подпишись на Доктора Боба!"
+  },
+  "loop": "Вот так и получилось, что…",
+  "source": "Министерство юстиции США, 2000; NASA OIG",
+  "description": "Джонатан Джеймс в 15 лет проник в системы NASA.",
+  "hashtags": [
+   "факты",
+   "истории",
+   "знаешьли",
+   "shorts",
+   "интересно",
+   "докторбоб",
+   "хакеры",
+   "nasa"
+  ]
+ },
+ {
+  "title": "Письмо «Я тебя люблю» сломало миллионы компьютеров 💌",
+  "question": "Открыл бы такое письмо? 👇",
+  "mood": "mystery",
+  "hook": {
+   "text": "Одно письмо с признанием в любви сломало миллионы компьютеров по всему миру.",
+   "title": "I LOVE|*YOU*",
+   "bg": "office",
+   "actors": [
+    {
+     "kind": "person",
+     "look": {
+      "skin": "#E9C09A",
+      "dress": "#5a6a8a",
+      "shirt": "#e8e4dc",
+      "hairStyle": "bun",
+      "hair": "#4a2a1a"
+     },
+     "x": 135,
+     "y": 395,
+     "anim": "shock"
+    },
+    {
+     "kind": "computer",
+     "x": 200,
+     "y": 400,
+     "props": {
+      "glow": "#ff5a7a"
+     }
+    }
+   ],
+   "cam": "shake",
+   "tint": "red"
+  },
+  "scenes": [
+   {
+    "text": "Май двухтысячного. Люди получают письмо с темой «Я тебя люблю».",
+    "bg": "office",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E2B48E",
+       "shirt": "#e8e4dc",
+       "pants": "#2a2a30",
+       "tie": "#3a5a8a",
+       "hairStyle": "side",
+       "hair": "#2a1d14"
+      },
+      "x": 120,
+      "y": 395,
+      "anim": "idle",
+      "expr": "happy"
+     },
+     {
+      "kind": "computer",
+      "x": 195,
+      "y": 400
+     }
+    ],
+    "cam": "in",
+    "tag": "2000",
+    "insert": {
+     "name": "heartmail",
+     "tone": "warm",
+     "at": 0.45
+    }
+   },
+   {
+    "text": "Кто откажется прочитать признание? Человек открывает вложение…",
+    "bg": "office",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E9C09A",
+       "dress": "#5a6a8a",
+       "shirt": "#e8e4dc",
+       "hairStyle": "bun",
+       "hair": "#4a2a1a"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "talk",
+      "expr": "happy",
+      "say": "Мне?!"
+     }
+    ],
+    "cam": "in",
+    "focus": 0
+   },
+   {
+    "text": "…и вирус рассылает себя всем из его записной книжки.",
+    "bg": "server_room",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E2B48E",
+       "shirt": "#e8e4dc",
+       "pants": "#2a2a30",
+       "tie": "#3a5a8a",
+       "hairStyle": "side",
+       "hair": "#2a1d14"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "shock"
+     }
+    ],
+    "cam": "shake",
+    "alert": "ВИРУС"
+   },
+   {
+    "text": "За считаные дни заражены десятки миллионов компьютеров. Ущерб — миллиарды долларов.",
+    "bg": "office",
+    "actors": [
+     {
+      "kind": "crowd",
+      "x": 135,
+      "y": 400,
+      "count": 6,
+      "spread": 230,
+      "depth": 30,
+      "anim": "shock",
+      "looks": [
+       {
+        "skin": "#E2B48E",
+        "shirt": "#e8e4dc",
+        "pants": "#2a2a30",
+        "tie": "#3a5a8a",
+        "hairStyle": "side",
+        "hair": "#2a1d14"
+       },
+       {
+        "skin": "#E9C09A",
+        "dress": "#5a6a8a",
+        "shirt": "#e8e4dc",
+        "hairStyle": "bun",
+        "hair": "#4a2a1a"
+       }
+      ]
+     }
+    ],
+    "cam": "in",
+    "count": {
+     "to": 45,
+     "label": "МЛН КОМПЬЮТЕРОВ",
+     "at": 0.3
+    }
+   },
+   {
+    "text": "Автора находят на Филиппинах. Это студент. Но наказать его… нельзя: такого закона там просто ещё нет.",
+    "bg": "room",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#C8956A",
+       "shirt": "#e8e4dc",
+       "pants": "#2a2a30",
+       "hairStyle": "short",
+       "hair": "#120c08",
+       "build": "thin"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "idle",
+      "fx": [
+       "question"
+      ]
+     }
+    ],
+    "cam": "in",
+    "alert": "НЕТ ЗАКОНА",
+    "tint": "dark"
+   }
+  ],
+  "punch": {
+   "big": "ЗАКОН|*ПРИДУМАЛИ ПОТОМ*",
+   "text": "Только после этого вируса во многих странах появились законы о компьютерных преступлениях."
+  },
+  "outro": {
+   "text": "Подпишись на Доктора Боба!"
+  },
+  "loop": "И всё потому, что однажды…",
+  "source": "BBC, 2000; Европол; Филиппины, Electronic Commerce Act 2000",
+  "description": "Вирус ILOVEYOU в 2000 году заразил десятки миллионов компьютеров.",
+  "hashtags": [
+   "факты",
+   "истории",
+   "знаешьли",
+   "shorts",
+   "интересно",
+   "докторбоб",
+   "хакеры",
+   "вирусы"
+  ]
+ },
+ {
+  "title": "Хакеры ограбили казино через… аквариум 🐠",
+  "question": "Догадался бы проверить аквариум? 👇",
+  "mood": "funny",
+  "hook": {
+   "text": "Хакеры ограбили казино… через термометр в аквариуме!",
+   "title": "ВЗЛОМ|*ЧЕРЕЗ АКВАРИУМ*",
+   "bg": "casino",
+   "actors": [
+    {
+     "kind": "aquarium",
+     "x": 135,
+     "y": 400,
+     "s": 1.6
+    }
+   ],
+   "cam": "in"
+  },
+  "scenes": [
+   {
+    "text": "Крупное казино. Охрана, камеры, лучшая защита сети.",
+    "bg": "casino",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E2B48E",
+       "shirt": "#2a3a5a",
+       "pants": "#1e2a40",
+       "hat": "cap",
+       "hatColor": "#1e2a40"
+      },
+      "x": 80,
+      "y": 395,
+      "anim": "idle",
+      "expr": "angry"
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E2B48E",
+       "shirt": "#2a3a5a",
+       "pants": "#1e2a40",
+       "hat": "cap",
+       "hatColor": "#1e2a40"
+      },
+      "x": 190,
+      "y": 395,
+      "anim": "idle",
+      "expr": "angry"
+     }
+    ],
+    "cam": "in",
+    "tag": "КАЗИНО",
+    "angle": "low"
+   },
+   {
+    "text": "А в холле стоит красивый аквариум с умным термометром, подключённым к интернету.",
+    "bg": "casino",
+    "actors": [
+     {
+      "kind": "aquarium",
+      "x": 135,
+      "y": 410,
+      "s": 1.4
+     }
+    ],
+    "cam": "in",
+    "focus": 0
+   },
+   {
+    "text": "Именно через этот термометр хакеры попадают во внутреннюю сеть казино.",
+    "bg": "hacker_room",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E9B98F",
+       "shirt": "#2a2e38",
+       "pants": "#1e2028",
+       "hat": "hood",
+       "hatColor": "#2a2e38",
+       "build": "thin"
+      },
+      "x": 120,
+      "y": 395,
+      "anim": "point"
+     },
+     {
+      "kind": "computer",
+      "x": 195,
+      "y": 400
+     }
+    ],
+    "cam": "in",
+    "alert": "ВХОД НАЙДЕН",
+    "insert": {
+     "name": "screen",
+     "tone": "green",
+     "at": 0.6
+    }
+   },
+   {
+    "text": "И выкачивают базу самых богатых игроков казино.",
+    "bg": "server_room",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E9B98F",
+       "shirt": "#2a2e38",
+       "pants": "#1e2028",
+       "hat": "hood",
+       "hatColor": "#2a2e38",
+       "build": "thin"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "carry",
+      "expr": "happy"
+     }
+    ],
+    "cam": "shake",
+    "alert": "БАЗА ИГРОКОВ"
+   },
+   {
+    "text": "Охрана замечает утечку слишком поздно.",
+    "bg": "casino",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E2B48E",
+       "shirt": "#2a3a5a",
+       "pants": "#1e2a40",
+       "hat": "cap",
+       "hatColor": "#1e2a40"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "shock"
+     }
+    ],
+    "cam": "in",
+    "focus": 0,
+    "tint": "red"
+   }
+  ],
+  "punch": {
+   "big": "СЛАБОЕ МЕСТО —|*РЫБКИ*",
+   "text": "Теперь специалисты по безопасности приводят этот случай как главный пример: опасна любая мелочь, подключённая к сети."
+  },
+  "outro": {
+   "text": "Подпишись на Доктора Боба!"
+  },
+  "loop": "Вот почему однажды…",
+  "source": "Darktrace, Global Threat Report, 2017",
+  "description": "Хакеры проникли в сеть казино через умный термометр в аквариуме.",
+  "hashtags": [
+   "факты",
+   "истории",
+   "знаешьли",
+   "shorts",
+   "интересно",
+   "докторбоб",
+   "хакеры",
+   "казино"
+  ]
+ },
+ {
+  "title": "Похитили… гроб Чарли Чаплина ⚰️",
+  "question": "Ты знал эту историю? 👇",
+  "mood": "mystery",
+  "hook": {
+   "text": "Однажды похитили… тело Чарли Чаплина. И потребовали выкуп!",
+   "title": "ПОХИТИЛИ|*ЧАПЛИНА*",
+   "bg": "cemetery",
+   "actors": [
+    {
+     "kind": "coffin",
+     "x": 135,
+     "y": 410,
+     "s": 1.4
+    },
+    {
+     "kind": "person",
+     "look": {
+      "skin": "#E2B48E",
+      "shirt": "#4a4a3a",
+      "pants": "#2a2a24",
+      "hat": "cap",
+      "hatColor": "#2a2a2a",
+      "mustache": true,
+      "beardColor": "#2a1a10"
+     },
+     "x": 70,
+     "y": 395,
+     "anim": "carry"
+    },
+    {
+     "kind": "person",
+     "look": {
+      "skin": "#D9A27A",
+      "shirt": "#5a3a2a",
+      "pants": "#2a2420",
+      "hairStyle": "bald",
+      "hair": "#444",
+      "build": "fat"
+     },
+     "x": 205,
+     "y": 395,
+     "anim": "carry"
+    }
+   ],
+   "cam": "in",
+   "tint": "night"
+  },
+  "scenes": [
+   {
+    "text": "Швейцария, тысяча девятьсот семьдесят восьмой. Великого комика Чаплина только что похоронили.",
+    "bg": "cemetery",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "dress": "#1a1a1e",
+       "shirt": "#2a2a2e",
+       "hairStyle": "bun",
+       "hair": "#cfcfcf",
+       "build": "thin"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "idle",
+      "expr": "sad"
+     }
+    ],
+    "cam": "in",
+    "tag": "1978 · ШВЕЙЦАРИЯ",
+    "tint": "cold"
+   },
+   {
+    "text": "Однажды утром могила оказывается раскопана. Гроба нет!",
+    "bg": "cemetery",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E2B48E",
+       "shirt": "#2a3a5a",
+       "pants": "#1e2a40",
+       "hat": "cap",
+       "hatColor": "#1e2a40"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "shock"
+     }
+    ],
+    "cam": "shake",
+    "alert": "ГРОБА НЕТ"
+   },
+   {
+    "text": "Вдове звонят и требуют огромный выкуп.",
+    "bg": "room",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "dress": "#1a1a1e",
+       "shirt": "#2a2a2e",
+       "hairStyle": "bun",
+       "hair": "#cfcfcf",
+       "build": "thin"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "worried",
+      "expr": "sad"
+     }
+    ],
+    "cam": "in",
+    "insert": {
+     "name": "phone",
+     "tone": "dark",
+     "at": 0.5
+    },
+    "count": {
+     "to": 600000,
+     "label": "ФРАНКОВ ВЫКУПА",
+     "at": 0.1
+    }
+   },
+   {
+    "text": "Полиция ставит на прослушку телефоны в двухстах будках вокруг.",
+    "bg": "london",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#D9A27A",
+       "shirt": "#2a3a5a",
+       "pants": "#1e2a40",
+       "hat": "cap",
+       "hatColor": "#1e2a40"
+      },
+      "x": 90,
+      "y": 395,
+      "anim": "point"
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#D9A27A",
+       "shirt": "#2a3a5a",
+       "pants": "#1e2a40",
+       "hat": "cap",
+       "hatColor": "#1e2a40"
+      },
+      "x": 190,
+      "y": 395,
+      "anim": "idle"
+     }
+    ],
+    "cam": "in",
+    "tag": "ПРОСЛУШКА",
+    "tint": "night",
+    "weather": "rain"
+   },
+   {
+    "text": "Звонящего ловят прямо у будки. Это два механика, которые нуждались в деньгах.",
+    "bg": "london",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#D9A27A",
+       "shirt": "#2a3a5a",
+       "pants": "#1e2a40",
+       "hat": "cap",
+       "hatColor": "#1e2a40"
+      },
+      "x": 80,
+      "y": 395,
+      "anim": "point"
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E2B48E",
+       "shirt": "#4a4a3a",
+       "pants": "#2a2a24",
+       "hat": "cap",
+       "hatColor": "#2a2a2a",
+       "mustache": true,
+       "beardColor": "#2a1a10"
+      },
+      "x": 185,
+      "y": 395,
+      "anim": "shock"
+     }
+    ],
+    "cam": "in",
+    "alert": "ПОЙМАН",
+    "angle": "dutch"
+   }
+  ],
+  "punch": {
+   "big": "ГРОБ НАШЛИ|*В ПОЛЕ*",
+   "text": "Гроб нашли закопанным в кукурузном поле. Теперь Чаплин лежит под толстым слоем бетона."
+  },
+  "outro": {
+   "text": "Подпишись на Доктора Боба!"
+  },
+  "loop": "Мало кто знает, что однажды…",
+  "source": "BBC, 1978; архивы полиции кантона Во",
+  "description": "В 1978 году похитители выкопали гроб Чарли Чаплина и требовали выкуп.",
+  "hashtags": [
+   "факты",
+   "истории",
+   "знаешьли",
+   "shorts",
+   "интересно",
+   "докторбоб",
+   "преступления",
+   "чаплин"
+  ]
+ },
+ {
+  "title": "Грабитель намазался лимоном, чтобы стать невидимым 🍋",
+  "question": "Как думаешь, сработало? 👇",
+  "mood": "funny",
+  "hook": {
+   "text": "Этот грабитель намазал лицо лимонным соком… чтобы стать невидимым для камер!",
+   "title": "НЕВИДИМКА|*С ЛИМОНОМ*",
+   "bg": "office",
+   "actors": [
+    {
+     "kind": "person",
+     "look": {
+      "skin": "#8a5a3a",
+      "shirt": "#7a8a3a",
+      "pants": "#2a2a30",
+      "hat": "cap",
+      "hatColor": "#c84a2a",
+      "build": "fat"
+     },
+     "x": 135,
+     "y": 395,
+     "anim": "idle",
+     "expr": "happy",
+     "say": "Меня не видно!"
+    }
+   ],
+   "cam": "in"
+  },
+  "scenes": [
+   {
+    "text": "Питтсбург, тысяча девятьсот девяносто пятый. Макартур Уилер узнаёт, что лимонным соком пишут невидимые чернила.",
+    "bg": "room",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#8a5a3a",
+       "shirt": "#7a8a3a",
+       "pants": "#2a2a30",
+       "hat": "cap",
+       "hatColor": "#c84a2a",
+       "build": "fat"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "talk",
+      "expr": "happy",
+      "fx": [
+       "stars"
+      ]
+     }
+    ],
+    "cam": "in",
+    "tag": "1995 · ПИТТСБУРГ",
+    "insert": {
+     "name": "lemon",
+     "tone": "warm",
+     "at": 0.5
+    }
+   },
+   {
+    "text": "И делает гениальный вывод: если намазать лицо — камеры его не увидят!",
+    "bg": "room",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#8a5a3a",
+       "shirt": "#7a8a3a",
+       "pants": "#2a2a30",
+       "hat": "cap",
+       "hatColor": "#c84a2a",
+       "build": "fat"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "point",
+      "expr": "happy"
+     }
+    ],
+    "cam": "in",
+    "alert": "ГЕНИАЛЬНО?"
+   },
+   {
+    "text": "Он даже проверяет на фото. Снимок неудачный… значит, работает!",
+    "bg": "room",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#8a5a3a",
+       "shirt": "#7a8a3a",
+       "pants": "#2a2a30",
+       "hat": "cap",
+       "hatColor": "#c84a2a",
+       "build": "fat"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "yes",
+      "expr": "happy"
+     }
+    ],
+    "cam": "in",
+    "focus": 0
+   },
+   {
+    "text": "Уилер грабит два банка средь бела дня. Без маски.",
+    "bg": "vault",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#8a5a3a",
+       "shirt": "#7a8a3a",
+       "pants": "#2a2a30",
+       "hat": "cap",
+       "hatColor": "#c84a2a",
+       "build": "fat"
+      },
+      "x": 90,
+      "y": 395,
+      "anim": "carry",
+      "expr": "happy"
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "dress": "#3a5a6a",
+       "shirt": "#e8e4dc",
+       "hairStyle": "ponytail",
+       "hair": "#8a5a2a"
+      },
+      "x": 190,
+      "y": 395,
+      "anim": "shock"
+     }
+    ],
+    "cam": "shake",
+    "alert": "БЕЗ МАСКИ"
+   },
+   {
+    "text": "Вечером его лицо показывают по телевизору. И в ту же ночь его арестовывают.",
+    "bg": "office",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#D9A27A",
+       "shirt": "#2a3a5a",
+       "pants": "#1e2a40",
+       "hat": "cap",
+       "hatColor": "#1e2a40"
+      },
+      "x": 80,
+      "y": 395,
+      "anim": "point"
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#8a5a3a",
+       "shirt": "#7a8a3a",
+       "pants": "#2a2a30",
+       "hat": "cap",
+       "hatColor": "#c84a2a",
+       "build": "fat"
+      },
+      "x": 185,
+      "y": 395,
+      "anim": "shock",
+      "say": "Но я же был с соком!"
+     }
+    ],
+    "cam": "in",
+    "tag": "АРЕСТ"
+   }
+  ],
+  "punch": {
+   "big": "ЭФФЕКТ|*ДАННИНГА — КРЮГЕРА*",
+   "text": "Эта история вдохновила учёных на знаменитое исследование о том, почему некомпетентные люди уверены в себе."
+  },
+  "outro": {
+   "text": "Подпишись на Доктора Боба!"
+  },
+  "loop": "Вот так и вышло, что…",
+  "source": "Pittsburgh Post-Gazette, 1996; Kruger & Dunning, 1999",
+  "description": "Макартур Уилер верил, что лимонный сок сделает его невидимым для камер.",
+  "hashtags": [
+   "факты",
+   "истории",
+   "знаешьли",
+   "shorts",
+   "интересно",
+   "докторбоб",
+   "преступления",
+   "психология"
+  ]
+ },
+ {
+  "title": "Побег из Алькатраса с помощью ложек 🥄",
+  "question": "Как думаешь, они выжили? 👇",
+  "mood": "tense",
+  "hook": {
+   "text": "Из самой надёжной тюрьмы Америки сбежали с помощью ложек. И их так и не нашли.",
+   "title": "ПОБЕГ ИЗ|*АЛЬКАТРАСА*",
+   "bg": "prison",
+   "actors": [
+    {
+     "kind": "bars",
+     "x": 135,
+     "y": 480
+    },
+    {
+     "kind": "person",
+     "look": {
+      "skin": "#E2B48E",
+      "shirt": "#c8c0a8",
+      "pants": "#8a8470",
+      "hair": "#3a2a1a",
+      "build": "thin"
+     },
+     "x": 135,
+     "y": 395,
+     "anim": "idle",
+     "expr": "angry"
+    }
+   ],
+   "cam": "in",
+   "tint": "cold"
+  },
+  "scenes": [
+   {
+    "text": "Алькатрас — тюрьма на острове в холодном заливе Сан-Франциско. Отсюда никто не сбегал.",
+    "bg": "beach_night",
+    "actors": [],
+    "cam": "out",
+    "tag": "АЛЬКАТРАС",
+    "tint": "night"
+   },
+   {
+    "text": "Тысяча девятьсот шестьдесят второй. Трое заключённых месяцами ковыряют стены камер заточенными ложками.",
+    "bg": "prison",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E2B48E",
+       "shirt": "#c8c0a8",
+       "pants": "#8a8470",
+       "hair": "#3a2a1a",
+       "build": "thin"
+      },
+      "x": 100,
+      "y": 395,
+      "anim": "carry"
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#c8c0a8",
+       "pants": "#8a8470",
+       "hair": "#6a4a2a",
+       "hairStyle": "side"
+      },
+      "x": 185,
+      "y": 395,
+      "anim": "idle"
+     }
+    ],
+    "cam": "in",
+    "tag": "1962",
+    "insert": {
+     "name": "clock",
+     "tone": "dark",
+     "at": 0.6
+    }
+   },
+   {
+    "text": "Из мыла, бумаги и настоящих волос они делают головы-муляжи и кладут их на подушки.",
+    "bg": "prison",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#c8c0a8",
+       "pants": "#8a8470",
+       "hair": "#6a4a2a",
+       "hairStyle": "side"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "carry",
+      "expr": "happy"
+     }
+    ],
+    "cam": "in",
+    "alert": "МУЛЯЖИ"
+   },
+   {
+    "text": "А из пятидесяти украденных плащей склеивают плот.",
+    "bg": "prison",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E2B48E",
+       "shirt": "#c8c0a8",
+       "pants": "#8a8470",
+       "hair": "#3a2a1a",
+       "build": "thin"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "carry"
+     }
+    ],
+    "cam": "in",
+    "count": {
+     "to": 50,
+     "label": "ПЛАЩЕЙ"
+    }
+   },
+   {
+    "text": "Ночью они уходят через вентиляцию и уплывают в тёмный залив.",
+    "bg": "beach_night",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E2B48E",
+       "shirt": "#c8c0a8",
+       "pants": "#8a8470",
+       "hair": "#3a2a1a",
+       "build": "thin"
+      },
+      "x": 100,
+      "y": 395,
+      "anim": "run",
+      "to": {
+       "x": 230,
+       "y": 400
+      }
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#c8c0a8",
+       "pants": "#8a8470",
+       "hair": "#6a4a2a",
+       "hairStyle": "side"
+      },
+      "x": 60,
+      "y": 395,
+      "anim": "run",
+      "to": {
+       "x": 190,
+       "y": 405
+      }
+     }
+    ],
+    "cam": "in",
+    "tint": "night",
+    "weather": "wind"
+   }
+  ],
+  "punch": {
+   "big": "ИХ|*НЕ НАШЛИ*",
+   "text": "ФБР искало их семнадцать лет и закрыло дело. Что с ними стало — неизвестно до сих пор."
+  },
+  "outro": {
+   "text": "Подпишись на Доктора Боба!"
+  },
+  "loop": "Вот почему до сих пор…",
+  "source": "ФБР, Alcatraz Escape case file",
+  "description": "Побег Морриса и братьев Энглин из Алькатраса в 1962 году.",
+  "hashtags": [
+   "факты",
+   "истории",
+   "знаешьли",
+   "shorts",
+   "интересно",
+   "докторбоб",
+   "преступления",
+   "тюрьма"
+  ]
+ },
+ {
+  "title": "Он угнал самолёт и исчез с парашютом навсегда 🪂",
+  "question": "Куда он, по-твоему, делся? 👇",
+  "mood": "mystery",
+  "hook": {
+   "text": "Он угнал самолёт, получил выкуп… и выпрыгнул с парашютом в ночь. Навсегда.",
+   "title": "ИСЧЕЗ|*В НЕБЕ*",
+   "bg": "sky",
+   "actors": [
+    {
+     "kind": "parachute",
+     "x": 135,
+     "y": 300
+    },
+    {
+     "kind": "person",
+     "look": {
+      "skin": "#EBC3A0",
+      "shirt": "#1e1e24",
+      "pants": "#16161a",
+      "coat": true,
+      "tie": "#16161a",
+      "hairStyle": "side",
+      "hair": "#1a1410",
+      "glasses": true
+     },
+     "x": 135,
+     "y": 300,
+     "anim": "idle",
+     "s": 0.6,
+     "z": 999
+    }
+   ],
+   "cam": "in",
+   "tint": "night"
+  },
+  "scenes": [
+   {
+    "text": "Тысяча девятьсот семьдесят первый. На рейс в Сиэтл садится вежливый мужчина в костюме. Он называет себя Дэн Купер.",
+    "bg": "cabin",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#1e1e24",
+       "pants": "#16161a",
+       "coat": true,
+       "tie": "#16161a",
+       "hairStyle": "side",
+       "hair": "#1a1410",
+       "glasses": true
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "idle"
+     }
+    ],
+    "cam": "in",
+    "tag": "1971 · ДЭН КУПЕР",
+    "focus": 0
+   },
+   {
+    "text": "Он передаёт стюардессе записку: в портфеле бомба.",
+    "bg": "cabin",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#1e1e24",
+       "pants": "#16161a",
+       "coat": true,
+       "tie": "#16161a",
+       "hairStyle": "side",
+       "hair": "#1a1410",
+       "glasses": true
+      },
+      "x": 90,
+      "y": 395,
+      "anim": "point",
+      "say": "У меня бомба."
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "dress": "#3a5a9a",
+       "shirt": "#e8e4dc",
+       "hairStyle": "bun",
+       "hair": "#6a3a1a",
+       "hat": "cap",
+       "hatColor": "#3a5a9a"
+      },
+      "x": 185,
+      "y": 395,
+      "anim": "shock"
+     }
+    ],
+    "cam": "in",
+    "alert": "БОМБА",
+    "insert": {
+     "name": "letter",
+     "tone": "dark",
+     "at": 0.6
+    }
+   },
+   {
+    "text": "Его требования: двести тысяч долларов и четыре парашюта.",
+    "bg": "cabin",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#1e1e24",
+       "pants": "#16161a",
+       "coat": true,
+       "tie": "#16161a",
+       "hairStyle": "side",
+       "hair": "#1a1410",
+       "glasses": true
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "talk",
+      "talk": true
+     }
+    ],
+    "cam": "in",
+    "count": {
+     "to": 200000,
+     "label": "ДОЛЛАРОВ",
+     "at": 0.2
+    }
+   },
+   {
+    "text": "В Сиэтле он отпускает пассажиров, а самолёт снова взлетает на юг.",
+    "map": {
+     "region": "usa",
+     "route": [
+      [
+       40,
+       185
+      ],
+      [
+       45,
+       215
+      ],
+      [
+       55,
+       245
+      ]
+     ],
+     "pins": [
+      {
+       "x": 40,
+       "y": 185,
+       "label": "Сиэтл"
+      }
+     ]
+    },
+    "cam": "in",
+    "tag": "МАРШРУТ"
+   },
+   {
+    "text": "Ночью, под дождём, Купер открывает заднюю дверь… и прыгает.",
+    "bg": "sky",
+    "actors": [
+     {
+      "kind": "parachute",
+      "x": 135,
+      "y": 300,
+      "to": {
+       "x": 150,
+       "y": 420
+      }
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#1e1e24",
+       "pants": "#16161a",
+       "coat": true,
+       "tie": "#16161a",
+       "hairStyle": "side",
+       "hair": "#1a1410",
+       "glasses": true
+      },
+      "x": 135,
+      "y": 300,
+      "to": {
+       "x": 150,
+       "y": 420
+      },
+      "anim": "shock",
+      "s": 0.55,
+      "z": 999
+     }
+    ],
+    "cam": "shake",
+    "alert": "ПРЫЖОК",
+    "tint": "night",
+    "weather": "rain"
+   }
+  ],
+  "punch": {
+   "big": "ЕГО|*НЕ НАШЛИ*",
+   "text": "Через девять лет мальчик нашёл на берегу реки часть тех самых купюр. Больше следов нет."
+  },
+  "outro": {
+   "text": "Подпишись на Доктора Боба!"
+  },
+  "loop": "Вот почему до сих пор…",
+  "source": "ФБР, D. B. Cooper case (NORJAK)",
+  "description": "Дэн Купер угнал самолёт в 1971 году и исчез с парашютом.",
+  "hashtags": [
+   "факты",
+   "истории",
+   "знаешьли",
+   "shorts",
+   "интересно",
+   "докторбоб",
+   "преступления",
+   "загадки"
+  ]
+ },
+ {
+  "title": "Ограбление на 100 миллионов раскрыли по бутерброду 🥪",
+  "question": "Знал, что ДНК остаётся даже на еде? 👇",
+  "mood": "tense",
+  "hook": {
+   "text": "Самое крупное ограбление алмазов раскрыли… по недоеденному бутерброду.",
+   "title": "ВЫДАЛ|*БУТЕРБРОД*",
+   "bg": "vault",
+   "actors": [
+    {
+     "kind": "person",
+     "look": {
+      "skin": "#D9A27A",
+      "shirt": "#2a2a34",
+      "pants": "#1e1e24",
+      "coat": true,
+      "tie": "#8a2a2a",
+      "hairStyle": "bald",
+      "hair": "#444",
+      "mustache": true,
+      "beardColor": "#333",
+      "build": "fat"
+     },
+     "x": 135,
+     "y": 395,
+     "anim": "shock"
+    }
+   ],
+   "cam": "in"
+  },
+  "scenes": [
+   {
+    "text": "Антверпен, две тысячи третий. Хранилище алмазного центра: десять уровней защиты.",
+    "bg": "vault",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E2B48E",
+       "shirt": "#2a3a5a",
+       "pants": "#1e2a40",
+       "hat": "cap",
+       "hatColor": "#1e2a40"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "idle",
+      "expr": "angry"
+     }
+    ],
+    "cam": "in",
+    "tag": "2003 · АНТВЕРПЕН",
+    "angle": "low",
+    "insert": {
+     "name": "diamond",
+     "tone": "cold",
+     "at": 0.6
+    }
+   },
+   {
+    "text": "Банда воров годами готовится. Главарь даже арендует здесь офис, чтобы изучить всё изнутри.",
+    "bg": "office",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#D9A27A",
+       "shirt": "#2a2a34",
+       "pants": "#1e1e24",
+       "coat": true,
+       "tie": "#8a2a2a",
+       "hairStyle": "bald",
+       "hair": "#444",
+       "mustache": true,
+       "beardColor": "#333",
+       "build": "fat"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "idle",
+      "expr": "happy"
+     }
+    ],
+    "cam": "in",
+    "tag": "ЛЕОНАРДО НОТАРБАРТОЛО",
+    "focus": 0
+   },
+   {
+    "text": "За одну ночь они вскрывают больше сотни ячеек.",
+    "bg": "vault",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E2B48E",
+       "shirt": "#4a4a3a",
+       "pants": "#2a2a24",
+       "hat": "cap",
+       "hatColor": "#2a2a2a",
+       "mustache": true,
+       "beardColor": "#2a1a10"
+      },
+      "x": 90,
+      "y": 395,
+      "anim": "carry"
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#D9A27A",
+       "shirt": "#2a2a34",
+       "pants": "#1e1e24",
+       "coat": true,
+       "tie": "#8a2a2a",
+       "hairStyle": "bald",
+       "hair": "#444",
+       "mustache": true,
+       "beardColor": "#333",
+       "build": "fat"
+      },
+      "x": 185,
+      "y": 395,
+      "anim": "point"
+     }
+    ],
+    "cam": "in",
+    "tint": "night",
+    "lights": [
+     {
+      "x": 135,
+      "y": 260,
+      "r": 80,
+      "color": "#fff0d0"
+     }
+    ],
+    "count": {
+     "to": 109,
+     "label": "ЯЧЕЕК ВСКРЫТО",
+     "at": 0.3
+    }
+   },
+   {
+    "text": "Добыча — алмазы и драгоценности примерно на сто миллионов долларов.",
+    "bg": "vault",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#D9A27A",
+       "shirt": "#2a2a34",
+       "pants": "#1e1e24",
+       "coat": true,
+       "tie": "#8a2a2a",
+       "hairStyle": "bald",
+       "hair": "#444",
+       "mustache": true,
+       "beardColor": "#333",
+       "build": "fat"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "carry",
+      "expr": "happy"
+     }
+    ],
+    "cam": "in",
+    "alert": "≈ 100 МЛН $",
+    "insert": {
+     "name": "diamond",
+     "tone": "warm",
+     "at": 0.5
+    }
+   },
+   {
+    "text": "Но сообщник выбрасывает пакет с уликами в лесу. А в нём — надкусанный бутерброд.",
+    "bg": "forest",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#D9A27A",
+       "shirt": "#5a3a2a",
+       "pants": "#2a2420",
+       "hairStyle": "bald",
+       "hair": "#444",
+       "build": "fat"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "worried"
+     }
+    ],
+    "cam": "in",
+    "alert": "УЛИКИ",
+    "insert": {
+     "name": "sandwich",
+     "tone": "green",
+     "at": 0.5
+    }
+   }
+  ],
+  "punch": {
+   "big": "ДНК НА|*БУТЕРБРОДЕ*",
+   "text": "По ДНК на бутерброде полиция вышла на банду. Но большую часть алмазов так и не нашли."
+  },
+  "outro": {
+   "text": "Подпишись на Доктора Боба!"
+  },
+  "loop": "И до сих пор вспоминают, что…",
+  "source": "J. Davis, Wired, 2009; бельгийская федеральная полиция",
+  "description": "Ограбление Антверпенского алмазного центра в 2003 году раскрыли по ДНК на бутерброде.",
+  "hashtags": [
+   "факты",
+   "истории",
+   "знаешьли",
+   "shorts",
+   "интересно",
+   "докторбоб",
+   "преступления",
+   "алмазы"
+  ]
+ }
+]
