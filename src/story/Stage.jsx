@@ -115,6 +115,65 @@ function Ambient({ name, f }) {
   );
 }
 
+function Bubble({ a, f, dur, font, pos, cam }) {
+  if (!a.say) return null;
+  const at = Math.floor(dur * (a.sayAt ?? 0.12)), len = Math.floor(dur * (a.sayFor ?? 0.6));
+  if (f < at || f > at + len) return null;
+  const p = backOutLocal(prog(f, at, 7)) * (1 - easeOut(prog(f, at + len - 5, 5)));
+  const s = a.s ?? 1;
+  const w = Math.max(48, a.say.length * 7.8 + 22), h = 28;
+  const side = pos.x > 150 ? -1 : 1;
+  // облачко не должно вылезать за край кадра
+  const half = 135 / (cam?.z || 1) - 6, cx = cam?.cx ?? 135;
+  const bx = clamp(pos.x + side * 14, cx - half + w / 2, cx + half - w / 2), by = pos.y - 205 * s;
+  return (
+    <g transform={`translate(${bx} ${by}) scale(${p})`}>
+      <path d={`M${-w / 2} ${-h} h${w} v${h} h${-w / 2 + 10} l${-side * 8} 10 l${-2} -10 h${-w / 2 + 2} Z`} fill="#fff" stroke="#1a1410" strokeWidth="1.6" strokeLinejoin="round"
+        transform={side < 0 ? "scale(-1 1)" : ""} />
+      <text x="0" y="-9" textAnchor="middle" fontSize="12.5" fontWeight="900" fill="#1a1410" fontFamily={font}>{a.say}</text>
+    </g>
+  );
+}
+
+// ---------- погода и источники света ночью ----------
+function Weather({ kind, f }) {
+  if (kind === "rain") return (<g stroke="#b8cce8" strokeWidth=".9" opacity=".6">
+    {[...Array(70)].map((_, i) => { const x = (i * 41 + f * 2.5) % 320 - 25, y = (i * 67 + f * 14) % 520 - 20;
+      return <line key={i} x1={x} y1={y} x2={x - 3} y2={y + 14} />; })}</g>);
+  if (kind === "wind") return (<g>
+    {[...Array(12)].map((_, i) => { const x = (i * 83 + f * 6) % 340 - 40, y = 80 + (i * 37) % 320;
+      return <path key={i} d={`M${x} ${y} q18 -4 36 0`} stroke="#fff" strokeWidth="1.2" fill="none" opacity=".35" />; })}
+    {[...Array(6)].map((_, i) => { const x = (i * 97 + f * 4.5) % 320 - 25, y = 120 + (i * 53) % 260 + Math.sin(f / 6 + i) * 10;
+      return <ellipse key={"l" + i} cx={x} cy={y} rx="4" ry="2" fill={i % 2 ? "#b8862a" : "#8a6a2a"} transform={`rotate(${f * 8 + i * 40} ${x} ${y})`} />; })}
+  </g>);
+  return null;
+}
+
+function NightLights({ lights, f, id }) {
+  if (!lights || !lights.length) return null;
+  return (
+    <g>
+      <defs>
+        <radialGradient id={id + "g"}><stop offset="0" stopColor="#000" /><stop offset=".55" stopColor="#000" stopOpacity=".6" /><stop offset="1" stopColor="#000" stopOpacity="0" /></radialGradient>
+        <mask id={id}><rect x="-300" y="-300" width="900" height="1100" fill="#fff" />
+          {lights.map((l, i) => <circle key={i} cx={l.x} cy={l.y} r={(l.r || 70) * (1 + Math.sin(f / 3 + i) * 0.03)} fill={`url(#${id}g)`} />)}</mask>
+      </defs>
+      <rect x="-300" y="-300" width="900" height="1100" fill="#02040e" opacity=".72" mask={`url(#${id})`} />
+      {lights.map((l, i) => (<g key={i} style={{ mixBlendMode: "screen" }}>
+        <circle cx={l.x} cy={l.y} r={(l.r || 70) * 0.6} fill={l.color || "#ffb050"} opacity={0.18 + Math.sin(f / 2.5 + i) * 0.03} />
+        <circle cx={l.x} cy={l.y} r="4" fill="#fff4c0" />
+      </g>))}
+    </g>
+  );
+}
+
+// силуэт «через плечо» на переднем плане
+function OverShoulder() {
+  return (<g fill="#08060c" opacity=".92">
+    <ellipse cx="40" cy="330" rx="52" ry="60" /><path d="M-40 480 Q-30 380 40 385 Q110 380 130 480 Z" />
+  </g>);
+}
+
 function actorPos(a, t) {
   const k = a.to ? easeInOut(clamp(t)) : 0;
   return { x: lerp(a.x ?? 135, a.to?.x ?? a.x ?? 135, k), y: lerp(a.y ?? 360, a.to?.y ?? a.y ?? 360, k) };
@@ -185,7 +244,7 @@ function cameraFor(seg, f, actors) {
 
 const TINTS = { warm: ["#ff9a40", 0.14], cold: ["#3a5cff", 0.14], night: ["#0a1430", 0.4], red: ["#ff2a1a", 0.16], dark: ["#000", 0.3] };
 
-export function Stage({ seg, f, mouth, transition = "flash" }) {
+export function Stage({ seg, f, mouth, transition = "flash", font = "DejaVu Sans" }) {
   const actors = seg.actors || [];
   const t = f / Math.max(1, seg.dur);
   const cam = cameraFor(seg, f, actors);
@@ -210,10 +269,17 @@ export function Stage({ seg, f, mouth, transition = "flash" }) {
     return near.p.x > me.x ? 1 : -1;
   };
   const zb = 1 + (cam.z - 1) * 0.55, cxb = 135 + (cam.cx - 135) * 0.5;      // дальний план медленнее
-  const closeUp = cam.z > 1.9;                                             // на крупном плане фон уходит в размытие
+  const closeUp = cam.z > 1.9;
+  const dutch = seg.angle === "dutch" ? (seg.start % 2 ? 7 : -7) : 0;
+  // снизу — герои выше и массивнее; сверху — меньше и «придавлены»
+  const ground = 400;
+  const angleT = seg.angle === "low" ? `translate(0 ${ground}) scale(1.06 1.16) translate(0 ${-ground})`
+    : seg.angle === "high" ? `translate(0 ${ground}) scale(0.9 0.8) translate(0 ${-ground})` : "";
+  const hookBoost = seg.kind === "hook" ? 1 - easeOut(prog(f, 45, 20)) : 0;  // яркость хука плавно уходит к 2-й секунде                                             // на крупном плане фон уходит в размытие
   const enter = transition === "flash" ? 1 - easeOut(prog(f, 0, 4)) : transition === "dip" ? 1 - easeOut(prog(f, 0, 7)) : 0;
   return (
-    <svg width="1080" height="1920" viewBox="0 0 270 480" style={{ position: "absolute", inset: 0 }}>
+    <svg width="1080" height="1920" viewBox="0 0 270 480" style={{ position: "absolute", inset: 0,
+      filter: seg.kind === "hook" ? `brightness(${1 + 0.18 * hookBoost}) saturate(${1 + 0.35 * hookBoost}) contrast(${1 + 0.12 * hookBoost})` : undefined }}>
       <defs>
         <radialGradient id="vig" cx="50%" cy="48%" r="70%"><stop offset="55%" stopColor="#000" stopOpacity="0" /><stop offset="100%" stopColor="#000" stopOpacity=".75" /></radialGradient>
         <linearGradient id="haze" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#fff" stopOpacity="0" /><stop offset=".6" stopColor="#fff" stopOpacity=".06" /><stop offset="1" stopColor="#fff" stopOpacity="0" /></linearGradient>
@@ -225,10 +291,18 @@ export function Stage({ seg, f, mouth, transition = "flash" }) {
         <Ambient name={seg.bg} f={f} />
       </g>
       <rect width="270" height="480" fill="url(#haze)" opacity=".6" />
-      <g transform={`translate(135 240) scale(${cam.z}) translate(${-cam.cx} ${-cam.cy})`}>
+      <g transform={`rotate(${dutch} 135 240) translate(135 240) scale(${cam.z}) translate(${-cam.cx} ${-cam.cy})`}>
         <LightLayer name={seg.bg} f={f} />
-        {order.map(({ a, i }) => <Actor key={i} a={a} f={f} t={t} mouth={mouth} idx={i} light={lightFor(a)} gaze={a.kind === "person" ? gazeFor(a, i) : 0} />)}
+        <g transform={angleT}>
+          {order.map(({ a, i }) => <Actor key={i} a={a} f={f} t={t} mouth={mouth} idx={i} light={lightFor(a)} gaze={a.kind === "person" ? gazeFor(a, i) : 0} />)}
+        </g>
+        <NightLights lights={seg.lights} f={f} id={`nl${seg.start}`} />
+        <g transform={angleT}>
+          {actors.map((a, i) => <Bubble key={i} a={a} f={f} dur={seg.dur} font={font} pos={actorPos(a, t)} cam={cam} />)}
+        </g>
       </g>
+      <Weather kind={seg.weather} f={f} />
+      {seg.angle === "ots" ? <OverShoulder /> : null}
       <g transform={`translate(${-(cam.cx - 135) * 0.8} 0)`}>
         <Foreground name={seg.bg} f={f} />
       </g>

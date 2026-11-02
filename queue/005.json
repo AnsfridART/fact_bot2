@@ -1,5 +1,1076 @@
 [
  {
+  "title": "Целую школу накрыла эпидемия… смеха 😂",
+  "question": "Ты бы смог остановиться? 👇",
+  "hook": {
+   "text": "Целая школа заболела… смехом. И остановиться не мог никто!",
+   "title": "ЭПИДЕМИЯ|*СМЕХА*",
+   "bg": "classroom",
+   "actors": [
+    {
+     "kind": "desks",
+     "x": 135,
+     "y": 420
+    },
+    {
+     "kind": "person",
+     "look": {
+      "skin": "#8a5a3a",
+      "dress": "#3a6aa0",
+      "shirt": "#e8e4dc",
+      "hairStyle": "curly",
+      "hair": "#1a1210",
+      "shoes": "#2a2018"
+     },
+     "x": 90,
+     "y": 395,
+     "anim": "dance",
+     "expr": "happy"
+    },
+    {
+     "kind": "person",
+     "look": {
+      "skin": "#7a4a30",
+      "dress": "#3a6aa0",
+      "shirt": "#e8e4dc",
+      "hairStyle": "curly",
+      "hair": "#120c08",
+      "shoes": "#2a2018"
+     },
+     "x": 185,
+     "y": 395,
+     "anim": "dance",
+     "expr": "happy"
+    }
+   ],
+   "cam": "shake"
+  },
+  "scenes": [
+   {
+    "text": "Африка, тысяча девятьсот шестьдесят второй год. Обычная школа для девочек.",
+    "bg": "classroom",
+    "actors": [
+     {
+      "kind": "desks",
+      "x": 135,
+      "y": 420
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#8a5a3a",
+       "shirt": "#6a4a6a",
+       "pants": "#2a2a30",
+       "hair": "#1a1210",
+       "glasses": true,
+       "coat": true
+      },
+      "x": 70,
+      "y": 395,
+      "anim": "talk",
+      "talk": true
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#8a5a3a",
+       "dress": "#3a6aa0",
+       "shirt": "#e8e4dc",
+       "hairStyle": "curly",
+       "hair": "#1a1210",
+       "shoes": "#2a2018"
+      },
+      "x": 160,
+      "y": 395,
+      "anim": "idle"
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#7a4a30",
+       "dress": "#3a6aa0",
+       "shirt": "#e8e4dc",
+       "hairStyle": "curly",
+       "hair": "#120c08",
+       "shoes": "#2a2018"
+      },
+      "x": 215,
+      "y": 395,
+      "anim": "idle",
+      "s": 0.9
+     }
+    ],
+    "cam": "out",
+    "tag": "1962 · ТАНГАНЬИКА"
+   },
+   {
+    "text": "Три ученицы вдруг начинают смеяться. И не могут перестать.",
+    "bg": "classroom",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#8a5a3a",
+       "dress": "#3a6aa0",
+       "shirt": "#e8e4dc",
+       "hairStyle": "curly",
+       "hair": "#1a1210",
+       "shoes": "#2a2018"
+      },
+      "x": 90,
+      "y": 395,
+      "anim": "talk",
+      "expr": "happy",
+      "say": "Ха-ха-ха!"
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#7a4a30",
+       "dress": "#3a6aa0",
+       "shirt": "#e8e4dc",
+       "hairStyle": "curly",
+       "hair": "#120c08",
+       "shoes": "#2a2018"
+      },
+      "x": 180,
+      "y": 395,
+      "anim": "talk",
+      "expr": "happy"
+     }
+    ],
+    "cam": "in",
+    "alert": "СМЕХ",
+    "focus": 0,
+    "insert": {
+     "name": "clock",
+     "tone": "warm",
+     "at": 0.6
+    }
+   },
+   {
+    "text": "Через несколько недель хохочут уже девяносто пять учениц. Часами, а кто-то днями!",
+    "bg": "classroom",
+    "actors": [
+     {
+      "kind": "desks",
+      "x": 135,
+      "y": 420
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#8a5a3a",
+       "dress": "#3a6aa0",
+       "shirt": "#e8e4dc",
+       "hairStyle": "curly",
+       "hair": "#1a1210",
+       "shoes": "#2a2018"
+      },
+      "x": 70,
+      "y": 395,
+      "anim": "dance",
+      "expr": "happy"
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#7a4a30",
+       "dress": "#3a6aa0",
+       "shirt": "#e8e4dc",
+       "hairStyle": "curly",
+       "hair": "#120c08",
+       "shoes": "#2a2018"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "dance",
+      "expr": "happy"
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#8a5a3a",
+       "dress": "#3a6aa0",
+       "shirt": "#e8e4dc",
+       "hairStyle": "curly",
+       "hair": "#1a1210",
+       "shoes": "#2a2018"
+      },
+      "x": 200,
+      "y": 395,
+      "anim": "dance",
+      "expr": "happy",
+      "s": 0.9
+     }
+    ],
+    "cam": "shake",
+    "count": {
+     "to": 95,
+     "label": "УЧЕНИЦ ХОХОЧУТ"
+    }
+   },
+   {
+    "text": "Школу закрывают. Девочек отправляют по домам…",
+    "bg": "classroom",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#8a5a3a",
+       "shirt": "#6a4a6a",
+       "pants": "#2a2a30",
+       "hair": "#1a1210",
+       "glasses": true,
+       "coat": true
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "worried",
+      "expr": "worried"
+     }
+    ],
+    "cam": "in",
+    "tag": "ШКОЛА ЗАКРЫТА",
+    "focus": 0
+   },
+   {
+    "text": "И смех расползается по деревням! Хохочут уже около тысячи человек.",
+    "bg": "town",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E9B98F",
+       "shirt": "#7a5a8a",
+       "pants": "#3a3a44",
+       "hat": "cap",
+       "hatColor": "#8a2a2a",
+       "beard": true,
+       "beardColor": "#6a5040"
+      },
+      "x": 70,
+      "y": 395,
+      "anim": "dance",
+      "expr": "happy"
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "dress": "#5a7a5a",
+       "shirt": "#e0d0b0",
+       "hairStyle": "long",
+       "hair": "#6a4a2a",
+       "shoes": "#2a2018"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "dance",
+      "expr": "happy"
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E9B98F",
+       "shirt": "#7a5a8a",
+       "pants": "#3a3a44",
+       "hat": "cap",
+       "hatColor": "#8a2a2a",
+       "beard": true,
+       "beardColor": "#6a5040"
+      },
+      "x": 205,
+      "y": 395,
+      "anim": "dance",
+      "expr": "happy",
+      "s": 0.9
+     }
+    ],
+    "cam": "shake",
+    "alert": "≈1000 ЧЕЛОВЕК"
+   },
+   {
+    "text": "Врачи проверяют всё: еду, воду, воздух. Но никакой болезни не находят.",
+    "bg": "office",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E2B48E",
+       "shirt": "#e8e8e4",
+       "pants": "#3a3a44",
+       "coat": true,
+       "hair": "#4a3a2a",
+       "glasses": true
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "no",
+      "expr": "worried",
+      "fx": [
+       "question"
+      ]
+     }
+    ],
+    "cam": "in",
+    "focus": 0,
+    "tint": "dark",
+    "insert": {
+     "name": "document",
+     "tone": "paper",
+     "at": 0.6
+    }
+   }
+  ],
+  "punch": {
+   "big": "ЭПИДЕМИЯ|*ДЛИЛАСЬ ПОЛТОРА ГОДА*",
+   "text": "Учёные называют это массовой истерией. Смех передавался… просто от человека к человеку."
+  },
+  "outro": {
+   "text": "Подпишись на Доктора Боба!"
+  },
+  "source": "C. F. Rankin, A. M. Philip, Central African Journal of Medicine, 1963",
+  "description": "Танганьикская эпидемия смеха 1962 года: школу закрыли, а смех распространился на соседние деревни.",
+  "hashtags": [
+   "факты",
+   "истории",
+   "знаешьли",
+   "shorts",
+   "интересно",
+   "докторбоб",
+   "история",
+   "африка"
+  ],
+  "mood": "funny",
+  "loop": "И до сих пор никто толком не понимает, почему однажды…"
+ },
+ {
+  "title": "Город так вонял, что парламент сбежал 🤢",
+  "question": "А ты бы выдержал? 👇",
+  "hook": {
+   "text": "Город вонял так сильно, что из парламента сбежали депутаты!",
+   "title": "ВЕЛИКОЕ|*ЗЛОВОНИЕ*",
+   "bg": "london",
+   "actors": [
+    {
+     "kind": "person",
+     "look": {
+      "skin": "#EBC3A0",
+      "shirt": "#2a2a34",
+      "pants": "#1e1e24",
+      "coat": true,
+      "tie": "#2a2a2a",
+      "hat": "wide",
+      "hatColor": "#1e1e24",
+      "beard": true,
+      "beardColor": "#6a5040"
+     },
+     "x": 100,
+     "y": 395,
+     "anim": "run",
+     "to": {
+      "x": 230,
+      "y": 395
+     },
+     "expr": "shock"
+    },
+    {
+     "kind": "person",
+     "look": {
+      "skin": "#E2B48E",
+      "shirt": "#3a3440",
+      "pants": "#22222a",
+      "coat": true,
+      "tie": "#5a2a2a",
+      "hairStyle": "bald",
+      "hair": "#888"
+     },
+     "x": 40,
+     "y": 395,
+     "anim": "run",
+     "to": {
+      "x": 160,
+      "y": 400
+     },
+     "expr": "shock"
+    }
+   ],
+   "cam": "shake",
+   "tint": "warm"
+  },
+  "scenes": [
+   {
+    "text": "Лондон, лето тысяча восемьсот пятьдесят восьмого года. Страшная жара.",
+    "bg": "london",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E2B48E",
+       "shirt": "#3a3440",
+       "pants": "#22222a",
+       "coat": true,
+       "tie": "#5a2a2a",
+       "hairStyle": "bald",
+       "hair": "#888"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "tired",
+      "expr": "sad"
+     }
+    ],
+    "cam": "out",
+    "tag": "1858 · ЛОНДОН",
+    "tint": "warm"
+   },
+   {
+    "text": "Все нечистоты города стекают прямо в Темзу. И река начинает… вонять.",
+    "bg": "london",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E9B98F",
+       "shirt": "#7a5a8a",
+       "pants": "#3a3a44",
+       "hat": "cap",
+       "hatColor": "#8a2a2a",
+       "beard": true,
+       "beardColor": "#6a5040"
+      },
+      "x": 100,
+      "y": 395,
+      "anim": "worried",
+      "expr": "worried"
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "dress": "#5a7a5a",
+       "shirt": "#e0d0b0",
+       "hairStyle": "long",
+       "hair": "#6a4a2a",
+       "shoes": "#2a2018"
+      },
+      "x": 185,
+      "y": 395,
+      "anim": "worried",
+      "expr": "sad"
+     }
+    ],
+    "cam": "in",
+    "alert": "ТЕМЗА",
+    "focus": 0,
+    "tint": "warm"
+   },
+   {
+    "text": "Запах такой, что в парламенте окна завешивают шторами, пропитанными хлоркой.",
+    "bg": "office",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#2a2a34",
+       "pants": "#1e1e24",
+       "coat": true,
+       "tie": "#2a2a2a",
+       "hat": "wide",
+       "hatColor": "#1e1e24",
+       "beard": true,
+       "beardColor": "#6a5040"
+      },
+      "x": 90,
+      "y": 395,
+      "anim": "talk",
+      "talk": true,
+      "expr": "angry"
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E2B48E",
+       "shirt": "#3a3440",
+       "pants": "#22222a",
+       "coat": true,
+       "tie": "#5a2a2a",
+       "hairStyle": "bald",
+       "hair": "#888"
+      },
+      "x": 185,
+      "y": 395,
+      "anim": "no",
+      "expr": "worried"
+     }
+    ],
+    "cam": "in",
+    "tag": "ПАРЛАМЕНТ",
+    "focus": 0,
+    "tint": "dark"
+   },
+   {
+    "text": "Не помогает. Депутаты думают даже переехать из Лондона!",
+    "bg": "office",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E2B48E",
+       "shirt": "#3a3440",
+       "pants": "#22222a",
+       "coat": true,
+       "tie": "#5a2a2a",
+       "hairStyle": "bald",
+       "hair": "#888"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "run",
+      "expr": "shock"
+     }
+    ],
+    "cam": "shake",
+    "alert": "ПОБЕГ"
+   },
+   {
+    "text": "И тогда закон о новой канализации принимают всего за восемнадцать дней.",
+    "bg": "office",
+    "actors": [
+     {
+      "kind": "desk",
+      "x": 135,
+      "y": 380
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#2a2a34",
+       "pants": "#1e1e24",
+       "coat": true,
+       "tie": "#2a2a2a",
+       "hat": "wide",
+       "hatColor": "#1e1e24",
+       "beard": true,
+       "beardColor": "#6a5040"
+      },
+      "x": 135,
+      "y": 338,
+      "anim": "talk",
+      "s": 0.9,
+      "z": 300,
+      "talk": true
+     }
+    ],
+    "cam": "in",
+    "insert": {
+     "name": "document",
+     "tone": "paper",
+     "at": 0.5
+    },
+    "count": {
+     "to": 18,
+     "label": "ДНЕЙ",
+     "at": 0.1
+    }
+   },
+   {
+    "text": "Инженер Джозеф Базалджет строит под городом гигантскую сеть тоннелей.",
+    "bg": "london",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "shirt": "#3a3a2a",
+       "pants": "#2a2a20",
+       "coat": true,
+       "tie": "#2a2a2a",
+       "hair": "#3a2a1a",
+       "beard": true,
+       "beardColor": "#3a2a1a"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "point",
+      "talk": true
+     }
+    ],
+    "cam": "in",
+    "tag": "ДЖОЗЕФ БАЗАЛДЖЕТ",
+    "focus": 0
+   }
+  ],
+  "punch": {
+   "big": "ВОНЬ|*СПАСЛА ГОРОД*",
+   "text": "Канализация остановила эпидемии холеры. И часть её работает до сих пор."
+  },
+  "outro": {
+   "text": "Подпишись на Доктора Боба, завтра ещё безумнее!"
+  },
+  "source": "Парламент Великобритании; S. Halliday, «The Great Stink of London», 1999",
+  "description": "Великое зловоние 1858 года заставило Лондон построить современную канализацию.",
+  "hashtags": [
+   "факты",
+   "истории",
+   "знаешьли",
+   "shorts",
+   "интересно",
+   "докторбоб",
+   "история",
+   "лондон"
+  ],
+  "mood": "funny"
+ },
+ {
+  "title": "Кот был мэром города 20 лет 🐱",
+  "question": "Голосовал бы за такого мэра? 👇",
+  "hook": {
+   "text": "Двадцать лет этим городом «руководил»… кот.",
+   "title": "КОТ —|*МЭР ГОРОДА*",
+   "bg": "town",
+   "actors": [
+    {
+     "kind": "cat",
+     "x": 135,
+     "y": 420,
+     "s": 2.2,
+     "anim": "proud"
+    }
+   ],
+   "cam": "in",
+   "tint": "cold"
+  },
+  "scenes": [
+   {
+    "text": "Аляска, маленький городок Талкитна. Девятьсот девяносто седьмой год.",
+    "bg": "town",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E9B98F",
+       "shirt": "#7a5a8a",
+       "pants": "#3a3a44",
+       "hat": "cap",
+       "hatColor": "#8a2a2a",
+       "beard": true,
+       "beardColor": "#6a5040"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "walk",
+      "to": {
+       "x": 180,
+       "y": 395
+      }
+     }
+    ],
+    "cam": "out",
+    "tag": "1997 · АЛЯСКА",
+    "tint": "cold"
+   },
+   {
+    "text": "Местные жители в шутку делают почётным мэром рыжего котёнка по имени Стаббс.",
+    "bg": "town",
+    "actors": [
+     {
+      "kind": "cat",
+      "x": 135,
+      "y": 410,
+      "s": 1.6
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E9B98F",
+       "shirt": "#7a5a8a",
+       "pants": "#3a3a44",
+       "hat": "cap",
+       "hatColor": "#8a2a2a",
+       "beard": true,
+       "beardColor": "#6a5040"
+      },
+      "x": 60,
+      "y": 395,
+      "anim": "point",
+      "expr": "happy"
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#EBC3A0",
+       "dress": "#5a7a5a",
+       "shirt": "#e0d0b0",
+       "hairStyle": "long",
+       "hair": "#6a4a2a",
+       "shoes": "#2a2018"
+      },
+      "x": 210,
+      "y": 395,
+      "anim": "talk",
+      "expr": "happy",
+      "s": 0.95
+     }
+    ],
+    "cam": "in",
+    "tag": "МЭР СТАББС",
+    "focus": 0
+   },
+   {
+    "text": "Шутка выходит из-под контроля. Посмотреть на кота-мэра едут туристы со всего мира!",
+    "bg": "town",
+    "actors": [
+     {
+      "kind": "cat",
+      "x": 200,
+      "y": 410,
+      "s": 1.4
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E9B98F",
+       "shirt": "#d86a3a",
+       "pants": "#3a4a6a",
+       "hat": "cap",
+       "hatColor": "#2a4a8a"
+      },
+      "x": 70,
+      "y": 395,
+      "anim": "point",
+      "expr": "happy"
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E9B98F",
+       "shirt": "#d86a3a",
+       "pants": "#3a4a6a",
+       "hat": "cap",
+       "hatColor": "#2a4a8a"
+      },
+      "x": 130,
+      "y": 395,
+      "anim": "shock",
+      "expr": "happy",
+      "s": 0.9
+     }
+    ],
+    "cam": "left",
+    "alert": "ТУРИСТЫ",
+    "tint": "cold"
+   },
+   {
+    "text": "Каждый день мэр «работает» в местном магазине и пьёт воду из бокала с кошачьей мятой.",
+    "bg": "town",
+    "actors": [
+     {
+      "kind": "cat",
+      "x": 135,
+      "y": 410,
+      "s": 2,
+      "anim": "proud",
+      "say": "Мяу. Работаю."
+     }
+    ],
+    "cam": "in",
+    "tag": "РАБОЧИЙ ДЕНЬ",
+    "focus": 0
+   },
+   {
+    "text": "Ему пишут письма поклонники со всего мира. Кот становится звездой.",
+    "bg": "town",
+    "actors": [
+     {
+      "kind": "cat",
+      "x": 160,
+      "y": 410,
+      "s": 1.5
+     },
+     {
+      "kind": "letter",
+      "x": 90,
+      "y": 380,
+      "s": 2
+     }
+    ],
+    "cam": "in",
+    "insert": {
+     "name": "letter",
+     "tone": "warm",
+     "at": 0.5
+    }
+   },
+   {
+    "text": "Стаббс был мэром почти двадцать лет. До самой старости.",
+    "bg": "town",
+    "actors": [
+     {
+      "kind": "cat",
+      "x": 135,
+      "y": 410,
+      "s": 1.8
+     }
+    ],
+    "cam": "in",
+    "count": {
+     "to": 20,
+     "label": "ЛЕТ НА ПОСТУ"
+    }
+   }
+  ],
+  "punch": {
+   "big": "ЛУЧШИЙ|*МЭР*",
+   "text": "Ни одного скандала за двадцать лет. Может, так и надо?"
+  },
+  "outro": {
+   "text": "Подпишись на Доктора Боба!"
+  },
+  "source": "Alaska Public Media; Talkeetna Historical Society",
+  "description": "Кот Стаббс почти 20 лет был почётным мэром городка Талкитна на Аляске.",
+  "hashtags": [
+   "факты",
+   "истории",
+   "знаешьли",
+   "shorts",
+   "интересно",
+   "докторбоб",
+   "коты",
+   "аляска"
+  ],
+  "mood": "funny",
+  "loop": "Вот так и вышло, что…"
+ },
+ {
+  "title": "В него 7 раз ударила молния. И он выжил ⚡",
+  "question": "Ты бы вышел из дома после третьего раза? 👇",
+  "hook": {
+   "text": "В этого человека молния ударила семь раз. И он выжил каждый раз!",
+   "title": "7 УДАРОВ|*МОЛНИИ*",
+   "bg": "forest",
+   "actors": [
+    {
+     "kind": "lightning",
+     "x": 135,
+     "y": 380,
+     "props": {
+      "every": 30
+     }
+    },
+    {
+     "kind": "person",
+     "look": {
+      "skin": "#E2B48E",
+      "shirt": "#6a6a3a",
+      "pants": "#4a4a2a",
+      "hat": "wide",
+      "hatColor": "#6a5a30"
+     },
+     "x": 135,
+     "y": 395,
+     "anim": "shock"
+    }
+   ],
+   "cam": "shake",
+   "tint": "cold"
+  },
+  "scenes": [
+   {
+    "text": "США, национальный парк. Смотритель Рой Салливан на обходе.",
+    "bg": "forest",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E2B48E",
+       "shirt": "#6a6a3a",
+       "pants": "#4a4a2a",
+       "hat": "wide",
+       "hatColor": "#6a5a30"
+      },
+      "x": 80,
+      "y": 395,
+      "anim": "walk",
+      "to": {
+       "x": 160,
+       "y": 395
+      }
+     }
+    ],
+    "cam": "right",
+    "tag": "РОЙ САЛЛИВАН",
+    "angle": "low"
+   },
+   {
+    "text": "Тысяча девятьсот сорок второй год. Первый удар: молния попадает ему в ногу.",
+    "bg": "forest",
+    "actors": [
+     {
+      "kind": "lightning",
+      "x": 135,
+      "y": 380,
+      "props": {
+       "every": 60
+      }
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E2B48E",
+       "shirt": "#6a6a3a",
+       "pants": "#4a4a2a",
+       "hat": "wide",
+       "hatColor": "#6a5a30"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "shock"
+     }
+    ],
+    "cam": "shake",
+    "tag": "1942",
+    "alert": "УДАР 1",
+    "tint": "cold",
+    "weather": "rain"
+   },
+   {
+    "text": "Потом второй. Третий. Ему опаляет брови и сжигает волосы!",
+    "bg": "forest",
+    "actors": [
+     {
+      "kind": "lightning",
+      "x": 120,
+      "y": 380,
+      "props": {
+       "every": 25
+      }
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E2B48E",
+       "shirt": "#6a6a3a",
+       "pants": "#4a4a2a",
+       "hat": "wide",
+       "hatColor": "#6a5a30"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "shock",
+      "expr": "shock"
+     }
+    ],
+    "cam": "shake",
+    "alert": "УДАР 2, 3, 4",
+    "focus": 1,
+    "tint": "cold"
+   },
+   {
+    "text": "Он начинает бояться грозы. Люди отходят от него подальше.",
+    "bg": "forest",
+    "actors": [
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E2B48E",
+       "shirt": "#6a6a3a",
+       "pants": "#4a4a2a",
+       "hat": "wide",
+       "hatColor": "#6a5a30"
+      },
+      "x": 80,
+      "y": 395,
+      "anim": "worried",
+      "expr": "worried"
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E9B98F",
+       "shirt": "#d86a3a",
+       "pants": "#3a4a6a",
+       "hat": "cap",
+       "hatColor": "#2a4a8a"
+      },
+      "x": 200,
+      "y": 395,
+      "anim": "run",
+      "to": {
+       "x": 290,
+       "y": 395
+      },
+      "expr": "shock"
+     }
+    ],
+    "cam": "in",
+    "focus": 0,
+    "tint": "dark"
+   },
+   {
+    "text": "Седьмой удар настигает его на рыбалке, в тысяча девятьсот семьдесят седьмом.",
+    "bg": "forest",
+    "actors": [
+     {
+      "kind": "lightning",
+      "x": 150,
+      "y": 380,
+      "props": {
+       "every": 40
+      }
+     },
+     {
+      "kind": "person",
+      "look": {
+       "skin": "#E2B48E",
+       "shirt": "#6a6a3a",
+       "pants": "#4a4a2a",
+       "hat": "wide",
+       "hatColor": "#6a5a30"
+      },
+      "x": 135,
+      "y": 395,
+      "anim": "shock"
+     }
+    ],
+    "cam": "shake",
+    "tag": "1977",
+    "alert": "УДАР 7",
+    "tint": "cold",
+    "count": {
+     "to": 7,
+     "label": "УДАРОВ МОЛНИИ",
+     "at": 0.5
+    },
+    "weather": "rain"
+   }
+  ],
+  "punch": {
+   "big": "РЕКОРД|*ГИННЕССА*",
+   "text": "Рой Салливан попал в Книгу рекордов как человек, переживший больше всех ударов молнии."
+  },
+  "outro": {
+   "text": "Подпишись на Доктора Боба!"
+  },
+  "source": "Книга рекордов Гиннесса; Служба национальных парков США",
+  "description": "Смотритель парка Рой Салливан пережил 7 ударов молнии с 1942 по 1977 год.",
+  "hashtags": [
+   "факты",
+   "истории",
+   "знаешьли",
+   "shorts",
+   "интересно",
+   "докторбоб",
+   "молния",
+   "рекорд"
+  ],
+  "mood": "epic",
+  "loop": "Так что, если тебе кажется, что тебе не везёт, вспомни:"
+ },
+ {
   "title": "24 кролика захватили целый континент 🐇",
   "question": "Думал, что кролики настолько опасны? 👇",
   "hook": {
@@ -104,66 +1175,60 @@
    },
    {
     "text": "Через несколько десятилетий их уже сотни миллионов. Они съедают траву и урожаи.",
-    "bg": "field_dusk",
-    "actors": [
-     {
-      "kind": "rabbits",
-      "x": 135,
-      "y": 370,
-      "count": 24,
-      "spread": 300,
-      "depth": 70,
-      "anim": "hop",
-      "s": 1.6
-     },
-     {
-      "kind": "person",
-      "look": {
-       "skin": "#E2AE84",
-       "shirt": "#7B6A4A",
-       "pants": "#4A4038",
-       "hat": "wide",
-       "hatColor": "#8A6A40"
-      },
-      "x": 210,
-      "y": 395,
-      "anim": "shock",
-      "s": 0.9
-     }
-    ],
     "cam": "shake",
     "alert": "СОТНИ МИЛЛИОНОВ",
-    "tint": "warm"
+    "map": {
+     "region": "australia",
+     "spread": {
+      "from": [
+       190,
+       300
+      ],
+      "r": 300,
+      "color": "#ece4d4"
+     },
+     "pins": [
+      {
+       "x": 190,
+       "y": 302,
+       "label": "Здесь выпустили 24 кролика"
+      }
+     ]
+    }
    },
    {
     "text": "Тогда через всю страну строят забор длиной больше трёх тысяч километров!",
-    "bg": "outback",
-    "actors": [
-     {
-      "kind": "fence2",
-      "x": 135,
-      "y": 400
-     },
-     {
-      "kind": "person",
-      "look": {
-       "skin": "#E2AE84",
-       "shirt": "#7B6A4A",
-       "pants": "#4A4038",
-       "hat": "wide",
-       "hatColor": "#8A6A40"
-      },
-      "x": 70,
-      "y": 395,
-      "anim": "carry"
-     }
-    ],
     "cam": "in",
     "tag": "ЗАБОР ОТ КРОЛИКОВ",
     "count": {
      "to": 3256,
      "label": "КИЛОМЕТРОВ",
      "at": 0.3
+    },
+    "map": {
+     "region": "australia",
+     "fence": [
+      [
+       95,
+       170
+      ],
+      [
+       92,
+       230
+      ],
+      [
+       100,
+       320
+      ]
+     ],
+     "spread": {
+      "from": [
+       190,
+       300
+      ],
+      "r": 120,
+      "color": "#ece4d4"
+     }
     }
    },
    {
@@ -202,7 +1267,7 @@
    "text": "Австралия воюет с ними до сих пор. А всё началось с двадцати четырёх."
   },
   "outro": {
-   "text": "Подпишись на Доктора Боба, завтра ещё безумнее!"
+   "text": "Подпишись на Доктора Боба!"
   },
   "source": "Правительство Австралии, Department of Climate Change, Energy, the Environment and Water",
   "description": "В 1859 году в Австралии выпустили 24 кролика. Через полвека их были сотни миллионов.",
@@ -216,7 +1281,8 @@
    "австралия",
    "животные"
   ],
-  "mood": "funny"
+  "mood": "funny",
+  "loop": "А всё потому, что однажды…"
  },
  {
   "title": "Почтальон 33 года строил дворец из камней 🏰",
@@ -377,7 +1443,8 @@
       "x": 60,
       "y": 395,
       "anim": "point",
-      "expr": "happy"
+      "expr": "happy",
+      "say": "Сумасшедший!"
      },
      {
       "kind": "person",
@@ -397,7 +1464,15 @@
     ],
     "cam": "in",
     "alert": "«СУМАСШЕДШИЙ»",
-    "tint": "night"
+    "tint": "night",
+    "lights": [
+     {
+      "x": 195,
+      "y": 300,
+      "r": 80,
+      "color": "#ffb050"
+     }
+    ]
    },
    {
     "text": "Проходит тридцать три года.",
@@ -460,7 +1535,7 @@
    "text": "Сегодня его дворец охраняет государство, и туда едут туристы со всего мира."
   },
   "outro": {
-   "text": "Подпишись на Доктора Боба, завтра ещё безумнее!"
+   "text": "Подпишись на Доктора Боба!"
   },
   "source": "Palais idéal du facteur Cheval (официальный сайт); Министерство культуры Франции",
   "description": "Почтальон Фердинан Шеваль 33 года строил дворец из камней, собранных на маршруте.",
@@ -474,6 +1549,7 @@
    "франция",
    "мечта"
   ],
-  "mood": "epic"
+  "mood": "epic",
+  "loop": "Вот что бывает, когда…"
  }
 ]

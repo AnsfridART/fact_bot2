@@ -111,6 +111,9 @@ def build_props(s):
         plan.append({"kind": "punch", "text": s["punch"]["text"], "big": s["punch"]["big"]})
     plan.append({"kind": "outro", "emotion": "wave",
                  "text": (s.get("outro") or {}).get("text", "Это был Доктор Боб. Подпишись, завтра история ещё безумнее!")})
+    # словесная петля: последняя фраза обрывается и «продолжается» первой фразой ролика
+    if s.get("loop") and s.get("hook"):
+        plan.append({"kind": "loop", "text": s["loop"]})
 
     seed = random.randint(1, 10_000_000)
     segments, start = [], 0
@@ -118,14 +121,14 @@ def build_props(s):
         wav = f"seg{i}.wav"
         tts.synthesize(clean(p["text"]), os.path.join(config.PUBLIC_DIR, wav))
         frames, env, first, last = audio_info(os.path.join(config.PUBLIC_DIR, wav))
-        gap = 0.12 if p["kind"] in ("scene", "hook") else 0.35
+        gap = 0.0 if p["kind"] == "loop" else 0.12 if p["kind"] in ("scene", "hook") else 0.35
         dur = max(frames + int(gap * FPS), int(1.6 * FPS))
         seg = {"kind": p["kind"], "start": start, "dur": dur, "audio": wav, "env": env,
                "words": word_timings(p["text"].replace("|", " "), first, last)}
-        for k in ("title", "emotion", "tag", "alert", "cam", "big", "bg", "actors", "focus", "tint", "camY", "insert", "count"):
+        for k in ("title", "emotion", "tag", "alert", "cam", "big", "bg", "actors", "focus", "tint", "camY", "insert", "count", "map", "angle", "weather", "lights"):
             if p.get(k) is not None:  # focus=0 — тоже значение
                 seg[k] = p[k]
-        if p["kind"] in ("scene", "hook") and not (p.get("bg") or p.get("actors")):
+        if p["kind"] in ("scene", "hook") and not (p.get("bg") or p.get("actors") or p.get("map")):
             img = f"img{i}.jpg"
             try:
                 images.generate(p["prompt"], os.path.join(config.PUBLIC_DIR, img), seed, p.get("stock", ""))

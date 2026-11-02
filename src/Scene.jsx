@@ -3,6 +3,7 @@
 import React from "react";
 import { Stage } from "./story/Stage.jsx";
 import { Insert } from "./story/Inserts.jsx";
+import { MapScene } from "./story/Map.jsx";
 
 const S = 4; // сцена рисуется в координатах 270x480, а выводится в 1080x1920
 const GOLD = "#F2B84B";
@@ -182,7 +183,7 @@ function Captions({ seg, f, font, top = 1180 }) {
   if (!chunk) return null;
   const pop = backOut(prog(f, chunk[0].s, 5));
   const text = chunk.map((w) => w.w).join(" ");
-  const size = Math.min(104, 900 / Math.max(5, text.length * 0.62));
+  const size = Math.min(104, 880 / Math.max(5, text.length * 0.72));
   return (
     <div style={{
       position: "absolute", left: 40, right: 40, top, textAlign: "center", fontFamily: font,
@@ -243,7 +244,7 @@ function HookTitle({ seg, f, font }) {
   return (
     <div style={{ position: "absolute", top: 300, left: 40, right: 40, display: "flex", flexDirection: "column", alignItems: "center" }}>
       {lines.map((line, i) => {
-        const p = i === 0 ? 1 : backOut(prog(f, i * 4, 6));
+        const p = 1 + 0.12 * Math.sin(Math.min(1, f / 8) * Math.PI) * (i % 2 ? -1 : 1);
         const shake = Math.sin(f * 1.8) * 6 * clamp(1 - (f - i * 4 - 6) / 10);
         return (
           <div key={i} style={{
@@ -283,6 +284,16 @@ function Counter({ seg, f, font }) {
 }
 
 function StoryScene({ seg, f, src, ImgComp, font }) {
+  if (seg.map) {
+    return (
+      <div style={{ position: "absolute", inset: 0, overflow: "hidden", background: "#000" }}>
+        <MapScene seg={seg} f={f} font={font} />
+        <Tags seg={seg} f={f} font={font} />
+        <Counter seg={seg} f={f} font={font} />
+        <Captions seg={seg} f={f} font={font} top={1400} />
+      </div>
+    );
+  }
   if (seg.actors || seg.bg) {
     const env = seg.env || [];
     const mouth = clamp(env[Math.min(f, env.length - 1)] || 0);
@@ -297,7 +308,7 @@ function StoryScene({ seg, f, src, ImgComp, font }) {
     return (
       <div style={{ position: "absolute", inset: 0, overflow: "hidden", background: "#000" }}>
         <div style={{ position: "absolute", inset: 0, ...wrap }}>
-          <Stage seg={seg} f={f} mouth={mouth} transition={tr === "dip" ? "dip" : tr === "flash" ? "flash" : "none"} />
+          <Stage seg={seg} f={f} mouth={mouth} font={font} transition={tr === "dip" ? "dip" : tr === "flash" ? "flash" : "none"} />
         </div>
         {seg.insert && f >= insAt ? (
           <div style={{ position: "absolute", inset: 0, transform: `scale(${1 + 0.12 * (1 - easeOut(prog(f, insAt, 6)))})` }}>
@@ -403,13 +414,17 @@ export function Scene({ frame, data, src, ImgComp, font = "Montserrat, DejaVu Sa
   if (!segs.length) return <div style={{ width: 1080, height: 1920, background: "#000" }} />;
   const [seg, f] = currentSeg(segs, frame);
   let body;
-  if (seg.kind === "intro" || seg.kind === "outro") body = <HostScene seg={seg} f={f} frame={frame} font={font} />;
+  if (seg.kind === "loop" && segs[0] && segs[0].kind === "hook") {
+    // финальная фраза звучит на кадре начала ролика: при повторе всё сходится в одно предложение
+    body = <StoryScene seg={{ ...segs[0], start: seg.start, dur: seg.dur, words: seg.words, env: seg.env }} f={Math.min(f, 6)} src={src} ImgComp={ImgComp} font={font} />;
+  } else if (seg.kind === "intro" || seg.kind === "outro") body = <HostScene seg={seg} f={f} frame={frame} font={font} />;
   else if (seg.kind === "punch") body = <Punch seg={seg} f={f} font={font} />;
   else body = <StoryScene seg={seg} f={f} src={src} ImgComp={ImgComp} font={font} />;  // scene и hook
   const total = data.totalFrames || 0;
   const loopLen = 14;
   const first = segs[0];
-  const loop = total && frame >= total - loopLen && first && first.kind === "hook" ? easeOut(prog(frame, total - loopLen, loopLen)) : 0;
+  const hasLoopSeg = segs.some((x) => x.kind === "loop");
+  const loop = !hasLoopSeg && total && frame >= total - loopLen && first && first.kind === "hook" ? easeOut(prog(frame, total - loopLen, loopLen)) : 0;
   return (
     <div style={{ position: "absolute", inset: 0, width: 1080, height: 1920, overflow: "hidden", background: "#000" }}>
       {body}
