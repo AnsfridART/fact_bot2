@@ -128,7 +128,7 @@ export function Person({ look = {}, anim = "idle", t = 0, mouth = 0, expr, phase
   const talking = mouth > 0.05 || anim === "talk";
   const headTilt = anim === "no" ? Math.sin(t * 0.55) * 11 : (talking ? Math.sin(t * 0.13 + phase) * 4 + mouth * 3 : Math.sin(t * 0.05 + phase) * 1.8);
   const headDy = anim === "yes" ? Math.abs(Math.sin(t * 0.35)) * 4 : 0;
-  const blink = (t + phase * 37) % 110 < 4;
+  const blink = t > 20 && (t + phase * 37) % 110 < 4;  // v14: не моргаем в первые кадры сцены (кадр 0 = превью в ленте)
   const e = expr || (anim === "shock" ? "shock" : anim === "worried" ? "worried" : "neutral");
   const autoFx = fx || [
     ...(e === "shock" ? ["exclaim", "sweat"] : []), ...(e === "worried" ? ["sweat"] : []),

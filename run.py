@@ -138,6 +138,8 @@ def build_props(s):
                 prev = next((x["image"] for x in reversed(segments) if x.get("image")), None)
                 if prev:
                     seg["image"] = prev
+        if p["kind"] == "hook" and dur > 3.5 * FPS:  # v14: длинный хук — главная причина ухода в первые секунды
+            WARNINGS.append(f"хук длится {dur / FPS:.1f} с (лучше до 3 с): «{clean(p['text'])}»")
         segments.append(seg)
         start += dur
 

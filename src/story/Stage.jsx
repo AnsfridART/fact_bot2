@@ -233,7 +233,18 @@ function cameraFor(seg, f, actors) {
   if (seg.cam === "up") cy = lerp(325, 285, t);
   let sx = 0, sy = 0;
   if (seg.cam === "shake") { sx = Math.sin(f * 1.7) * 1.6; sy = Math.cos(f * 2.3) * 1.6; }
-  z += (seg.kind === "hook" ? 0.28 : 0.06) * (1 - easeOut(prog(f, 0, seg.kind === "hook" ? 9 : 6)));  // резкий наезд на первом кадре
+  if (seg.kind !== "hook") z += 0.06 * (1 - easeOut(prog(f, 0, 6)));  // резкий наезд на первом кадре сцены
+  // v14: хук открывается сверхкрупным планом лица и резко отъезжает на общий план к ~0.6 с
+  if (seg.kind === "hook" && seg.open !== "wide") {
+    const hi = seg.hookFocus ?? actors.findIndex((a) => a.kind === "person" || a.kind === "emu" || a.kind === "cat" || a.kind === "crow" || a.kind === "rabbit");
+    const a = actors[hi];
+    if (a) {
+      const p = actorPos(a, 0), s = a.s ?? 1;
+      const head = a.kind === "person" ? 140 : a.kind === "emu" ? 110 : 40;
+      const k = easeInOut(prog(f, 4, 14));            // 4 кадра держим лицо, затем отъезд
+      z = lerp(2.4, z, k); cx = lerp(p.x, cx, k); cy = lerp(p.y - head * s + 6, cy, k);
+    }
+  }
   // крупный план на второй половине длинной сцены
   const fi = seg.focus;
   if (fi !== undefined && fi !== null && d > 70 && f >= d / 2 && actors[fi]) {
@@ -280,11 +291,11 @@ export function Stage({ seg, f, mouth, transition = "flash", font = "DejaVu Sans
   const ground = 400;
   const angleT = seg.angle === "low" ? `translate(0 ${ground}) scale(1.06 1.16) translate(0 ${-ground})`
     : seg.angle === "high" ? `translate(0 ${ground}) scale(0.9 0.8) translate(0 ${-ground})` : "";
-  const hookBoost = seg.kind === "hook" ? 1 - easeOut(prog(f, 45, 20)) : 0;  // яркость хука плавно уходит к 2-й секунде                                             // на крупном плане фон уходит в размытие
+  const hookBoost = seg.kind === "hook" ? 1 - easeOut(prog(f, 45, 20)) : 0;  // хук контрастнее обычных сцен, к 2-й секунде выравнивается
   const enter = transition === "flash" ? 1 - easeOut(prog(f, 0, 4)) : transition === "dip" ? 1 - easeOut(prog(f, 0, 7)) : 0;
   return (
     <svg width="1080" height="1920" viewBox="0 0 270 480" style={{ position: "absolute", inset: 0,
-      filter: seg.kind === "hook" ? `brightness(${1 + 0.18 * hookBoost}) saturate(${1 + 0.35 * hookBoost}) contrast(${1 + 0.12 * hookBoost})` : undefined }}>
+      filter: seg.kind === "hook" ? `saturate(${1 + 0.4 * hookBoost}) contrast(${1 + 0.22 * hookBoost})` : undefined }}>
       <defs>
         <radialGradient id="vig" cx="50%" cy="48%" r="70%"><stop offset="55%" stopColor="#000" stopOpacity="0" /><stop offset="100%" stopColor="#000" stopOpacity=".75" /></radialGradient>
         <linearGradient id="haze" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#fff" stopOpacity="0" /><stop offset=".6" stopColor="#fff" stopOpacity=".06" /><stop offset="1" stopColor="#fff" stopOpacity="0" /></linearGradient>

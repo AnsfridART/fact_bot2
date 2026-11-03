@@ -149,6 +149,7 @@ function professorPose(seg, f, frame) {
 
 // ======================= ИСТОРИЯ =======================
 const RED = "#FF4B3E";
+const CAP_Y = 1230; // v14: выше нижней зоны TikTok (ник, описание, музыка)
 
 // *слово* в тексте = красное ключевое слово
 function parseWords(text) {
@@ -174,14 +175,16 @@ function chunkWords(words) {
 
 const outline = (px) => ({ WebkitTextStroke: `${px}px #000`, paintOrder: "stroke fill" });
 
-function Captions({ seg, f, font, top = 1180 }) {
+function Captions({ seg, f, font, top = CAP_Y }) {
   const words = seg.words || [];
   if (!words.length) return null;
   let cur = words.findIndex((w) => f >= w.s && f < w.e);
   if (cur < 0) cur = f < words[0].s ? 0 : words.length - 1;
   const chunk = chunkWords(words).find((ch) => ch.some((w) => w.i === cur));
   if (!chunk) return null;
-  const pop = backOut(prog(f, chunk[0].s, 5));
+  // v14: первая фраза хука видна сразу на 0-м кадре, без проявления
+  const instant = seg.kind === "hook" && chunk[0].i === 0;
+  const pop = instant ? 1 : backOut(prog(f, chunk[0].s, 5));
   const text = chunk.map((w) => w.w).join(" ");
   const size = Math.min(104, 880 / Math.max(5, text.length * 0.72));
   return (
@@ -290,7 +293,7 @@ function StoryScene({ seg, f, src, ImgComp, font }) {
         <MapScene seg={seg} f={f} font={font} />
         <Tags seg={seg} f={f} font={font} />
         <Counter seg={seg} f={f} font={font} />
-        <Captions seg={seg} f={f} font={font} top={1400} />
+        <Captions seg={seg} f={f} font={font} top={CAP_Y} />
       </div>
     );
   }
@@ -321,7 +324,7 @@ function StoryScene({ seg, f, src, ImgComp, font }) {
         {seg.kind === "hook" ? <div style={{ position: "absolute", left: 0, right: 0, top: 0, height: 900, background: "linear-gradient(rgba(0,0,0,.55), rgba(0,0,0,0))" }} /> : null}
         <Tags seg={seg} f={f} font={font} />
         <HookTitle seg={seg} f={f} font={font} />
-        <Captions seg={seg} f={f} font={font} top={1400} />
+        <Captions seg={seg} f={f} font={font} top={CAP_Y} />
       </div>
     );
   }
