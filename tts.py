@@ -275,10 +275,12 @@ def _yandex_full(text, wav_path, voice=None, emotion=None, speed=None):
     return wav_path
 
 
-def synthesize(text: str, wav_path: str) -> str:
+def synthesize(text: str, wav_path: str, speed_mul: float = 1.0, voice: str = None) -> str:
+    """speed_mul > 1 — быстрее (v15: хук бодрее); voice — свой голос SpeechKit для истории."""
     if config.TTS_ENGINE == "yandex" and config.SPEECHKIT_API_KEY:
         try:
-            return _yandex_full(text, wav_path)
+            sp = round(min(1.6, float(config.YANDEX_SPEED) * speed_mul), 2)
+            return _yandex_full(text, wav_path, voice=voice, speed=sp)
         except Exception as e:
             print("SpeechKit не сработал, запасной голос Microsoft:", e)
             try:
@@ -287,7 +289,8 @@ def synthesize(text: str, wav_path: str) -> str:
                 print("edge-tts тоже не сработал:", e2)
     if config.TTS_ENGINE == "edge":
         try:
-            return _edge(text, wav_path)
+            pct = int(config.EDGE_RATE.replace("%", "").replace("+", "") or 0) + int(round((speed_mul - 1) * 100))
+            return _edge(text, wav_path, rate=f"{pct:+d}%")
         except Exception as e:
             print("edge-tts не сработал, запасной голос Silero:", e)
     order = [(config.TTS_ENGINE if config.TTS_ENGINE != "edge" else "silero", config.VOICE),

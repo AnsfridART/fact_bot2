@@ -201,6 +201,33 @@ export function Background({ name, t = 0 }) {
         {[...Array(6)].map((_, i) => <g key={"d" + i}><rect x={-170 + i * 80} y="300" width="66" height="30" fill="#4a4e54" />
           <rect x={-160 + i * 80} y="282" width="46" height="20" fill="#0e1a24" /><rect x={-156 + i * 80} y="288" width={20 + (i * 7) % 18} height="3" fill="#3ac85a" /></g>)}
       </g>);
+    case "noir_room":  // v15: комната ночью — неоновые жалюзи, постер, полки, диван
+      return (<g>
+        <rect x="-200" y="-200" width="670" height="880" fill="#080d12" />
+        <rect x="-200" y="-200" width="670" height="880" fill="#0b2a2a" opacity=".35" />
+        <g transform="translate(170 120)">
+          <rect x="-4" y="-4" width="98" height="150" fill="#0a0610" />
+          {[...Array(11)].map((_, i) => <rect key={i} x="0" y={i * 13.5} width="90" height="8" fill="#ffb020" opacity={0.6 + 0.25 * Math.sin(t / 9 + i)} />)}
+          <rect x="-30" y="-20" width="160" height="200" fill="#ffb020" opacity=".06" />
+        </g>
+        <g transform="translate(-40 120)"><rect width="56" height="74" rx="3" fill="#121c24" /><circle cx="28" cy="30" r="15" fill="#3dffa8" /><rect x="10" y="56" width="36" height="5" fill="#2a3a40" /></g>
+        <g transform="translate(40 170)">{[0, 1].map((r) => <g key={r}><rect x="0" y={r * 40 + 30} width="90" height="4" fill="#1e2a32" />
+          {[...Array(8)].map((_, i) => <rect key={i} x={4 + i * 10} y={r * 40 + 30 - 18 - (i % 3) * 4} width="7" height={18 + (i % 3) * 4} fill={["#1f3a3a", "#2a3240", "#3a2e24", "#24303a"][(i + r) % 4]} />)}</g>)}</g>
+        <path d="M-200 360 L470 360 L470 680 L-200 680 Z" fill="#05080b" />
+        <g transform="translate(-60 300)"><rect width="220" height="60" rx="14" fill="#16202a" /><rect x="-6" y="20" width="232" height="44" rx="12" fill="#1b2733" /><rect x="10" y="-14" width="200" height="34" rx="10" fill="#121a22" /></g>
+        <ellipse cx="135" cy="372" rx="160" ry="14" fill="#ffb020" opacity=".05" />
+      </g>);
+    case "noir_city":  // v15: ночной город — неоновые вывески, мокрый асфальт
+      return (<g>
+        <rect x="-200" y="-200" width="670" height="880" fill="#05080c" />
+        {[[-150, 60, 90], [-60, 110, 80], [20, 40, 70], [90, 90, 85], [175, 30, 95], [270, 120, 80]].map(([x, y, w], i) => <g key={i}>
+          <rect x={x} y={y} width={w} height={400} fill={i % 2 ? "#0b1218" : "#0e161e"} />
+          {[...Array(12)].map((_, k) => <rect key={k} x={x + 8 + (k % 3) * (w / 3.4)} y={y + 14 + Math.floor(k / 3) * 30} width="10" height="14" fill={(k * 7 + i) % 5 ? "#16222c" : "#ffcf7a"} opacity=".8" />)}</g>)}
+        <g transform="translate(30 150)"><rect width="70" height="22" rx="4" fill="none" stroke="#3dffa8" strokeWidth="3" opacity={0.7 + 0.3 * (Math.floor(t / 7) % 5 ? 1 : 0)} /><rect x="8" y="8" width="54" height="6" fill="#3dffa8" /></g>
+        <g transform="translate(180 210)"><rect width="56" height="18" rx="4" fill="none" stroke="#ffb020" strokeWidth="3" /><rect x="8" y="6" width="40" height="6" fill="#ffb020" /></g>
+        <path d="M-200 360 L470 360 L470 680 L-200 680 Z" fill="#070b0f" />
+        {[...Array(6)].map((_, i) => <rect key={i} x={-150 + i * 80} y={380 + (i % 2) * 20} width="30" height="3" fill={i % 2 ? "#3dffa8" : "#ffb020"} opacity=".35" />)}
+      </g>);
     case "hacker_room":
       return (<g>
         <rect x="-200" y="-200" width="670" height="880" fill="#0a0c12" />

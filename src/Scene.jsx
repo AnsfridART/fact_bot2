@@ -4,6 +4,8 @@ import React from "react";
 import { Stage } from "./story/Stage.jsx";
 import { Insert } from "./story/Inserts.jsx";
 import { MapScene } from "./story/Map.jsx";
+import { NoirHUD, UiCard, UiBackdrop, NoirFX, NoirCaptions, ChoiceScreen, N } from "./story/Noir.jsx";
+import { Stage as StageView, NOIR_SHOT } from "./story/Stage.jsx";
 
 const S = 4; // сцена рисуется в координатах 270x480, а выводится в 1080x1920
 const GOLD = "#F2B84B";
@@ -200,12 +202,12 @@ function Captions({ seg, f, font, top = CAP_Y }) {
   );
 }
 
-function Tags({ seg, f, font }) {
+function Tags({ seg, f, font, top = 120 }) {
   const items = [];
   if (seg.tag) items.push({ text: seg.tag, bg: "rgba(10,10,14,.82)", fg: "#fff", delay: 0, border: "rgba(255,255,255,.25)" });
   if (seg.alert) items.push({ text: seg.alert, bg: RED, fg: "#fff", delay: 6, border: "rgba(255,255,255,.6)" });
   return (
-    <div style={{ position: "absolute", top: 120, left: 0, right: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 14 }}>
+    <div style={{ position: "absolute", top, left: 0, right: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 14 }}>
       {items.map((t, i) => {
         const p = backOut(prog(f, 3 + t.delay, 6));
         return (
@@ -412,10 +414,95 @@ function currentSeg(segments, frame) {
   return [last, last.dur - 1];
 }
 
+
+// ======================= v15: КИБЕР-НУАР =======================
+function hudState(segs, i) {
+  let st = null;
+  for (let k = 0; k <= i && k < segs.length; k++) if (segs[k].hud) st = { ...(st || {}), ...segs[k].hud };
+  return st;
+}
+
+function NoirScene({ seg, f, font, idx }) {
+  const uis = seg.ui ? (Array.isArray(seg.ui) ? seg.ui : [seg.ui]) : [];
+  const hasStage = !!(seg.actors || seg.bg);
+  const over = hasStage ? uis.filter((u) => u.type === "notify") : [];
+  const full = uis.filter((u) => !over.includes(u));
+  const uiStart = !hasStage ? 0 : full.length ? Math.floor(seg.dur * (seg.uiAt ?? 0.45)) : seg.dur;
+  const env = seg.env || [];
+  const mouth = clamp(env[Math.min(f, env.length - 1)] || 0);
+  const hook = seg.kind === "hook";
+  let body, flash = 0, kick = 0;
+  if (f < uiStart) {
+    const cutF = f >= NOIR_SHOT && seg.dur > 50 ? f % NOIR_SHOT : 99;
+    flash = Math.max(hook ? 0 : 1 - easeOut(prog(f, 0, 5)), cutF < 4 ? 1 - cutF / 4 : 0);
+    body = (
+      <div style={{ position: "absolute", inset: 0 }}>
+        <StageView seg={{ ...seg, style: "noir" }} f={f} mouth={mouth} font={font} transition="none" />
+        {over.map((u, i) => {
+          const at = Math.floor(seg.dur * (u.at ?? (hook ? 0.12 : 0.25)));
+          return f >= at ? <UiCard key={i} ui={u} f={f - at} font={font} dur={seg.dur - at} /> : null;
+        })}
+      </div>
+    );
+  } else {
+    const share = Math.max(1, (seg.dur - uiStart) / Math.max(1, full.length));
+    const j = Math.min(full.length - 1, Math.floor((f - uiStart) / share));
+    const lf = Math.floor(f - uiStart - j * share);
+    flash = 1 - easeOut(prog(lf, 0, 5));
+    kick = 0.06 * (1 - easeOut(prog(lf, 0, 7)));
+    const u = full[j];
+    body = (
+      <div style={{ position: "absolute", inset: 0, transform: `scale(${1 + kick})` }}>
+        <UiBackdrop f={f} tone={u?.tone} />
+        {u ? <UiCard ui={u} f={lf} font={font} dur={Math.floor(share)} /> : null}
+      </div>
+    );
+  }
+  // «глитч» на входе в сцену: кадр дёргается по горизонтали
+  const jitter = !hook && f < 5 ? Math.sin(f * 7.3 + idx) * 26 * (1 - f / 5) : 0;
+  return (
+    <div style={{ position: "absolute", inset: 0, overflow: "hidden", background: N.bg, transform: `translateX(${jitter}px)` }}>
+      {body}
+      <NoirFX f={f} flash={flash} />
+      {seg.tag ? <Tags seg={{ tag: seg.tag, alert: seg.alert }} f={f} font={font} top={300} /> : seg.alert ? <Tags seg={{ alert: seg.alert }} f={f} font={font} top={300} /> : null}
+    </div>
+  );
+}
+
+function NoirFrame({ segs, seg, f, frame, data, font, src, ImgComp }) {
+  const i = segs.indexOf(seg);
+  let body;
+  if (seg.kind === "loop" && segs[0]) {
+    body = <NoirScene seg={{ ...segs[0], start: seg.start, dur: seg.dur }} f={Math.min(f, 6)} font={font} idx={0} />;
+  } else if (seg.kind === "choice") {
+    body = <><ChoiceScreen seg={seg} f={f} font={font} /><NoirFX f={f} flash={0.5 * (1 - easeOut(prog(f, 0, 5)))} /></>;
+  } else if (seg.kind === "punch") {
+    body = <><Punch seg={seg} f={f} font={font} /><NoirFX f={f} /></>;
+  } else if (seg.kind === "intro" || seg.kind === "outro") {
+    body = <HostScene seg={seg} f={f} frame={frame} font={font} />;
+  } else {
+    body = <NoirScene seg={seg} f={f} font={font} idx={i} />;
+  }
+  const cur = hudState(segs, i);
+  const prev = seg.hud ? hudState(segs, i - 1) : cur;
+  const hudIn = seg.kind === "hook" ? easeOut(prog(f, 16, 8)) : 1;
+  const showHud = cur && seg.kind !== "outro" && seg.kind !== "intro";
+  const capSeg = seg.kind === "loop" ? seg : seg;
+  return (
+    <div style={{ position: "absolute", inset: 0, width: 1080, height: 1920, overflow: "hidden", background: N.bg }}>
+      {body}
+      {showHud ? <div style={{ position: "absolute", inset: 0, opacity: hudIn, transform: `translateY(${(1 - hudIn) * -40}px)` }}>
+        <NoirHUD labels={data.hudLabels} prev={prev} cur={cur} f={seg.kind === "hook" ? f - 16 : f} font={font} /></div> : null}
+      {seg.kind !== "intro" && seg.kind !== "outro" ? <NoirCaptions seg={capSeg} f={f} font={font} instant={seg.kind === "hook"} top={seg.kind === "choice" ? 1420 : 1290} /> : null}
+    </div>
+  );
+}
+
 export function Scene({ frame, data, src, ImgComp, font = "Montserrat, DejaVu Sans, Arial" }) {
   const segs = data.segments || [];
   if (!segs.length) return <div style={{ width: 1080, height: 1920, background: "#000" }} />;
   const [seg, f] = currentSeg(segs, frame);
+  if (data.style === "noir") return <NoirFrame segs={segs} seg={seg} f={f} frame={frame} data={data} font={font} src={src} ImgComp={ImgComp} />;
   let body;
   if (seg.kind === "loop" && segs[0] && segs[0].kind === "hook") {
     // финальная фраза звучит на кадре начала ролика: при повторе всё сходится в одно предложение
@@ -441,9 +528,31 @@ export function Scene({ frame, data, src, ImgComp, font = "Montserrat, DejaVu Sa
 }
 
 // Обложка ролика: кадр из начала истории, плашка «ИСТОРИЯ #N», крупный заголовок.
+function NoirCover({ data, seg, font }) {
+  const lines = (seg.title || "").split("|").filter(Boolean);
+  return (
+    <div style={{ position: "absolute", inset: 0, width: 1080, height: 1920, overflow: "hidden", background: N.bg }}>
+      <NoirScene seg={{ ...seg, ui: undefined, kind: "scene", dur: 200 }} f={30} font={font} idx={0} />
+      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(rgba(6,9,13,.35), rgba(6,9,13,.85) 36%, rgba(6,9,13,0) 64%)" }} />
+      <div style={{ position: "absolute", top: 320, left: 0, right: 0, textAlign: "center", fontFamily: font }}>
+        <span style={{ background: N.acc, color: N.bg, fontWeight: 900, fontSize: 44, padding: "10px 28px", borderRadius: 12, letterSpacing: 2 }}>
+          СЦЕНАРИЙ #{data.coverNumber || 1}{data.part ? ` · ЧАСТЬ ${data.part}` : ""}</span>
+      </div>
+      <div style={{ position: "absolute", top: 430, left: 50, right: 50, textAlign: "center", fontFamily: font, fontWeight: 900, textTransform: "uppercase", lineHeight: 1.04, ...outline(18) }}>
+        {lines.map((line, i) => (
+          <div key={i} style={{ fontSize: Math.min(124, 960 / Math.max(4, line.replace(/\*/g, "").length * 0.72)) }}>
+            {parseWords(line).map((w, k) => <span key={k} style={{ color: w.key ? N.acc : "#fff" }}>{(k ? " " : "") + w.w}</span>)}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function Cover({ data, font = "Montserrat, DejaVu Sans, Arial" }) {
   const seg = (data.segments || [])[0];
   if (!seg) return <div style={{ width: 1080, height: 1920, background: "#000" }} />;
+  if (data.style === "noir") return <NoirCover data={data} seg={seg} font={font} />;
   const lines = (seg.title || "").split("|").filter(Boolean);
   const shot = { ...seg, kind: "scene", focus: undefined, alert: undefined, tag: undefined, cam: "in", camY: (seg.camY ?? 305) - 50 };
   return (

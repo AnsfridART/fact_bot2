@@ -374,5 +374,20 @@ def _clocktick(sr):
     return out
 
 
-ACTION_SFX = {"thunder": _thunder, "wings": _wings, "stamp": _stamp, "paper": _paper, "snap": _snap,
+def _ping(sr):  # v15: уведомление телефона
+    t = np.arange(int(sr * 0.45)) / sr
+    tone = np.sin(2 * np.pi * 1318 * t) * np.exp(-t * 9) + 0.6 * np.sin(2 * np.pi * 1975 * t) * np.exp(-t * 12) * (t > 0.09)
+    return tone * 0.45
+
+
+def _glitch(sr):  # v15: цифровой «срыв» на склейке
+    n = int(sr * 0.22)
+    rng = np.random.default_rng(7)
+    x = rng.standard_normal(n)
+    hold = np.repeat(x[::90], 90)[:n]
+    t = np.arange(n) / sr
+    return (hold * 0.6 + np.sign(np.sin(2 * np.pi * 120 * t)) * 0.3) * np.exp(-t * 14) * 0.5
+
+
+ACTION_SFX = {"ping": _ping, "glitch": _glitch, "thunder": _thunder, "wings": _wings, "stamp": _stamp, "paper": _paper, "snap": _snap,
               "clock": _clocktick, "fire": lambda sr: _amb_fire(int(sr * 1.5), sr, 9) * 0.3}

@@ -182,7 +182,7 @@ function actorPos(a, t) {
   return { x: lerp(a.x ?? 135, a.to?.x ?? a.x ?? 135, k), y: lerp(a.y ?? 360, a.to?.y ?? a.y ?? 360, k) };
 }
 
-function Actor({ a, f, t, mouth, idx, light, gaze, zeroG }) {
+function Actor({ a, f, t, mouth, idx, light, gaze, zeroG, closeUp }) {
   const p0 = actorPos(a, t);
   const x = p0.x + (zeroG ? Math.sin(f / 37 + idx) * 3 : 0), y = p0.y + (zeroG ? Math.sin(f / 23 + idx) * 5 : 0);
   const living = ["person", "emu", "crow", "cat", "rabbit"].includes(a.kind);
@@ -221,8 +221,16 @@ function Actor({ a, f, t, mouth, idx, light, gaze, zeroG }) {
     body = <P t={f} {...(a.props || {})} />;
   }
   const spin = zeroG ? Math.sin(f / 41 + idx) * 6 : 0;
-  return <g transform={`translate(${x} ${y}) rotate(${spin}) scale(${s * flip} ${s})`}>{body}</g>;
+  // v15: метка «ТЫ» над главным героем
+  const you = a.you && !closeUp ? (
+    <g transform={`translate(0 ${-212 + Math.sin(f / 6) * 3}) scale(${flip} 1)`} opacity={clamp(prog(f, 4, 6))}>
+      <rect x="-20" y="-15" width="40" height="22" rx="5" fill="#3dffa8" /><path d="M-6 7 L0 14 L6 7 Z" fill="#3dffa8" />
+      <text x="0" y="2" textAnchor="middle" fontSize="14" fontWeight="900" fill="#06090d" fontFamily="Montserrat, DejaVu Sans, sans-serif">ТЫ</text>
+    </g>) : null;
+  return <g transform={`translate(${x} ${y}) rotate(${spin}) scale(${s * flip} ${s})`}>{body}{you}</g>;
 }
+
+export const NOIR_SHOT = 42;
 
 function cameraFor(seg, f, actors) {
   const d = Math.max(1, seg.dur), t = f / d;
@@ -244,6 +252,19 @@ function cameraFor(seg, f, actors) {
       const k = easeInOut(prog(f, 4, 14));            // 4 кадра держим лицо, затем отъезд
       z = lerp(2.4, z, k); cx = lerp(p.x, cx, k); cy = lerp(p.y - head * s + 6, cy, k);
     }
+  }
+  // v15 «нуар»: внутри сцены смена плана каждые ~1.4 с — общий → лицо → средний
+  if (seg.style === "noir" && d > 50) {
+    const SH = NOIR_SHOT, k = Math.floor(f / SH), fk = f - k * SH;
+    const ai = actors.findIndex((a) => a.kind === "person");
+    const a = actors[ai];
+    if (a && k > 0) {
+      const p = actorPos(a, t), s = a.s ?? 1;
+      if (k % 3 === 1) { cx = p.x; cy = p.y - 140 * s + 8; z = 2.25 + 0.12 * (fk / SH); }
+      else if (k % 3 === 2) { cx = lerp(135, p.x, 0.6); cy = p.y - 100 * s; z = 1.65 + 0.1 * (fk / SH); }
+      z += 0.1 * (1 - easeOut(prog(fk, 0, 5)));
+    }
+    return { z, cx: cx + sx, cy: cy + sy };
   }
   // крупный план на второй половине длинной сцены
   const fi = seg.focus;
@@ -311,7 +332,7 @@ export function Stage({ seg, f, mouth, transition = "flash", font = "DejaVu Sans
         <LightLayer name={seg.bg} f={f} />
         <g transform={angleT}>
           {order.map(({ a, i }) => <Actor key={i} a={a} f={f} t={t} mouth={mouth} idx={i} light={lightFor(a)} gaze={a.kind === "person" ? gazeFor(a, i) : 0}
-            zeroG={seg.bg === "space" && a.kind === "person"} />)}
+            zeroG={seg.bg === "space" && a.kind === "person"} closeUp={cam.z > 1.6} />)}
         </g>
         <NightLights lights={seg.lights} f={f} id={`nl${seg.start}`} />
         <g transform={angleT}>

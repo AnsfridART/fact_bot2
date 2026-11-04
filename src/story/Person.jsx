@@ -96,6 +96,7 @@ function pose(anim, t, phase) {
     case "salute": return { la: 6, ra: -160, ll: 0, rl: 0, bob: 0, lean: 0 };
     case "no": return { la: 8, ra: -8, ll: 0, rl: 0, bob: 0, lean: 0 };
     case "yes": return { la: 8, ra: -8, ll: 0, rl: 0, bob: Math.sin(t * 0.35) * 1, lean: 0 };
+    case "phone": return { la: -33 + s * 1.5, ra: 33 - s * 1.5, ll: 0, rl: 0, bob: s * 0.6, lean: 2 };  // v15: смотрит в телефон
     case "talk": return { la: 10 + s * 8, ra: -20 - Math.max(0, s2) * 30, ll: 0, rl: 0, bob: s * 1.2, lean: 0 };
     default: return { la: 6 + s * 2, ra: -6 - s * 2, ll: 0, rl: 0, bob: s * 0.8, lean: 0 };
   }
@@ -172,7 +173,7 @@ export function Person({ look = {}, anim = "idle", t = 0, mouth = 0, expr, phase
         <rect x="-26" y="-112" width="52" height="60" rx="14" fill={L.shirt} />
         <path d={light < 0 ? "M2 -112 L12 -112 Q26 -112 26 -98 L26 -66 Q26 -52 12 -52 L2 -52 Z" : "M-2 -112 L-12 -112 Q-26 -112 -26 -98 L-26 -66 Q-26 -52 -12 -52 L-2 -52 Z"}
           fill="#000" opacity=".2" />
-        <path d={light < 0 ? "M-25 -100 L-25 -60" : "M25 -100 L25 -60"} stroke="#ffd6a0" strokeWidth="2" opacity=".45" strokeLinecap="round" />
+        <path d={light < 0 ? "M-25 -100 L-25 -60" : "M25 -100 L25 -60"} stroke={L.rim || "#ffd6a0"} strokeWidth="2" opacity=".45" strokeLinecap="round" />
         {L.coat && <g><path d="M-10 -112 L-2 -90 L-6 -70" stroke={shade(L.shirt, 0.6)} strokeWidth="2" fill="none" />
           <path d="M10 -112 L2 -90 L6 -70" stroke={shade(L.shirt, 0.6)} strokeWidth="2" fill="none" /></g>}
         {!L.coat && !L.dress && <path d="M-8 -112 L0 -104 L8 -112" stroke={shade(L.shirt, 0.7)} strokeWidth="2" fill="none" />}
@@ -180,15 +181,18 @@ export function Person({ look = {}, anim = "idle", t = 0, mouth = 0, expr, phase
         {held === "rifle" && <g transform="translate(-4 -88) rotate(-12)"><rect x="-6" y="-4" width="60" height="6" rx="2" fill="#3a2d20" /><rect x="40" y="-6" width="26" height="4" fill="#222" /></g>}
         {held === "painting" && <g transform="translate(0 -92)"><rect x="-24" y="-18" width="48" height="58" rx="2" fill="#6b4a22" /><rect x="-19" y="-13" width="38" height="48" fill="#3f5a3f" /><ellipse cx="0" cy="4" rx="9" ry="12" fill="#c49a6c" /></g>}
         {arm(1, p.ra)}
+        {held === "phone" && <g transform="translate(0 -72)">
+          <circle cx="0" cy="-30" r="30" fill="#9fdcff" opacity=".07" /><circle cx="0" cy="-8" r="14" fill="#cfefff" opacity=".12" />
+          <rect x="-9" y="-14" width="18" height="30" rx="3" fill="#111" /><rect x="-7" y="-11" width="14" height="23" rx="2" fill="#cfefff" /></g>}
         <rect x="-8" y="-120" width="16" height="12" fill={shade(L.skin, 0.9)} />
         <g transform={`translate(0 ${headDy}) rotate(${headTilt} 0 -118) translate(0 -118) scale(${1 / B[0] * (L.build === "kid" ? 1.12 : 1)} ${1 / B[1] * (L.build === "kid" ? 1.12 : 1)}) translate(0 118)`}>
         <circle cx="0" cy="-140" r="26" fill={L.skin} />
         <path d={light < 0 ? "M3 -166 A26 26 0 0 1 3 -114 A21 26 0 0 0 3 -166 Z" : "M-3 -166 A26 26 0 0 0 -3 -114 A21 26 0 0 1 -3 -166 Z"}
           fill="#000" opacity=".13" />
-        <path d={light < 0 ? "M-24 -148 A26 26 0 0 1 -14 -162" : "M24 -148 A26 26 0 0 0 14 -162"} stroke="#ffd6a0" strokeWidth="2.4" fill="none" opacity=".55" strokeLinecap="round" />
+        <path d={light < 0 ? "M-24 -148 A26 26 0 0 1 -14 -162" : "M24 -148 A26 26 0 0 0 14 -162"} stroke={L.rim || "#ffd6a0"} strokeWidth="2.4" fill="none" opacity=".55" strokeLinecap="round" />
         <ellipse cx="-26" cy="-137" rx="4" ry="6" fill={shade(L.skin, 0.9)} />
         <ellipse cx="26" cy="-137" rx="4" ry="6" fill={shade(L.skin, 0.9)} />
-        <Hair style={L.hat && L.hairStyle !== "long" ? "none" : L.hairStyle} color={L.hair} />
+        <Hair style={L.hood ? "none" : L.hat && L.hairStyle !== "long" ? "none" : L.hairStyle} color={L.hair} />
         {L.mustache && <path d="M-12 -125 Q-6 -131 0 -127 Q6 -131 12 -125 Q6 -123 0 -125 Q-6 -123 -12 -125 Z" fill={L.beardColor || L.hair} />}
         {L.beard && <path d="M-22 -132 Q-22 -102 0 -100 Q22 -102 22 -132 Q12 -118 0 -118 Q-12 -118 -22 -132 Z" fill={L.beardColor} />}
         {L.mask === "cave" ? (
@@ -202,6 +206,11 @@ export function Person({ look = {}, anim = "idle", t = 0, mouth = 0, expr, phase
         ) : (
           <Face t={t} expr={e} mouth={mouth} blink={blink} look={anim === "point" ? { x: 2, y: -1 } : gaze ? { x: gaze * 1.8, y: 0 } : null} />
         )}
+        {held === "phone" && <ellipse cx="0" cy="-126" rx="24" ry="17" fill="#bfe8ff" opacity=".2" />}
+        {L.hood && <g>{/* v15: капюшон — лицо в тени, видны только глаза */}
+          <path d="M-24 -150 Q-20 -166 0 -166 Q20 -166 24 -150 L24 -144 Q0 -150 -24 -144 Z" fill="#000" opacity=".55" />
+          <path d="M-33 -112 Q-38 -182 0 -180 Q38 -182 33 -112 L25 -112 Q28 -160 0 -162 Q-28 -160 -25 -112 Z" fill={shade(L.shirt, 0.85)} />
+          <path d="M-33 -112 Q-38 -182 0 -180" stroke={L.rim || "#ffd6a0"} strokeWidth="2" fill="none" opacity=".7" /></g>}
         {L.glasses && <g fill="none" stroke="#2a2a2a" strokeWidth="2"><circle cx="-9" cy="-138" r="8" /><circle cx="9" cy="-138" r="8" /><line x1="-1" y1="-138" x2="1" y2="-138" /></g>}
         <Hat type={L.hat} color={L.hatColor} />
         <EmotionFX fx={autoFx} t={t + phase * 10} />

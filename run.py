@@ -85,7 +85,7 @@ def word_timings(text, first, last):
     total, span, t, out = sum(weights), max(1, last - first), float(first), []
     for w, k in zip(words, weights):
         d = span * k / total
-        out.append({"w": w.replace("*", "").strip("«»"), "key": "*" in w, "s": int(t), "e": int(t + d)})
+        out.append({"w": w.replace("*", "").replace("«", "").replace("»", ""), "key": "*" in w, "s": int(t), "e": int(t + d)})
         t += d
     return out
 
@@ -100,6 +100,7 @@ def build_props(s):
         shutil.rmtree(config.PUBLIC_DIR)
     os.makedirs(config.PUBLIC_DIR)
 
+    noir = s.get("style") == "noir"
     # холодный старт: сразу сцена с действием и крупным заголовком; старый формат — профессор во вступлении
     if s.get("hook"):
         plan = [{"kind": "hook", **s["hook"]}]
@@ -107,10 +108,15 @@ def build_props(s):
         plan = [{"kind": "intro", "text": s["intro"]["text"], "title": s["intro"].get("title"), "emotion": "enter"}]
     for sc in s["scenes"]:
         plan.append({"kind": "scene", **sc})
+    if s.get("choice"):  # v15: экран выбора «а что сделал бы ты?» перед развязкой
+        c = s["choice"]
+        plan.append({"kind": "choice", "text": c["text"], "options": c.get("options", []),
+                     "question": c.get("question"), "hint": c.get("hint"), "next": c.get("next")})
     if s.get("punch"):
         plan.append({"kind": "punch", "text": s["punch"]["text"], "big": s["punch"]["big"]})
-    plan.append({"kind": "outro", "emotion": "wave",
-                 "text": (s.get("outro") or {}).get("text", "Это был Доктор Боб. Подпишись, завтра история ещё безумнее!")})
+    if not noir or s.get("outro"):  # в нуар-стиле профессор не выходит, если outro не задан явно
+        plan.append({"kind": "outro", "emotion": "wave",
+                     "text": (s.get("outro") or {}).get("text", "Это был Доктор Боб. Подпишись, завтра история ещё безумнее!")})
     # словесная петля: последняя фраза обрывается и «продолжается» первой фразой ролика
     if s.get("loop") and s.get("hook"):
         plan.append({"kind": "loop", "text": s["loop"]})
@@ -119,16 +125,19 @@ def build_props(s):
     segments, start = [], 0
     for i, p in enumerate(plan):
         wav = f"seg{i}.wav"
-        tts.synthesize(clean(p["text"]), os.path.join(config.PUBLIC_DIR, wav))
+        # v15: хук звучит быстрее и напористее остальных фраз; у истории может быть свой голос и темп
+        mul = float(s.get("voice_speed", 1.08 if noir else 1.0)) * (1.1 if p["kind"] == "hook" else 1.0)
+        tts.synthesize(clean(p["text"]), os.path.join(config.PUBLIC_DIR, wav), speed_mul=mul, voice=s.get("voice"))
         frames, env, first, last = audio_info(os.path.join(config.PUBLIC_DIR, wav))
-        gap = 0.0 if p["kind"] == "loop" else 0.12 if p["kind"] in ("scene", "hook") else 0.35
+        gap = 0.0 if p["kind"] == "loop" else 0.12 if p["kind"] in ("scene", "hook") else 0.9 if p["kind"] == "choice" else 0.35
         dur = max(frames + int(gap * FPS), int(1.6 * FPS))
         seg = {"kind": p["kind"], "start": start, "dur": dur, "audio": wav, "env": env,
                "words": word_timings(p["text"].replace("|", " "), first, last)}
-        for k in ("title", "emotion", "tag", "alert", "cam", "big", "bg", "actors", "focus", "tint", "camY", "insert", "count", "map", "angle", "weather", "lights"):
+        for k in ("title", "emotion", "tag", "alert", "cam", "big", "bg", "actors", "focus", "tint", "camY", "insert", "count", "map", "angle", "weather", "lights",
+                  "ui", "hud", "uiAt", "options", "question", "hint", "next"):
             if p.get(k) is not None:  # focus=0 — тоже значение
                 seg[k] = p[k]
-        if p["kind"] in ("scene", "hook") and not (p.get("bg") or p.get("actors") or p.get("map")):
+        if p["kind"] in ("scene", "hook") and not (p.get("bg") or p.get("actors") or p.get("map") or p.get("ui")):
             img = f"img{i}.jpg"
             try:
                 images.generate(p["prompt"], os.path.join(config.PUBLIC_DIR, img), seed, p.get("stock", ""))
@@ -144,13 +153,17 @@ def build_props(s):
         start += dur
 
     props = {"segments": segments, "totalFrames": start}
+    if noir:
+        props["style"] = "noir"
+        props["hudLabels"] = s.get("hud_labels")
+        props["part"] = s.get("part")
     # музыка: свои треки из папки music/, иначе генерируем загадочный эмбиент (подмешивается после рендера)
     tracks = glob.glob(os.path.join(config.MUSIC_DIR, "*.mp3"))
     try:
         if tracks:
             shutil.copy(random.choice(tracks), "work_music.audio")
         else:
-            music.generate("work_music.audio.wav", start / FPS + 1, seed, s.get("mood", "mystery"))
+            music.generate("work_music.audio.wav", start / FPS + 1, seed, s.get("mood", "tense" if noir else "mystery"))
             # атмосфера мест подмешивается к музыке, чтобы вместе приглушаться под голос
             music.ambience_track("work_amb.wav", segments, FPS, start / FPS)
             subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", "work_music.audio.wav", "-i", "work_amb.wav",
@@ -162,6 +175,12 @@ def build_props(s):
     # звуковые эффекты: удар + свуш на первом кадре, свуш на смене сцен, удар на финальной фразе
     try:
         ev = [(0.0, "boom", 0.8), (0.0, "whoosh", 0.6)]
+        if noir and segments:  # уведомление в хуке
+            h = segments[0]
+            hu = h.get("ui") or []
+            for u in (hu if isinstance(hu, list) else [hu]):
+                if u.get("type") == "notify":
+                    ev.append((int(h["dur"] * u.get("at", 0.12)) / FPS, "ping", 0.9))
         for sg in segments[1:]:
             t0 = sg["start"] / FPS
             if sg["kind"] == "scene":
@@ -184,6 +203,42 @@ def build_props(s):
                     ev += [(t0 + k / FPS, "thunder", 0.8) for k in range(0, sg["dur"], every)]
                 if a.get("anim") == "fly" and a.get("kind") in ("crow", "crows"):
                     ev.append((t0 + 0.1, "wings", 0.6))
+            if noir:  # v15: звуки интерфейсов и монтажа
+                if sg["kind"] in ("scene", "choice") and t0 > 0:
+                    ev.append((t0, "glitch", 0.45))
+                uis = sg.get("ui") or []
+                uis = uis if isinstance(uis, list) else [uis]
+                has_stage = bool(sg.get("actors") or sg.get("bg"))
+                over = [u for u in uis if has_stage and u.get("type") == "notify"]
+                full = [u for u in uis if u not in over]
+                ui0 = 0 if not has_stage else (int(sg["dur"] * sg.get("uiAt", 0.45)) if full else sg["dur"])
+                for u in over:
+                    ev.append((t0 + int(sg["dur"] * u.get("at", 0.12 if sg["kind"] == "hook" else 0.25)) / FPS, "ping", 0.8))
+                share = (sg["dur"] - ui0) / max(1, len(full))
+                for j, u in enumerate(full):
+                    tu = t0 + (ui0 + j * share) / FPS
+                    if ui0 + j * share > 0:
+                        ev.append((tu, "whoosh", 0.3))
+                    kind = u.get("type")
+                    if kind == "notify":
+                        ev.append((tu, "ping", 0.8))
+                    elif kind in ("card", "doc", "chain") and (kind != "doc" or u.get("stamp")):
+                        ev.append((tu + (40 if kind == "chain" else 15) / FPS, "stamp", 0.9))
+                    elif kind in ("wallet", "alert"):
+                        ev += [(tu + (8 + i * 2.5) / FPS, "tick", 0.18) for i in range(14)]
+                        ev.append((tu + 48 / FPS, "boom", 0.45))
+                    elif kind == "chat":
+                        n = len(u.get("msgs", []))
+                        step = max(10, int(share * 0.75 / max(1, n)))
+                        ev += [(tu + (6 + i * step) / FPS, "ping", 0.35) for i in range(n)]
+                    elif kind == "call":
+                        ev += [(tu + k * 0.8, "ping", 0.5) for k in range(int(share / FPS / 0.8) + 1)]
+                    elif kind == "timer":
+                        ev += [(tu + k, "clock", 0.5) for k in range(int(share / FPS) + 1)]
+                if sg["kind"] == "choice":
+                    n = len(sg.get("options", []))
+                    step = max(8, int(sg["dur"] * 0.55 / max(1, n)))
+                    ev += [(t0 + (6 + i * step) / FPS, "tick", 0.6) for i in range(n)]
             if sg.get("count"):   # тиканье счётчика и удар в конце
                 c0 = t0 + sg["dur"] * sg["count"].get("at", 0.12) / FPS
                 ev += [(c0 + i * 0.07, "tick", 0.25) for i in range(16)]
