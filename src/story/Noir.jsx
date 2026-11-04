@@ -145,7 +145,8 @@ function Chat({ ui, f, font, dur }) {
       <div style={{ fontFamily: font, color: N.text }}>
         <div style={{ display: "flex", alignItems: "center", gap: 20, paddingBottom: 22, borderBottom: `2px solid ${N.line}`, marginBottom: 28 }}>
           <div style={{ width: 74, height: 74, borderRadius: "50%", background: N.panel2, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40, fontWeight: 900, color: N.dim }}>{(ui.name || "?")[0]}</div>
-          <div><div style={{ fontSize: 34, fontWeight: 800 }}>{ui.name || "Неизвестный"}</div><div style={{ fontSize: 24, color: N.green }}>{ui.status || "в сети"}</div></div>
+          <div><div style={{ fontSize: 34, fontWeight: 800 }}>{ui.name || "Неизвестный"}</div><div style={{ fontSize: 24, color: N.green }}>{ui.status || "в сети"}</div>
+            {ui.clue ? <div style={{ fontSize: 19, color: N.dim, marginTop: 4, fontFamily: "DejaVu Sans Mono, monospace" }}>{ui.clue}</div> : null}</div>
         </div>
         {msgs.map((m, i) => {
           const at = 6 + i * step;
@@ -192,6 +193,7 @@ function Doc({ ui, f, font }) {
     <div style={{ position: "absolute", left: 110, right: 110, top: 470, fontFamily: font, transform: `translateY(${(1 - clamp(p)) * 200}px) rotate(${1.5 - 1.5 * clamp(p)}deg)`, opacity: clamp(p * 2) }}>
       <div style={{ background: "#f3efe6", borderRadius: 14, padding: "50px 54px 70px", boxShadow: "0 30px 80px rgba(0,0,0,.6)", color: "#1a1620", position: "relative" }}>
         <div style={{ fontSize: 24, letterSpacing: 4, color: "#7a7268", fontWeight: 800, textAlign: "center" }}>{ui.head || "ДОКУМЕНТ"}</div>
+        {ui.clue ? <div style={{ fontSize: 22, color: "#8a8278", textAlign: "center", marginTop: 8, fontFamily: "DejaVu Sans Mono, monospace" }}>{ui.clue}</div> : null}
         {ui.photo ? <div style={{ width: 170, height: 210, background: "#cfc8bc", borderRadius: 8, margin: "34px 0 0", float: "left", marginRight: 34 }} /> : null}
         <div style={{ fontSize: 56, fontWeight: 900, marginTop: 34, textAlign: ui.photo ? "left" : "center" }}>{ui.title}</div>
         <div style={{ fontSize: 32, lineHeight: 1.35, marginTop: 24, color: "#3a3440", textAlign: ui.photo ? "left" : "center" }}>{ui.text}</div>
@@ -225,6 +227,7 @@ function Table({ ui, f, font, dur }) {
           );
         })}
       </div>
+      {ui.clue ? <div style={{ fontSize: 20, color: N.dim, marginTop: 12, textAlign: "right", fontFamily: "DejaVu Sans Mono, monospace" }}>{ui.clue}</div> : null}
     </div>
   );
 }
@@ -324,7 +327,47 @@ function Form({ ui, f, font, dur }) {
   );
 }
 
-const UI = { notify: Notify, wallet: Wallet, chat: Chat, card: Card, doc: Doc, table: Table, timer: Timer, alert: Alert, chain: Chain, call: Call, form: Form };
+// v15: разбор подсказки из части 1 — лупа наезжает на спрятанную деталь
+function Reveal({ ui, f, font }) {
+  const p = pop(f, 0, 8);
+  const z = easeInOut(prog(f, 8, 16));
+  const ring = 1 + 0.06 * Math.sin(f / 4);
+  return (
+    <div style={{ position: "absolute", inset: 0, fontFamily: font }}>
+      <div style={{ position: "absolute", top: 400, left: 0, right: 0, textAlign: "center", fontSize: 30, letterSpacing: 5, color: N.acc, fontWeight: 900, opacity: clamp(p * 2) }}>{ui.label || "ПОДСКАЗКА ИЗ ЧАСТИ 1"}</div>
+      <div style={{ position: "absolute", left: 90, right: 90, top: 520, height: 300, borderRadius: 18, background: ui.paper ? "#f3efe6" : N.panel, border: `2px solid ${N.line}`,
+        overflow: "hidden", transform: `scale(${clamp(p, 0, 1.1)})` }}>
+        {[0, 1, 2, 3].map((i) => <div key={i} style={{ position: "absolute", left: 40, top: 40 + i * 64, height: 16, width: `${80 - i * 12}%`, borderRadius: 8, background: ui.paper ? "#ddd6ca" : "#1f2d3a" }} />)}
+        <div style={{ position: "absolute", left: 0, right: 0, top: 120, textAlign: "center", transform: `scale(${1 + 0.45 * z})`,
+          fontFamily: "DejaVu Sans Mono, monospace", fontSize: 30, fontWeight: 800, color: ui.paper ? "#1a1620" : N.text, whiteSpace: "nowrap" }}>{ui.clue}</div>
+      </div>
+      <div style={{ position: "absolute", left: "50%", top: 668, width: 820 * ring, height: 150 * ring, marginLeft: -410 * ring, marginTop: -75 * ring, borderRadius: 80,
+        border: `8px solid ${N.acc}`, boxShadow: glow(N.acc, 18), opacity: z }} />
+      {ui.note ? <div style={{ position: "absolute", top: 880, left: 80, right: 80, textAlign: "center", fontSize: 44, fontWeight: 900, color: N.text, lineHeight: 1.15,
+        opacity: clamp(prog(f, 22, 8)) }}>{ui.note}</div> : null}
+    </div>
+  );
+}
+
+// v15: «реальное дело» — газетная заметка со штампом
+function Case({ ui, f, font }) {
+  const p = pop(f, 0, 9);
+  const st = backOut(prog(f, 16, 7));
+  return (
+    <div style={{ position: "absolute", left: 90, right: 90, top: 470, fontFamily: font, transform: `translateY(${(1 - clamp(p)) * 200}px) rotate(${-1 + clamp(p)}deg)`, opacity: clamp(p * 2) }}>
+      <div style={{ background: "#ece6d8", borderRadius: 8, padding: "44px 50px 60px", boxShadow: "0 30px 80px rgba(0,0,0,.6)", color: "#1a1620", position: "relative" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 24, fontWeight: 800, letterSpacing: 3, color: "#6a6258", borderBottom: "3px solid #1a1620", paddingBottom: 14 }}>
+          <span>{ui.source || "НОВОСТИ"}</span><span>{ui.place}</span></div>
+        <div style={{ fontSize: 52, fontWeight: 900, lineHeight: 1.08, marginTop: 30, fontFamily: "Georgia, DejaVu Serif, serif" }}>{ui.headline}</div>
+        {[0, 1, 2].map((i) => <div key={i} style={{ height: 12, background: "#d4ccbb", borderRadius: 6, marginTop: 20, width: `${95 - i * 15}%` }} />)}
+        {f >= 16 ? <div style={{ position: "absolute", right: 30, bottom: -40, transform: `rotate(-9deg) scale(${clamp(st, 0, 1.5)})`, background: N.acc, color: N.bg,
+          fontSize: 48, fontWeight: 900, padding: "12px 30px", borderRadius: 12, border: `5px solid ${N.bg}`, boxShadow: glow(N.acc, 16), whiteSpace: "nowrap" }}>{ui.stamp || "РЕАЛЬНОЕ ДЕЛО"}</div> : null}
+      </div>
+    </div>
+  );
+}
+
+const UI = { reveal: Reveal, case: Case, notify: Notify, wallet: Wallet, chat: Chat, card: Card, doc: Doc, table: Table, timer: Timer, alert: Alert, chain: Chain, call: Call, form: Form };
 export function UiCard({ ui, f, font, dur }) {
   const C = UI[ui.type];
   if (!C) return null;
@@ -407,6 +450,8 @@ export function ChoiceScreen({ seg, f, font }) {
       })}
       <div style={{ position: "absolute", top: 560 + opts.length * 165, left: 0, right: 0, textAlign: "center", fontFamily: font, fontSize: 36, fontWeight: 800,
         letterSpacing: 2, color: N.yellow, opacity: clamp(prog(f, end, 8)) }}>{seg.hint || (seg.next ? "ЧТО БУДЕТ ДАЛЬШЕ — В СЛЕДУЮЩЕМ РОЛИКЕ" : "ПИШИ БУКВУ В КОММЕНТАРИЯХ")}</div>
+      {seg.clue ? <div style={{ position: "absolute", top: 680 + opts.length * 165, left: 40, right: 40, textAlign: "center", fontFamily: font, fontSize: 34, fontWeight: 900, whiteSpace: "nowrap",
+        color: N.bg, opacity: clamp(prog(f, end + 6, 8)) }}><span style={{ background: N.acc, padding: "8px 22px", borderRadius: 10, boxShadow: glow(N.acc, 12) }}>ПОДСКАЗКА СПРЯТАНА В КАДРЕ. НАШЁЛ?</span></div> : null}
     </div>
   );
 }
