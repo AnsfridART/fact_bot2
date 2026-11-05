@@ -98,3 +98,78 @@ export function Rabbit({ t = 0, anim = "hop", phase = 0, color = "#a8988a" }) {
     </g>
   );
 }
+
+// v19: снежный барс анфас (сидит). anim: sit, paw (тянет лапку), lie (лежит, глаза закрыты), eyes (только глаза в темноте)
+// wrong — «не настоящий»: не моргает, без бликов в глазах; shadow — на полу тень с длинными человеческими руками
+export function Leopard({ t = 0, anim = "sit", phase = 0, wrong = false, shadow = false }) {
+  const fur = "#e6e2d8", shade = "#c7c1b2", belly = "#f5f3ee", spot = "#33322f";
+  const blink = !wrong && (t + phase * 20) % 110 < 4;
+  const breathe = Math.sin(t / 18 + phase) * 1.2;
+  const tail = Math.sin(t / 30 + phase) * 6;
+  const eyes = (cy, closed) => [-12, 12].map((x, i) => (
+    <g key={i}>
+      {closed || blink ? <path d={`M${x - 9} ${cy} Q${x} ${cy + 5} ${x + 9} ${cy}`} stroke={spot} strokeWidth="2.4" fill="none" strokeLinecap="round" /> : <>
+        <ellipse cx={x} cy={cy} rx="10" ry="11" fill="#d9d4c4" />
+        <ellipse cx={x} cy={cy} rx="8.6" ry="9.6" fill="#171614" />
+        {wrong ? <circle cx={x} cy={cy} r="1.6" fill="#ff2a2a" opacity={0.5 + 0.4 * Math.sin(t / 5)} />
+          : <><circle cx={x + 3} cy={cy - 4} r="2.8" fill="#fff" /><circle cx={x - 3} cy={cy + 3} r="1.2" fill="#fff" opacity=".7" /></>}
+      </>}
+    </g>));
+  const head = (y, closed) => (
+    <g transform={`translate(0 ${y}) rotate(${Math.sin(t / 40 + phase) * 3})`}>
+      <path d="M-28 -18 Q-34 -40 -20 -40 Q-12 -38 -12 -28 Z" fill={fur} /><path d="M28 -18 Q34 -40 20 -40 Q12 -38 12 -28 Z" fill={fur} />
+      <path d="M-24 -24 Q-27 -35 -19 -35 Z" fill={spot} opacity=".7" /><path d="M24 -24 Q27 -35 19 -35 Z" fill={spot} opacity=".7" />
+      <ellipse cx="0" cy="0" rx="32" ry="28" fill={fur} />
+      {[[-8, -20], [0, -23], [8, -20], [-16, -14], [16, -14], [-4, -16], [4, -16], [-26, 2], [26, 2], [-24, 10], [24, 10]].map(([x, yy], i) => <circle key={i} cx={x} cy={yy} r={i < 7 ? 1.6 : 2.4} fill={spot} opacity=".75" />)}
+      {eyes(-3, closed)}
+      <ellipse cx="-6" cy="13" rx="8" ry="6" fill={belly} /><ellipse cx="6" cy="13" rx="8" ry="6" fill={belly} />
+      <path d="M-4 8 L4 8 L0 13 Z" fill="#3a2a2a" /><path d="M0 13 L0 16 M0 16 Q-4 19 -7 17 M0 16 Q4 19 7 17" stroke="#3a2a2a" strokeWidth="1.2" fill="none" />
+      {[-1, 1].map((d) => <path key={d} d={`M${d * 12} 12 L${d * 34} 9 M${d * 12} 15 L${d * 33} 16`} stroke="#fff" strokeWidth=".7" opacity=".8" />)}
+    </g>);
+  // тень на полу: из-под барса уходит назад человеческий силуэт с руками до колен
+  const sh = shadow ? (
+    <g transform="matrix(1 0 0.5 0.62 0 0)" fill="#000" opacity={0.78 + 0.1 * Math.sin(t / 9)}>
+      <ellipse cx="0" cy="-232" rx="15" ry="18" />
+      <path d="M-20 -212 Q0 -220 20 -212 L24 -120 L14 -10 L4 -10 L0 -110 L-4 -10 L-14 -10 L-24 -120 Z" />
+      <path d="M-20 -206 Q-34 -150 -38 -40 L-44 -20 L-30 -30 L-28 -60 Q-26 -150 -14 -196 Z" />
+      <path d="M20 -206 Q34 -150 38 -40 L44 -20 L30 -30 L28 -60 Q26 -150 14 -196 Z" />
+    </g>) : null;
+  if (anim === "eyes") return (
+    <g opacity={0.85 + 0.15 * Math.sin(t / 7)}>
+      {[-12, 12].map((x, i) => <g key={i}><ellipse cx={x} cy="-86" rx="9" ry="10" fill="#d8ff9a" opacity=".18" /><ellipse cx={x} cy="-86" rx="5" ry="6" fill="#e9ffc0" /><ellipse cx={x} cy="-86" rx="1.6" ry="5" fill="#1a1a10" /></g>)}
+    </g>);
+  if (anim === "lie") return (
+    <g>
+      {sh}
+      <ellipse cx="0" cy="3" rx="54" ry="7" fill="#000" opacity=".28" />
+      <path d={`M30 -8 Q70 -10 66 ${-26 + tail}`} stroke={fur} strokeWidth="13" fill="none" strokeLinecap="round" />
+      <ellipse cx="0" cy={-20 + breathe * 0.5} rx="46" ry="21" fill={shade} />
+      <ellipse cx="0" cy={-14 + breathe * 0.5} rx="38" ry="14" fill={fur} />
+      {[[-30, -26], [-16, -32], [14, -32], [30, -26], [-24, -16], [24, -16]].map(([x, y], i) => <circle key={i} cx={x} cy={y} r="4" fill="none" stroke={spot} strokeWidth="2" opacity=".7" />)}
+      {[-14, 14].map((x, i) => <ellipse key={i} cx={x} cy="-3" rx="11" ry="6" fill={fur} />)}
+      {head(-36, true)}
+    </g>);
+  const lift = anim === "paw" ? 0.6 + 0.4 * Math.sin(t / 10 + phase) : 0;
+  return (
+    <g>
+      {sh}
+      <ellipse cx="0" cy="3" rx="40" ry="7" fill="#000" opacity=".28" />
+      {/* хвост обвивает лапы */}
+      <path d={`M24 -10 Q52 -4 44 8 Q20 18 -26 ${10 + tail * 0.2}`} stroke={fur} strokeWidth="14" fill="none" strokeLinecap="round" />
+      {[-12, 6, 26].map((x, i) => <circle key={i} cx={x} cy={i === 2 ? 10 : 14} r="3.2" fill={spot} opacity=".75" />)}
+      <ellipse cx="0" cy={-40 - breathe} rx="31" ry={42 + breathe} fill={shade} />
+      <ellipse cx="0" cy={-34 - breathe} rx="19" ry={34 + breathe} fill={belly} />
+      {[[-24, -62], [24, -62], [-27, -40], [27, -40], [-22, -18], [22, -18], [-14, -74], [14, -74]].map(([x, y], i) => <path key={i} d={`M${x - 3.5} ${y + 1} a3.5 3.5 0 1 1 6 2.4`} fill="none" stroke={spot} strokeWidth="1.8" strokeLinecap="round" opacity=".65" />)}
+      {/* передние лапы */}
+      <rect x="-20" y="-40" width="14" height="40" rx="7" fill={fur} />
+      <ellipse cx="-13" cy="-2" rx="10" ry="6" fill={fur} />
+      {anim === "paw" ? (
+        <g transform={`translate(15 ${-30 - lift * 22}) scale(${1 + lift * 0.25})`}>
+          <rect x="-7" y="0" width="14" height={30 + lift * 18} rx="7" fill={fur} />
+          <ellipse cx="0" cy="-4" rx="14" ry="15" fill={fur} />
+          <ellipse cx="0" cy="0" rx="7" ry="6" fill="#1c1b19" />
+          {[[-8, -9], [-3, -13], [3, -13], [8, -9]].map(([x, y], i) => <ellipse key={i} cx={x} cy={y} rx="3" ry="3.4" fill="#1c1b19" />)}
+        </g>) : <><rect x="6" y="-40" width="14" height="40" rx="7" fill={fur} /><ellipse cx="13" cy="-2" rx="10" ry="6" fill={fur} /></>}
+      {head(-88 - breathe, false)}
+    </g>);
+}
