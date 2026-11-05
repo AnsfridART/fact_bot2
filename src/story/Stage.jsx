@@ -2,7 +2,7 @@
 import React from "react";
 import { clamp, lerp, prog, easeOut, easeInOut, backOut as backOutLocal } from "./util.js";
 import { Person } from "./Person.jsx";
-import { Emu, Crow, Cat, Rabbit } from "./Animals.jsx";
+import { Emu, Crow, Cat, Rabbit, Leopard } from "./Animals.jsx";
 import { Truck, MachineGun, Fence, House, Desk, AmmoBox, Casings, Paper, Trunk, Door, Frame, LawnChair, Briefcase, Tank, Wave, Shelves, Smoke, Stage as Podium, Letter, Lightning, Stones, Wheelbarrow, Palace, Desks, Fence2, Rocket, Computer, Aquarium, Coffin, Parachute, Bars } from "./Props.jsx";
 import { Background } from "./Backgrounds.jsx";
 import { NoirBackground, NOIR_BGS } from "./NoirBG.jsx";
@@ -186,7 +186,7 @@ function actorPos(a, t) {
 function Actor({ a, f, t, mouth, idx, light, gaze, zeroG, closeUp, tagC = "#3dffa8", tagT = "#06090d" }) {
   const p0 = actorPos(a, t);
   const x = p0.x + (zeroG ? Math.sin(f / 37 + idx) * 3 : 0), y = p0.y + (zeroG ? Math.sin(f / 23 + idx) * 5 : 0);
-  const living = ["person", "emu", "crow", "cat", "rabbit"].includes(a.kind);
+  const living = ["person", "emu", "crow", "cat", "rabbit", "leopard"].includes(a.kind);
   const pop = living ? 0.9 + 0.1 * backOutLocal(prog(f, idx * 2, 9)) : 1;
   const s = (a.s ?? 1) * pop;
   const flip = a.flip ? -1 : 1;
@@ -205,6 +205,7 @@ function Actor({ a, f, t, mouth, idx, light, gaze, zeroG, closeUp, tagC = "#3dff
   else if (a.kind === "emu") body = <Emu {...common} anim={a.anim} angry={a.angry} />;
   else if (a.kind === "crow") body = <Crow {...common} anim={a.anim} color={a.color} />;
   else if (a.kind === "cat") body = <Cat {...common} anim={a.anim} color={a.color} />;
+  else if (a.kind === "leopard") body = <Leopard {...common} anim={a.anim} wrong={a.wrong} shadow={a.shadow} />;
   else if (a.kind === "rabbit") body = <Rabbit {...common} anim={a.anim} color={a.color} />;
   else if (a.kind === "flock" || a.kind === "crows" || a.kind === "rabbits") {
     const n = a.count || 12, spread = a.spread || 220;
@@ -245,11 +246,11 @@ function cameraFor(seg, f, actors) {
   if (seg.kind !== "hook") z += 0.06 * (1 - easeOut(prog(f, 0, 6)));  // резкий наезд на первом кадре сцены
   // v14: хук открывается сверхкрупным планом лица и резко отъезжает на общий план к ~0.6 с
   if (seg.kind === "hook" && seg.open !== "wide") {
-    const hi = seg.hookFocus ?? actors.findIndex((a) => a.kind === "person" || a.kind === "emu" || a.kind === "cat" || a.kind === "crow" || a.kind === "rabbit");
+    const hi = seg.hookFocus ?? actors.findIndex((a) => a.kind === "person" || a.kind === "emu" || a.kind === "cat" || a.kind === "crow" || a.kind === "rabbit" || a.kind === "leopard");
     const a = actors[hi];
     if (a) {
       const p = actorPos(a, 0), s = a.s ?? 1;
-      const head = a.kind === "person" ? 140 : a.kind === "emu" ? 110 : 40;
+      const head = a.kind === "person" ? 140 : a.kind === "leopard" ? (a.anim === "lie" ? 40 : 88) : a.kind === "emu" ? 110 : 40;
       if (seg.style === "noir") {
         // v17: в нуаре лицо держим ~1.3 с (пока висит лента), потом только до среднего плана — не на общий
         const k = easeInOut(prog(f, 40, 12));
@@ -263,11 +264,12 @@ function cameraFor(seg, f, actors) {
   // v15 «нуар»: внутри сцены смена плана каждые ~1.4 с — общий → лицо → средний
   if (seg.style === "noir" && d > 50) {
     const SH = NOIR_SHOT, k = Math.floor(f / SH), fk = f - k * SH;
-    const ai = actors.findIndex((a) => a.kind === "person");
+    const ai = seg.shotOn ?? actors.findIndex((a) => a.kind === "person" || a.kind === "leopard");
     const a = actors[ai];
     if (a && k > 0) {
       const p = actorPos(a, t), s = a.s ?? 1;
-      if (k % 3 === 1) { cx = p.x; cy = p.y - 140 * s + 8; z = 2.25 + 0.12 * (fk / SH); }
+      const hd = a.kind === "leopard" ? (a.anim === "lie" ? 40 : 88) : 140;
+      if (k % 3 === 1) { cx = p.x; cy = p.y - hd * s + 8; z = 2.25 + 0.12 * (fk / SH); }
       else if (k % 3 === 2) { cx = lerp(135, p.x, 0.6); cy = p.y - 100 * s; z = 1.65 + 0.1 * (fk / SH); }
       z += 0.1 * (1 - easeOut(prog(fk, 0, 5)));
     }
