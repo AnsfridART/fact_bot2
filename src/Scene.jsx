@@ -4,7 +4,7 @@ import React from "react";
 import { Stage } from "./story/Stage.jsx";
 import { Insert } from "./story/Inserts.jsx";
 import { MapScene } from "./story/Map.jsx";
-import { NoirHUD, UiCard, UiBackdrop, NoirFX, NoirCaptions, ChoiceScreen, N } from "./story/Noir.jsx";
+import { NoirHUD, UiCard, UiBackdrop, NoirFX, NoirCaptions, ChoiceScreen, N, applyTheme, Tape } from "./story/Noir.jsx";
 import { Stage as StageView, NOIR_SHOT } from "./story/Stage.jsx";
 
 const S = 4; // сцена рисуется в координатах 270x480, а выводится в 1080x1920
@@ -422,7 +422,8 @@ function hudState(segs, i) {
   return st;
 }
 
-function NoirScene({ seg, f, font, idx }) {
+function NoirScene({ seg, f, font, idx, th, chance = 100 }) {
+  th = th || applyTheme(null);
   const uis = seg.ui ? (Array.isArray(seg.ui) ? seg.ui : [seg.ui]) : [];
   const hasStage = !!(seg.actors || seg.bg);
   const over = hasStage ? uis.filter((u) => u.type === "notify") : [];
@@ -437,7 +438,10 @@ function NoirScene({ seg, f, font, idx }) {
     flash = Math.max(hook ? 0 : 1 - easeOut(prog(f, 0, 5)), cutF < 4 ? 1 - cutF / 4 : 0);
     body = (
       <div style={{ position: "absolute", inset: 0 }}>
-        <StageView seg={{ ...seg, style: "noir" }} f={f} mouth={mouth} font={font} transition="none" />
+        <div style={{ position: "absolute", inset: 0, filter: th.grade.filter }}>
+          <StageView seg={{ ...seg, style: "noir", pal: { ...th.bg, tag: th.ui.acc, tagText: th.ui.light ? "#ffffff" : "#06090d" }, weather: seg.weather === undefined ? th.weather : seg.weather,
+            actors: seg.actors && seg.actors.map((a) => (a.look ? { ...a, look: { ...a.look, rim: th.rim } } : a)) }} f={f} mouth={mouth} font={font} transition="none" />
+        </div>
         {over.map((u, i) => {
           // v15.1: в хуке уведомление с деньгами видно уже на кадре 0 — это главный «крючок» ленты
           const at = hook ? 0 : Math.floor(seg.dur * (u.at ?? 0.25));
@@ -464,25 +468,28 @@ function NoirScene({ seg, f, font, idx }) {
   return (
     <div style={{ position: "absolute", inset: 0, overflow: "hidden", background: N.bg, transform: `translateX(${jitter}px)` }}>
       {body}
-      <NoirFX f={f} flash={flash} />
+      <NoirFX f={f} flash={flash} chance={chance} />
+      {hook ? <Tape text={seg.tape} f={f} font={font} /> : null}
       {seg.tag ? <Tags seg={{ tag: seg.tag, alert: seg.alert }} f={f} font={font} top={300} /> : seg.alert ? <Tags seg={{ alert: seg.alert }} f={f} font={font} top={300} /> : null}
     </div>
   );
 }
 
 function NoirFrame({ segs, seg, f, frame, data, font, src, ImgComp }) {
+  const th = applyTheme(data.theme);
   const i = segs.indexOf(seg);
+  const chance = (hudState(segs, i) || {}).chance ?? 100;
   let body;
   if (seg.kind === "loop" && segs[0]) {
-    body = <NoirScene seg={{ ...segs[0], start: seg.start, dur: seg.dur }} f={Math.min(f, 6)} font={font} idx={0} />;
+    body = <NoirScene seg={{ ...segs[0], start: seg.start, dur: seg.dur }} f={Math.min(f, 6)} font={font} idx={0} th={th} chance={chance} />;
   } else if (seg.kind === "choice") {
-    body = <><ChoiceScreen seg={seg} f={f} font={font} /><NoirFX f={f} flash={0.5 * (1 - easeOut(prog(f, 0, 5)))} /></>;
+    body = <><ChoiceScreen seg={seg} f={f} font={font} /><NoirFX f={f} chance={chance} flash={0.5 * (1 - easeOut(prog(f, 0, 5)))} /></>;
   } else if (seg.kind === "punch") {
-    body = <><Punch seg={seg} f={f} font={font} /><NoirFX f={f} /></>;
+    body = <><Punch seg={seg} f={f} font={font} /><NoirFX f={f} chance={chance} /></>;
   } else if (seg.kind === "intro" || seg.kind === "outro") {
     body = <HostScene seg={seg} f={f} frame={frame} font={font} />;
   } else {
-    body = <NoirScene seg={seg} f={f} font={font} idx={i} />;
+    body = <NoirScene seg={seg} f={f} font={font} idx={i} th={th} chance={chance} />;
   }
   const cur = hudState(segs, i);
   const prev = seg.hud ? hudState(segs, i - 1) : cur;
@@ -530,10 +537,11 @@ export function Scene({ frame, data, src, ImgComp, font = "Montserrat, DejaVu Sa
 
 // Обложка ролика: кадр из начала истории, плашка «ИСТОРИЯ #N», крупный заголовок.
 function NoirCover({ data, seg, font }) {
+  const th = applyTheme(data.theme);
   const lines = (seg.title || "").split("|").filter(Boolean);
   return (
     <div style={{ position: "absolute", inset: 0, width: 1080, height: 1920, overflow: "hidden", background: N.bg }}>
-      <NoirScene seg={{ ...seg, ui: undefined, kind: "scene", dur: 200 }} f={30} font={font} idx={0} />
+      <NoirScene seg={{ ...seg, ui: undefined, kind: "scene", dur: 200 }} f={30} font={font} idx={0} th={th} />
       <div style={{ position: "absolute", inset: 0, background: "linear-gradient(rgba(6,9,13,.35), rgba(6,9,13,.85) 36%, rgba(6,9,13,0) 64%)" }} />
       <div style={{ position: "absolute", top: 320, left: 0, right: 0, textAlign: "center", fontFamily: font }}>
         <span style={{ background: N.acc, color: N.bg, fontWeight: 900, fontSize: 44, padding: "10px 28px", borderRadius: 12, letterSpacing: 2 }}>
