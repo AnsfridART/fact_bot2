@@ -359,7 +359,62 @@ function Backrooms({ P, t, exit = false }) {
   </g>);
 }
 
-const MAP = { backrooms: Backrooms, backrooms_exit: (p) => <Backrooms {...p} exit />, hallway: Hallway, hallway_feet: (p) => <Hallway {...p} feet />, stairwell: Stairwell, car_snow: CarSnow, car_snow_lights: (p) => <CarSnow {...p} lights />, room: Room, noir_room: Room, hacker_room: Room, street: Street, noir_city: Street, interrogation: Interrogation, n_office: Office, office: Office, police_street: PoliceStreet };
+// ---------- v19: «измерение сна» — северное сияние, парящие острова, светящиеся цветы ----------
+function Dream({ t }) {
+  const stars = [...Array(70)].map((_, i) => <circle key={i} cx={-200 + R(i) * 670} cy={-200 + R(i * 3) * 420} r={0.6 + R(i * 7) * 1.6} fill="#fff" opacity={0.4 + 0.6 * Math.abs(Math.sin(t / 15 + i))} />);
+  const aur = (k, c, y0) => {
+    let d = `M-200 ${y0}`;
+    for (let x = -200; x <= 470; x += 30) d += ` L${x} ${y0 + Math.sin(x / 70 + t / 25 + k) * 26 + Math.sin(x / 33 - t / 17) * 8}`;
+    return <path key={"au" + k} d={d} stroke={c} strokeWidth={34 - k * 6} fill="none" opacity={0.28 + 0.1 * Math.sin(t / 20 + k)} strokeLinecap="round" filter="url(#dblur)" />;
+  };
+  const island = (x, y, s, i) => {
+    const bob = Math.sin(t / 30 + i) * 5;
+    return <g key={"is" + i} transform={`translate(${x} ${y + bob}) scale(${s})`}>
+      <path d="M-46 0 Q-30 46 0 70 Q24 44 46 0 Z" fill="#4a2e5e" /><path d="M-46 0 Q-20 30 0 44 Q20 28 46 0 Z" fill="#6a3e7a" />
+      <ellipse cx="0" cy="0" rx="48" ry="9" fill="#3dffb0" /><ellipse cx="0" cy="-2" rx="44" ry="6" fill="#8affd0" />
+      <g transform="translate(-14 -2)"><rect x="-2" y="-26" width="4" height="26" fill="#3a2440" /><circle cy="-30" r="12" fill="#ff7ad9" /><circle cx="6" cy="-24" r="8" fill="#ffb0ec" /></g>
+      <g transform="translate(18 -2)"><rect x="-1.5" y="-16" width="3" height="16" fill="#3a2440" /><circle cy="-19" r="8" fill="#7ad7ff" /></g>
+      {[0, 1, 2].map((k) => <path key={k} d={`M${-20 + k * 18} 60 q4 14 0 30`} stroke="#8affd0" strokeWidth="1.5" fill="none" opacity=".5" />)}
+    </g>;
+  };
+  return (<g>
+    <defs>
+      <linearGradient id="dsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#0b0630" /><stop offset=".45" stopColor="#4b1a7a" /><stop offset=".75" stopColor="#d6407a" /><stop offset="1" stopColor="#ffb36b" /></linearGradient>
+      <filter id="dblur"><feGaussianBlur stdDeviation="6" /></filter>
+      <radialGradient id="dmoon"><stop offset="0" stopColor="#fff6e0" /><stop offset=".6" stopColor="#ffe0f4" stopOpacity=".5" /><stop offset="1" stopColor="#ffe0f4" stopOpacity="0" /></radialGradient>
+    </defs>
+    <rect x="-200" y="-200" width="670" height="880" fill="url(#dsky)" />
+    {stars}
+    {aur(0, "#3dffb0", 40)}{aur(1, "#7ad7ff", 80)}{aur(2, "#ff7ad9", 120)}
+    <circle cx="210" cy="60" r="70" fill="url(#dmoon)" /><circle cx="210" cy="60" r="26" fill="#fff8ec" />
+    {island(40, 150, 0.7, 1)}{island(230, 210, 0.55, 2)}{island(120, 90, 0.4, 3)}
+    {/* облачная поляна с цветами */}
+    <path d="M-200 360 Q-120 330 -40 352 Q40 322 120 350 Q200 324 280 352 Q380 330 470 356 L470 680 L-200 680 Z" fill="#f2c6ff" />
+    <path d="M-200 380 Q-80 360 40 378 Q160 356 300 380 Q400 366 470 380 L470 680 L-200 680 Z" fill="#e0a8f6" />
+    {[...Array(26)].map((_, i) => { const x = -180 + R(i * 5) * 640, y = 370 + R(i * 9) * 80, c = ["#ff7ad9", "#7ad7ff", "#ffe36b", "#8affd0"][i % 4];
+      return <g key={i} opacity={0.75 + 0.25 * Math.sin(t / 9 + i)}><circle cx={x} cy={y} r="3.4" fill={c} /><circle cx={x} cy={y} r="9" fill={c} opacity=".25" /></g>; })}
+    {[...Array(18)].map((_, i) => { const k = ((t * (0.4 + R(i) * 0.5) + R(i * 3) * 400) % 400); return <circle key={"f" + i} cx={-150 + R(i * 11) * 570 + Math.sin(t / 20 + i) * 10} cy={430 - k} r="1.8" fill="#fff6c0" opacity={0.8 * (1 - k / 400)} />; })}
+  </g>);
+}
+
+// ---------- v19: жёлтый зал со спящими: пустые люди, у которых забрали сон ----------
+function Sleepers({ P, t }) {
+  const rows = [[2.2, [-120, 0, 120]], [3.6, [-150, -40, 70, 170]], [6, [-120, 20, 140]]];
+  return (<g>
+    <Backrooms P={P} t={t} />
+    {rows.reverse().map(([z, xs], ri) => xs.map((X, i) => {
+      const x = 135 + X / z, y = 255 + 160 / z, s = 1.6 / z, br = Math.sin(t / 25 + i + ri) * 0.6;
+      return <g key={ri + "_" + i} transform={`translate(${x} ${y}) scale(${s})`}>
+        <ellipse cx="0" cy="-2" rx="44" ry="7" fill="#000" opacity=".25" />
+        <rect x="-36" y={-16 - br} width="58" height={14 + br} rx="7" fill={["#3a4a5a", "#5a3a3a", "#3a5a44", "#4a4a4a"][(i + ri) % 4]} />
+        <circle cx="30" cy="-10" r="9" fill="#d9b08c" /><path d="M24 -18 Q32 -22 38 -14" stroke="#2a1d14" strokeWidth="4" fill="none" />
+        <path d="M27 -11 Q29 -9 31 -11 M33 -11 Q35 -9 37 -11" stroke="#2a1d14" strokeWidth="1" fill="none" />
+      </g>;
+    }))}
+  </g>);
+}
+
+const MAP = { dream: Dream, backrooms_sleepers: Sleepers, backrooms: Backrooms, backrooms_exit: (p) => <Backrooms {...p} exit />, hallway: Hallway, hallway_feet: (p) => <Hallway {...p} feet />, stairwell: Stairwell, car_snow: CarSnow, car_snow_lights: (p) => <CarSnow {...p} lights />, room: Room, noir_room: Room, hacker_room: Room, street: Street, noir_city: Street, interrogation: Interrogation, n_office: Office, office: Office, police_street: PoliceStreet };
 export const NOIR_BGS = Object.keys(MAP);
 
 export function NoirBackground({ name, t = 0, P }) {
