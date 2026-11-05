@@ -5,6 +5,7 @@ import { Person } from "./Person.jsx";
 import { Emu, Crow, Cat, Rabbit } from "./Animals.jsx";
 import { Truck, MachineGun, Fence, House, Desk, AmmoBox, Casings, Paper, Trunk, Door, Frame, LawnChair, Briefcase, Tank, Wave, Shelves, Smoke, Stage as Podium, Letter, Lightning, Stones, Wheelbarrow, Palace, Desks, Fence2, Rocket, Computer, Aquarium, Coffin, Parachute, Bars } from "./Props.jsx";
 import { Background } from "./Backgrounds.jsx";
+import { NoirBackground, NOIR_BGS } from "./NoirBG.jsx";
 
 const PROPS = { truck: Truck, gun: MachineGun, fence: Fence, house: House, desk: Desk, ammo: AmmoBox, casings: Casings, paper: Paper, trunk: Trunk, door: Door, frame: Frame, chair: LawnChair, briefcase: Briefcase, tank: Tank, wave: Wave, shelves: Shelves, smoke: Smoke, podium: Podium, letter: Letter, lightning: Lightning, stones: Stones, wheelbarrow: Wheelbarrow, palace: Palace, desks: Desks, fence2: Fence2, rocket: Rocket, computer: Computer, aquarium: Aquarium, coffin: Coffin, parachute: Parachute, bars: Bars };
 
@@ -182,7 +183,7 @@ function actorPos(a, t) {
   return { x: lerp(a.x ?? 135, a.to?.x ?? a.x ?? 135, k), y: lerp(a.y ?? 360, a.to?.y ?? a.y ?? 360, k) };
 }
 
-function Actor({ a, f, t, mouth, idx, light, gaze, zeroG, closeUp }) {
+function Actor({ a, f, t, mouth, idx, light, gaze, zeroG, closeUp, tagC = "#3dffa8", tagT = "#06090d" }) {
   const p0 = actorPos(a, t);
   const x = p0.x + (zeroG ? Math.sin(f / 37 + idx) * 3 : 0), y = p0.y + (zeroG ? Math.sin(f / 23 + idx) * 5 : 0);
   const living = ["person", "emu", "crow", "cat", "rabbit"].includes(a.kind);
@@ -224,8 +225,8 @@ function Actor({ a, f, t, mouth, idx, light, gaze, zeroG, closeUp }) {
   // v15: метка «ТЫ» над главным героем
   const you = a.you && !closeUp ? (
     <g transform={`translate(0 ${-212 + Math.sin(f / 6) * 3}) scale(${flip} 1)`} opacity={clamp(prog(f, 4, 6))}>
-      <rect x="-20" y="-15" width="40" height="22" rx="5" fill="#3dffa8" /><path d="M-6 7 L0 14 L6 7 Z" fill="#3dffa8" />
-      <text x="0" y="2" textAnchor="middle" fontSize="14" fontWeight="900" fill="#06090d" fontFamily="Montserrat, DejaVu Sans, sans-serif">ТЫ</text>
+      <rect x="-20" y="-15" width="40" height="22" rx="5" fill={tagC} /><path d="M-6 7 L0 14 L6 7 Z" fill={tagC} />
+      <text x="0" y="2" textAnchor="middle" fontSize="14" fontWeight="900" fill={tagT} fontFamily="Montserrat, DejaVu Sans, sans-serif">ТЫ</text>
     </g>) : null;
   return <g transform={`translate(${x} ${y}) rotate(${spin}) scale(${s * flip} ${s})`}>{body}{you}</g>;
 }
@@ -324,7 +325,7 @@ export function Stage({ seg, f, mouth, transition = "flash", font = "DejaVu Sans
         <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="1.6" numOctaves="1" seed={f % 50} /><feColorMatrix type="saturate" values="0" /></filter>
       </defs>
       <g transform={`translate(135 240) scale(${zb}) translate(${-cxb} ${-cam.cy})`} filter={closeUp ? "url(#dof)" : undefined}>
-        <Background name={seg.bg} t={f} />
+        {seg.pal && NOIR_BGS.includes(seg.bg) ? <NoirBackground name={seg.bg} t={f} P={seg.pal} /> : <Background name={seg.bg} t={f} />}
         <Ambient name={seg.bg} f={f} />
       </g>
       <rect width="270" height="480" fill="url(#haze)" opacity=".6" />
@@ -332,7 +333,7 @@ export function Stage({ seg, f, mouth, transition = "flash", font = "DejaVu Sans
         <LightLayer name={seg.bg} f={f} />
         <g transform={angleT}>
           {order.map(({ a, i }) => <Actor key={i} a={a} f={f} t={t} mouth={mouth} idx={i} light={lightFor(a)} gaze={a.kind === "person" ? gazeFor(a, i) : 0}
-            zeroG={seg.bg === "space" && a.kind === "person"} closeUp={cam.z > 1.6} />)}
+            zeroG={seg.bg === "space" && a.kind === "person"} closeUp={cam.z > 1.6} tagC={seg.pal?.tag} tagT={seg.pal?.tagText} />)}
         </g>
         <NightLights lights={seg.lights} f={f} id={`nl${seg.start}`} />
         <g transform={angleT}>
