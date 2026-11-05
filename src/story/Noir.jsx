@@ -3,6 +3,7 @@
 // Всё рисуется в пикселях кадра 1080x1920.
 import React from "react";
 import { clamp, lerp, prog, easeOut, easeInOut, backOut } from "./util.js";
+import { THEMES, mix } from "./Themes.js";
 
 // палитра канала: почти чёрный, кислотно-мятный неон, янтарь (деньги/свет), красный (опасность)
 export const N = {
@@ -10,6 +11,15 @@ export const N = {
   acc: "#3dffa8", pink: "#3dffa8", red: "#ff3b4f", cyan: "#4fd8ff", yellow: "#ffb020", green: "#3dffa8",
   text: "#eef6f2", dim: "#7f9590",
 };
+
+// v16: активная атмосфера. N подменяется палитрой атмосферы, D — «экран телефона», он всегда тёмный
+export let TH = THEMES.noir;
+export const D = { ...THEMES.noir.ui };
+export function applyTheme(name) {
+  TH = THEMES[name] || THEMES.noir;
+  Object.assign(N, TH.ui);
+  return TH;
+}
 
 const glow = (c, r = 18) => `0 0 ${r}px ${c}, 0 0 ${r * 2.5}px ${c}55`;
 const pop = (f, at = 0, len = 7) => backOut(prog(f, at, len));
@@ -46,7 +56,7 @@ export function NoirHUD({ labels, prev, cur, f, font }) {
   const val = (h) => (h?.chance ?? (h?.risk !== undefined ? 100 - h.risk : 100));
   const chance = lerp(val(prev || cur), val(cur), k);
   const drop = prev && val(prev) !== val(cur) ? 1 - easeOut(prog(f, 4, 16)) : 0;
-  const c = chance > 60 ? N.acc : chance > 30 ? N.yellow : N.red;
+  const c = chance > 60 ? (N.good || N.acc) : chance > 30 ? (N.warn || N.yellow) : N.red;
   const pulse = chance <= 30 ? 0.5 + 0.5 * Math.sin(f / 3) : 1;
   const cell = (label, value, color, grow) => (
     <div style={{ flex: grow, minWidth: 0 }}>
@@ -56,6 +66,7 @@ export function NoirHUD({ labels, prev, cur, f, font }) {
   );
   return (
     <div style={{ position: "absolute", top: 170, left: 40, right: 40, fontFamily: font }}>
+      <div style={{ position: "absolute", left: -40, right: -40, top: -60, height: 230, background: `linear-gradient(${N.bg}f5, ${N.bg}d9 65%, ${N.bg}00)`, zIndex: -1 }} />
       <div style={{ display: "flex", gap: 22, alignItems: "flex-end", padding: "0 6px 12px", borderBottom: `2px solid ${N.line}` }}>
         {cell(L[0], tweenValue(prev?.time, cur.time, k) || "—", N.text, 1)}
         {cell(L[1], tweenValue(prev?.balance, cur.balance, k) || "—", N.yellow, 1.2)}
@@ -65,7 +76,7 @@ export function NoirHUD({ labels, prev, cur, f, font }) {
         </div>
       </div>
       <div style={{ display: "flex", gap: 5, marginTop: 10 }}>
-        {[...Array(20)].map((_, i) => <div key={i} style={{ flex: 1, height: 10, borderRadius: 3, background: i < Math.round(chance / 5) ? c : "#1a2530", boxShadow: i < Math.round(chance / 5) ? glow(c, 5) : "none" }} />)}
+        {[...Array(20)].map((_, i) => <div key={i} style={{ flex: 1, height: 10, borderRadius: 3, background: i < Math.round(chance / 5) ? c : N.line, boxShadow: i < Math.round(chance / 5) ? glow(c, 5) : "none" }} />)}
       </div>
     </div>
   );
@@ -89,7 +100,7 @@ function Phone({ children, f, at = 0, w = 620, h = 860, top = 380 }) {
   const p = pop(f, at, 9);
   return (
     <div style={{ position: "absolute", left: (1080 - w) / 2, top, width: w, height: h, borderRadius: 64, background: "#05030a",
-      border: `6px solid #2b2238`, boxShadow: `0 0 0 3px #0e0a16, 0 30px 80px rgba(0,0,0,.7), 0 0 60px ${N.acc}22`,
+      border: `6px solid #2b2238`, boxShadow: `0 0 0 3px #0e0a16, 0 30px 80px rgba(0,0,0,.7), 0 0 60px ${D.acc}22`,
       transform: `translateY(${(1 - clamp(p)) * 220}px) scale(${0.9 + 0.1 * p})`, opacity: clamp(p * 1.6), overflow: "hidden" }}>
       <div style={{ position: "absolute", top: 18, left: "50%", width: 150, height: 34, marginLeft: -75, borderRadius: 20, background: "#000" }} />
       <div style={{ position: "absolute", inset: "70px 34px 40px" }}>{children}</div>
@@ -123,16 +134,16 @@ function Wallet({ ui, f, font }) {
   const done = k >= 1;
   return (
     <Phone f={f} h={h} top={380 + (860 - h) / 2}>
-      <div style={{ fontFamily: font, color: N.text, textAlign: "center" }}>
+      <div style={{ fontFamily: font, color: D.text, textAlign: "center" }}>
         <div style={{ fontSize: 34, fontWeight: 800, textAlign: "left", marginBottom: 40 }}>{ui.title || "Кошелёк"}</div>
         <div style={{ width: 150, height: 150, borderRadius: "50%", margin: "0 auto 40px", background: ui.color || "#f7931a", color: "#fff",
           fontSize: 92, fontWeight: 900, lineHeight: "150px", boxShadow: glow(ui.color || "#f7931a", 22) }}>{ui.icon || "₿"}</div>
-        <div style={{ fontSize: Math.min(92, 540 / (fmt(to, dec, Math.abs(to) >= 10000).length * 0.72)), fontWeight: 900, letterSpacing: -2, color: done ? N.text : "#fff", whiteSpace: "nowrap",
+        <div style={{ fontSize: Math.min(92, 540 / (fmt(to, dec, Math.abs(to) >= 10000).length * 0.72)), fontWeight: 900, letterSpacing: -2, color: done ? D.text : "#fff", whiteSpace: "nowrap",
           transform: `scale(${done ? 1 + 0.08 * (1 - easeOut(prog(f, 8 + (ui.len || 40), 8))) : 1})` }}>{fmt(n, dec, Math.abs(to) >= 10000)}</div>
-        <div style={{ fontSize: 34, color: N.dim, fontWeight: 700, marginTop: 6 }}>{ui.unit || "BTC"}</div>
-        {ui.sub ? <div style={{ fontSize: 40, color: N.green, fontWeight: 800, marginTop: 24, opacity: clamp(k * 1.5) }}>{ui.sub}</div> : null}
-        {ui.from_label ? <div style={{ marginTop: 44, background: N.panel2, borderRadius: 22, padding: "22px 26px", textAlign: "left", fontSize: 28, color: N.dim }}>
-          {ui.from_label}<div style={{ color: N.text, fontWeight: 800, fontSize: 32, marginTop: 6 }}>{ui.from_value}</div></div> : null}
+        <div style={{ fontSize: 34, color: D.dim, fontWeight: 700, marginTop: 6 }}>{ui.unit || "BTC"}</div>
+        {ui.sub ? <div style={{ fontSize: 40, color: D.green, fontWeight: 800, marginTop: 24, opacity: clamp(k * 1.5) }}>{ui.sub}</div> : null}
+        {ui.from_label ? <div style={{ marginTop: 44, background: D.panel2, borderRadius: 22, padding: "22px 26px", textAlign: "left", fontSize: 28, color: D.dim }}>
+          {ui.from_label}<div style={{ color: D.text, fontWeight: 800, fontSize: 32, marginTop: 6 }}>{ui.from_value}</div></div> : null}
       </div>
     </Phone>
   );
@@ -143,11 +154,11 @@ function Chat({ ui, f, font, dur }) {
   const step = Math.max(10, Math.floor((dur * 0.75) / Math.max(1, msgs.length)));
   return (
     <Phone f={f}>
-      <div style={{ fontFamily: font, color: N.text }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 20, paddingBottom: 22, borderBottom: `2px solid ${N.line}`, marginBottom: 28 }}>
-          <div style={{ width: 74, height: 74, borderRadius: "50%", background: N.panel2, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40, fontWeight: 900, color: N.dim }}>{(ui.name || "?")[0]}</div>
-          <div><div style={{ fontSize: 34, fontWeight: 800 }}>{ui.name || "Неизвестный"}</div><div style={{ fontSize: 24, color: N.green }}>{ui.status || "в сети"}</div>
-            {ui.clue ? <div style={{ fontSize: 19, color: N.dim, marginTop: 4, fontFamily: "DejaVu Sans Mono, monospace" }}>{ui.clue}</div> : null}</div>
+      <div style={{ fontFamily: font, color: D.text }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 20, paddingBottom: 22, borderBottom: `2px solid ${D.line}`, marginBottom: 28 }}>
+          <div style={{ width: 74, height: 74, borderRadius: "50%", background: D.panel2, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40, fontWeight: 900, color: D.dim }}>{(ui.name || "?")[0]}</div>
+          <div><div style={{ fontSize: 34, fontWeight: 800 }}>{ui.name || "Неизвестный"}</div><div style={{ fontSize: 24, color: D.green }}>{ui.status || "в сети"}</div>
+            {ui.clue ? <div style={{ fontSize: 19, color: D.dim, marginTop: 4, fontFamily: "DejaVu Sans Mono, monospace" }}>{ui.clue}</div> : null}</div>
         </div>
         {msgs.map((m, i) => {
           const at = 6 + i * step;
@@ -157,7 +168,7 @@ function Chat({ ui, f, font, dur }) {
           return (
             <div key={i} style={{ display: "flex", justifyContent: me ? "flex-end" : "flex-start", marginBottom: 18 }}>
               <div style={{ maxWidth: "82%", padding: "18px 24px", borderRadius: 26, fontSize: 34, fontWeight: 700, lineHeight: 1.2,
-                background: me ? "#1f6b4c" : m.alert ? "#3a0f1c" : N.panel2, color: "#fff", border: m.alert ? `2px solid ${N.red}` : "none",
+                background: me ? "#1f6b4c" : m.alert ? "#3a0f1c" : D.panel2, color: "#fff", border: m.alert ? `2px solid ${D.red}` : "none",
                 transform: `scale(${clamp(p, 0, 1.2)})`, transformOrigin: me ? "right bottom" : "left bottom" }}>{m.text}</div>
             </div>
           );
@@ -259,7 +270,7 @@ function Alert({ ui, f, font }) {
     <div style={{ position: "absolute", left: 60, right: 60, top: 560, textAlign: "center", fontFamily: font }}>
       <div style={{ display: "inline-block", background: N.red, color: "#fff", fontSize: 38, fontWeight: 900, padding: "14px 30px", borderRadius: 12,
         opacity: 0.75 + 0.25 * blink, transform: `scale(${clamp(p, 0, 1.3)})`, boxShadow: glow(N.red, 16) }}>{ui.title || "СРОЧНО"}</div>
-      <div style={{ fontSize: Math.min(150, 1800 / Math.max(6, String(ui.big || "").length)), fontWeight: 900, color: N.red, marginTop: 60, textShadow: glow(N.red, 30), whiteSpace: "nowrap" }}>{big}</div>
+      <div style={{ fontSize: String(ui.big || "").length > 13 ? Math.min(130, 2000 / String(ui.big).length) : Math.min(150, 1300 / Math.max(6, String(ui.big || "").length)), fontWeight: 900, color: N.red, marginTop: 60, textShadow: glow(N.red, 30), whiteSpace: String(ui.big || "").length > 13 ? "normal" : "nowrap", lineHeight: 1.05, padding: "0 40px" }}>{big}</div>
       {ui.sub ? <div style={{ fontSize: 36, color: N.text, fontWeight: 700, marginTop: 24, opacity: clamp(k * 2) }}>{ui.sub}</div> : null}
     </div>
   );
@@ -291,16 +302,16 @@ function Call({ ui, f, font }) {
   const ring = (f % 24) / 24;
   return (
     <Phone f={f}>
-      <div style={{ fontFamily: font, color: N.text, textAlign: "center", paddingTop: 30 }}>
-        <div style={{ fontSize: 30, color: N.dim }}>{ui.sub || "Входящий видеозвонок"}</div>
+      <div style={{ fontFamily: font, color: D.text, textAlign: "center", paddingTop: 30 }}>
+        <div style={{ fontSize: 30, color: D.dim }}>{ui.sub || "Входящий видеозвонок"}</div>
         <div style={{ position: "relative", width: 230, height: 230, margin: "60px auto 30px" }}>
-          <div style={{ position: "absolute", inset: -40 * ring, borderRadius: "50%", border: `4px solid ${N.green}`, opacity: 1 - ring }} />
-          <div style={{ position: "absolute", inset: 0, borderRadius: "50%", background: N.panel2, fontSize: 110, fontWeight: 900, lineHeight: "230px", color: N.dim }}>{(ui.name || "?")[0]}</div>
+          <div style={{ position: "absolute", inset: -40 * ring, borderRadius: "50%", border: `4px solid ${D.green}`, opacity: 1 - ring }} />
+          <div style={{ position: "absolute", inset: 0, borderRadius: "50%", background: D.panel2, fontSize: 110, fontWeight: 900, lineHeight: "230px", color: D.dim }}>{(ui.name || "?")[0]}</div>
         </div>
         <div style={{ fontSize: 52, fontWeight: 900 }}>{ui.name || "Неизвестный"}</div>
         <div style={{ display: "flex", justifyContent: "space-around", marginTop: 110 }}>
-          <div style={{ width: 130, height: 130, borderRadius: "50%", background: N.red }} />
-          <div style={{ width: 130, height: 130, borderRadius: "50%", background: N.green, transform: `scale(${1 + 0.08 * Math.sin(f / 3)})`, boxShadow: glow(N.green, 18) }} />
+          <div style={{ width: 130, height: 130, borderRadius: "50%", background: D.red }} />
+          <div style={{ width: 130, height: 130, borderRadius: "50%", background: D.green, transform: `scale(${1 + 0.08 * Math.sin(f / 3)})`, boxShadow: glow(D.green, 18) }} />
         </div>
       </div>
     </Phone>
@@ -339,8 +350,8 @@ function Reveal({ ui, f, font }) {
       <div style={{ position: "absolute", left: 90, right: 90, top: 520, height: 300, borderRadius: 18, background: ui.paper ? "#f3efe6" : N.panel, border: `2px solid ${N.line}`,
         overflow: "hidden", transform: `scale(${clamp(p, 0, 1.1)})` }}>
         {[0, 1, 2, 3].map((i) => <div key={i} style={{ position: "absolute", left: 40, top: 40 + i * 64, height: 16, width: `${80 - i * 12}%`, borderRadius: 8, background: ui.paper ? "#ddd6ca" : "#1f2d3a" }} />)}
-        <div style={{ position: "absolute", left: 0, right: 0, top: 120, textAlign: "center", transform: `scale(${1 + 0.45 * z})`,
-          fontFamily: "DejaVu Sans Mono, monospace", fontSize: 30, fontWeight: 800, color: ui.paper ? "#1a1620" : N.text, whiteSpace: "nowrap" }}>{ui.clue}</div>
+        <div style={{ position: "absolute", left: 0, right: 0, top: 120, textAlign: "center", transform: `scale(${1 + 0.3 * z})`,
+          fontFamily: "DejaVu Sans Mono, monospace", fontSize: Math.min(30, 1000 / Math.max(1, String(ui.clue || "").length)), fontWeight: 800, color: ui.paper ? "#1a1620" : N.text, whiteSpace: "nowrap" }}>{ui.clue}</div>
       </div>
       <div style={{ position: "absolute", left: "50%", top: 668, width: 820 * ring, height: 150 * ring, marginLeft: -410 * ring, marginTop: -75 * ring, borderRadius: 80,
         border: `8px solid ${N.acc}`, boxShadow: glow(N.acc, 18), opacity: z }} />
@@ -368,7 +379,45 @@ function Case({ ui, f, font }) {
   );
 }
 
-const UI = { reveal: Reveal, case: Case, notify: Notify, wallet: Wallet, chat: Chat, card: Card, doc: Doc, table: Table, timer: Timer, alert: Alert, chain: Chain, call: Call, form: Form };
+// v16: «Правила» — нумерованные карточки, которые хочется сохранить
+function Rules({ ui, f, font, dur }) {
+  const items = ui.items || [];
+  const step = Math.max(10, Math.floor((dur * 0.7) / Math.max(1, items.length)));
+  return (
+    <div style={{ position: "absolute", left: 70, right: 70, top: 400, fontFamily: font }}>
+      <div style={{ fontSize: 30, letterSpacing: 6, color: N.acc, fontWeight: 900, textAlign: "center", marginBottom: 26 }}>{ui.head || "ПРАВИЛА"}</div>
+      {items.map((it, i) => {
+        const at = 4 + i * step;
+        if (f < at) return null;
+        const p = pop(f, at, 7);
+        return (
+          <div key={i} style={{ display: "flex", alignItems: "center", gap: 24, marginBottom: 20, padding: "22px 26px", borderRadius: 18,
+            background: N.panel, border: `2px solid ${N.line}`, transform: `translateX(${(1 - clamp(p)) * 260}px)`, opacity: clamp(p * 2),
+            boxShadow: "0 12px 30px rgba(0,0,0,.35)" }}>
+            <div style={{ width: 74, height: 74, flexShrink: 0, borderRadius: 16, background: N.acc, color: TH.ui.light ? "#fff" : N.bg, fontSize: 46, fontWeight: 900,
+              display: "flex", alignItems: "center", justifyContent: "center" }}>{i + 1}</div>
+            <div style={{ fontSize: it.length > 28 ? 36 : 42, fontWeight: 800, color: N.text, lineHeight: 1.15 }}>{it}</div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// v16: косая «лента» поперёк кадра на первых секундах хука — «02:47 · НОЧЬ»
+export function Tape({ text, f, font }) {
+  if (!text) return null;
+  const out = easeInOut(prog(f, 38, 10));
+  return (
+    <div style={{ position: "absolute", left: -120, right: -120, top: 640, height: 150, transform: `rotate(-7deg) translateX(${out * 1400}px)`,
+      background: N.red, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 18px 50px rgba(0,0,0,.5)",
+      borderTop: "6px solid #fff", borderBottom: "6px solid #fff" }}>
+      <div style={{ fontFamily: font, fontWeight: 900, fontSize: 104, color: "#fff", letterSpacing: 4, whiteSpace: "nowrap" }}>{text}</div>
+    </div>
+  );
+}
+
+const UI = { rules: Rules, reveal: Reveal, case: Case, notify: Notify, wallet: Wallet, chat: Chat, card: Card, doc: Doc, table: Table, timer: Timer, alert: Alert, chain: Chain, call: Call, form: Form };
 export function UiCard({ ui, f, font, dur, instant }) {
   const C = UI[ui.type];
   if (!C) return null;
@@ -376,12 +425,22 @@ export function UiCard({ ui, f, font, dur, instant }) {
 }
 
 // ---------- Эффекты стиля поверх кадра ----------
-export function NoirFX({ f, flash = 0 }) {
+export function NoirFX({ f, flash = 0, chance = 100 }) {
+  const fearK = clamp(1 - chance / 100);
+  const tone = mix(TH.hope, TH.fear, fearK);
+  const siren = TH.siren ? Math.floor(f / 8) % 2 : -1;
   return (
     <>
-      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(0,30,40,.35), rgba(0,8,12,.08) 40%, rgba(0,6,10,.6))", mixBlendMode: "multiply" }} />
-      <div style={{ position: "absolute", inset: 0, backgroundImage: "repeating-linear-gradient(0deg, rgba(0,0,0,.18) 0 2px, transparent 2px 6px)", opacity: 0.5 }} />
-      <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 45%, transparent 50%, rgba(0,0,0,.75) 100%)" }} />
+      <div style={{ position: "absolute", inset: 0, background: TH.grade.overlay, mixBlendMode: TH.ui.light ? "multiply" : "multiply" }} />
+      {/* цвет кадра следует за шансом: чем меньше шанс, тем ближе к «тону страха» атмосферы */}
+      <div style={{ position: "absolute", inset: 0, background: tone, opacity: 0.06 + 0.2 * fearK, mixBlendMode: "soft-light" }} />
+      {siren >= 0 ? <div style={{ position: "absolute", inset: 0, background: siren
+        ? "radial-gradient(ellipse at 0% 40%, rgba(255,40,60,.32), transparent 55%)"
+        : "radial-gradient(ellipse at 100% 40%, rgba(60,120,255,.32), transparent 55%)", mixBlendMode: "screen" }} /> : null}
+      {TH.paper
+        ? <div style={{ position: "absolute", inset: 0, backgroundImage: "repeating-linear-gradient(90deg, rgba(80,60,30,.035) 0 1px, transparent 1px 5px), repeating-linear-gradient(0deg, rgba(80,60,30,.03) 0 1px, transparent 1px 7px)" }} />
+        : <div style={{ position: "absolute", inset: 0, backgroundImage: "repeating-linear-gradient(0deg, rgba(0,0,0,.18) 0 2px, transparent 2px 6px)", opacity: 0.45 }} />}
+      <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse at 50% 45%, transparent 50%, ${TH.ui.light ? "rgba(70,45,20,.55)" : "rgba(0,0,0,.75)"} 100%)` }} />
       {flash > 0 ? <div style={{ position: "absolute", inset: 0, background: N.acc, opacity: 0.25 * flash, mixBlendMode: "screen" }} /> : null}
     </>
   );
@@ -407,7 +466,8 @@ export function NoirCaptions({ seg, f, font, top = 1290, instant = false }) {
   if (!chunk) return null;
   const p = instant && chunk[0].i === 0 ? 1 : easeOut(prog(f, chunk[0].s - 2, 4));
   const text = chunk.map((w) => w.w).join(" ");
-  const size = Math.min(80, 1450 / Math.max(10, text.length));
+  const longest = Math.max(...text.split(/\s+/).map((w) => w.length), 1);
+  const size = Math.min(80, 1450 / Math.max(10, text.length), 1250 / longest);  // v16: длинное слово не вылезает за кадр
   return (
     <div style={{ position: "absolute", left: 30, right: 30, top, textAlign: "center", fontFamily: font, fontWeight: 900, fontSize: size, lineHeight: 1.3,
       opacity: p, transform: `scale(${0.94 + 0.06 * p})`, textTransform: "uppercase" }}>
@@ -450,7 +510,7 @@ export function ChoiceScreen({ seg, f, font }) {
         ) : null;
       })}
       <div style={{ position: "absolute", top: 560 + opts.length * 165, left: 0, right: 0, textAlign: "center", fontFamily: font, fontSize: 36, fontWeight: 800,
-        letterSpacing: 2, color: N.yellow, opacity: clamp(prog(f, end, 8)) }}>{seg.hint || (seg.next ? "ЧТО БУДЕТ ДАЛЬШЕ — В СЛЕДУЮЩЕМ РОЛИКЕ" : "ПИШИ БУКВУ В КОММЕНТАРИЯХ")}</div>
+        letterSpacing: 2, color: N.yellow, opacity: clamp(prog(f, end, 8)) }}>{seg.hint || (seg.nextTitle ? `ЧАСТЬ 2 · ${seg.nextTitle}` : seg.next ? "ЧТО БУДЕТ ДАЛЬШЕ — В СЛЕДУЮЩЕМ РОЛИКЕ" : "ПИШИ БУКВУ В КОММЕНТАРИЯХ")}</div>
       {seg.clue ? <div style={{ position: "absolute", top: 680 + opts.length * 165, left: 40, right: 40, textAlign: "center", fontFamily: font, fontSize: 34, fontWeight: 900, whiteSpace: "nowrap",
         color: N.bg, opacity: clamp(prog(f, end + 6, 8)) }}><span style={{ background: N.acc, padding: "8px 22px", borderRadius: 10, boxShadow: glow(N.acc, 12) }}>ПОДСКАЗКА СПРЯТАНА В КАДРЕ. НАШЁЛ?</span></div> : null}
     </div>
