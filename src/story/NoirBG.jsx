@@ -197,7 +197,103 @@ function PoliceStreet({ P, t }) {
   </g>);
 }
 
-const MAP = { room: Room, noir_room: Room, hacker_room: Room, street: Street, noir_city: Street, interrogation: Interrogation, n_office: Office, office: Office, police_street: PoliceStreet };
+// ---------- v18: прихожая с входной дверью (глазок, замок, полоска света под дверью) ----------
+function Hallway({ P, t, feet = false }) {
+  const under = 0.75 + 0.25 * Math.sin(t / 9);
+  return (<g>
+    <rect x="-200" y="-200" width="670" height="880" fill={mix(P.wall, "#000000", 0.35)} />
+    {/* обои-полосы */}
+    {[...Array(12)].map((_, i) => <rect key={i} x={-200 + i * 56} y="-200" width="22" height="560" fill={mix(P.wall2, "#000000", 0.25)} opacity=".5" />)}
+    {/* дверь */}
+    <g transform="translate(70 70)">
+      <rect x="-8" y="-8" width="146" height="298" fill={mix(P.furn, "#000000", 0.4)} />
+      <rect width="130" height="290" fill={mix(P.furn2, "#000000", 0.15)} />
+      <rect x="12" y="14" width="106" height="120" fill="none" stroke={mix(P.furn, "#000000", 0.3)} strokeWidth="3" />
+      <rect x="12" y="150" width="106" height="124" fill="none" stroke={mix(P.furn, "#000000", 0.3)} strokeWidth="3" />
+      <circle cx="65" cy="78" r="5" fill="#0a0a0a" /><circle cx="65" cy="78" r="2.4" fill={P.light} opacity={0.5 + 0.4 * Math.sin(t / 15)} />
+      <rect x="104" y="140" width="16" height="30" rx="3" fill={mix(P.light, "#888888", 0.5)} /><rect x="100" y="150" width="24" height="5" rx="2" fill={mix(P.light, "#bbbbbb", 0.4)} />
+      <rect x="106" y="182" width="12" height="12" rx="2" fill="#111" />
+    </g>
+    {/* свет из подъезда под дверью и тени ног */}
+    <rect x="68" y="355" width="134" height="7" fill="#fff4d0" opacity={0.9 * under} />
+    <polygon points="68,362 202,362 250,440 20,440" fill="#fff4d0" opacity={0.16 * under} />
+    {feet ? <g fill="#000"><rect x="98" y="354" width="26" height="9" /><rect x="140" y="354" width="26" height="9" />
+      <polygon points="98,362 124,362 112,440 70,440" opacity=".7" /><polygon points="140,362 166,362 190,440 150,440" opacity=".7" /></g> : null}
+    {/* вешалка, куртка, тумба, обувь */}
+    <rect x="-90" y="120" width="120" height="6" fill={P.wood} />
+    <path d="M-70 126 q-8 60 6 120 h40 q10 -60 -2 -120 z" fill={mix(P.furn, "#000000", 0.2)} />
+    <rect x="220" y="280" width="90" height="80" fill={P.furn} /><rect x="226" y="290" width="78" height="4" fill={P.furn2} />
+    <g transform="translate(240 266)"><rect width="22" height="14" rx="3" fill="#0d0d0d" /><rect x="3" y="3" width="16" height="8" fill={P.screen} opacity={0.5 + 0.4 * Math.sin(t / 5)} /></g>
+    <path d="M-200 360 L470 360 L470 680 L-200 680 Z" fill={P.floor} />
+    <ellipse cx="0" cy="372" rx="40" ry="6" fill="#000" opacity=".5" /><ellipse cx="-50" cy="374" rx="34" ry="6" fill="#000" opacity=".5" />
+  </g>);
+}
+
+// ---------- v18: тёмная лестница подъезда с моргающей лампой ----------
+function Stairwell({ P, t }) {
+  const lamp = (Math.floor(t / 4) * 7919) % 11 < 2 ? 0.15 : 1;
+  return (<g>
+    <rect x="-200" y="-200" width="670" height="880" fill={mix(P.wall, "#000000", 0.45)} />
+    <rect x="-200" y="200" width="670" height="160" fill={mix(P.wall2, "#000000", 0.4)} />
+    <rect x="-200" y="196" width="670" height="6" fill={mix(P.wall2, "#000000", 0.6)} />
+    {/* пролёт ступеней вверх */}
+    {[...Array(9)].map((_, i) => <g key={i}><rect x={-40 + i * 26} y={360 - i * 22} width="200" height="22" fill={mix(P.floor, "#ffffff", 0.12 + i * 0.01)} /><rect x={-40 + i * 26} y={360 - i * 22} width="200" height="3" fill={mix(P.floor, "#ffffff", 0.12)} /></g>)}
+    {/* перила */}
+    <path d="M-40 300 L200 102" stroke={mix(P.furn2, "#000000", 0.2)} strokeWidth="5" />
+    {[...Array(9)].map((_, i) => <line key={i} x1={-30 + i * 26} y1={292 - i * 21.5} x2={-30 + i * 26} y2={350 - i * 22} stroke={mix(P.furn2, "#000000", 0.2)} strokeWidth="2.5" />)}
+    {/* окно подъезда и лампа */}
+    <rect x="190" y="40" width="60" height="80" fill={mix(P.sky, P.window, 0.15)} /><line x1="220" y1="40" x2="220" y2="120" stroke={mix(P.wall, "#000", .5)} strokeWidth="3" />
+    <g transform="translate(40 30)"><rect x="-14" y="-4" width="28" height="8" fill={P.furn2} /><ellipse cx="0" cy="6" rx="10" ry="5" fill="#fff4d0" opacity={lamp} />
+      <circle cx="0" cy="6" r="40" fill="#fff4d0" opacity={0.12 * lamp} />
+      <polygon points="-9,8 9,8 140,330 -140,330" fill="#fff4d0" opacity={0.22 * lamp} /></g>
+    <path d="M-200 360 L470 360 L470 680 L-200 680 Z" fill={mix(P.floor, "#000000", 0.3)} />
+    {/* силуэт на верхней площадке */}
+    <g opacity={0.55 + 0.2 * Math.sin(t / 30)} transform="translate(214 92)"><ellipse cx="0" cy="-30" rx="9" ry="11" fill="#000" /><path d="M-14 -18 Q0 -24 14 -18 L16 20 L-16 20 Z" fill="#000" /></g>
+  </g>);
+}
+
+// ---------- v18: салон машины ночью в метель ----------
+function CarSnow({ P, t, lights = false }) {
+  const flakes = [...Array(110)].map((_, i) => {
+    const sp = 1.4 + R(i) * 1.8, x = (R(i * 3) * 330 + t * (0.8 + R(i * 7)) * 1.6) % 330 - 30, y = (R(i * 5) * 260 + t * sp) % 260 + 20;
+    return <circle key={i} cx={x} cy={y} r={1 + R(i * 11) * 2.2} fill="#fff" opacity={0.6 + R(i * 13) * 0.4} />;
+  });
+  const wiper = Math.sin(t / 14) * 50;
+  return (<g>
+    <rect x="-200" y="-200" width="670" height="880" fill="#050608" />
+    {/* лобовое стекло: тьма, метель, свет фар в снегу */}
+    <svg x="-30" y="20" width="330" height="250" viewBox="-30 20 330 250" overflow="hidden">
+      <defs><linearGradient id="cs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={mix(P.sky, "#1a2a3a", 0.5)} /><stop offset=".55" stopColor={mix(P.sky, "#4a6a86", 0.55)} /><stop offset="1" stopColor="#9fb8cc" /></linearGradient>
+        <radialGradient id="hl" cx=".5" cy="1" r=".8"><stop offset="0" stopColor="#fff6dc" stopOpacity=".55" /><stop offset="1" stopColor="#fff6dc" stopOpacity="0" /></radialGradient></defs>
+      <rect x="-30" y="20" width="330" height="250" fill="url(#cs)" />
+      <path d="M-30 200 Q135 175 300 200 L300 270 L-30 270 Z" fill="#cfdbe6" opacity=".7" />
+      <rect x="-30" y="20" width="330" height="250" fill="url(#hl)" />
+      {lights ? <g opacity={0.5 + 0.4 * Math.sin(t / 7)}><circle cx="120" cy="140" r="4" fill="#ffd27a" /><circle cx="150" cy="140" r="4" fill="#ffd27a" /><circle cx="135" cy="140" r="30" fill="#ffd27a" opacity=".12" /><rect x="128" y="128" width="14" height="4" fill="#ff8a1f" opacity={(t >> 3) % 2 ? 1 : 0.2} /></g> : null}
+      {flakes}
+      {/* снег налипает снизу стекла */}
+      <path d={`M-30 270 L-30 ${236 - Math.min(40, t / 30)} Q60 ${222 - Math.min(40, t / 30)} 140 ${240 - Math.min(40, t / 30)} T300 ${230 - Math.min(40, t / 30)} L300 270 Z`} fill="#e9eef3" opacity=".9" />
+      <rect x="-30" y="20" width="330" height="250" fill="#cfd8e0" opacity=".06" />
+    </svg>
+    {/* стойки и рама */}
+    <path d="M-200 -200 H470 V680 H-200 Z M-30 20 L300 20 L330 280 L-60 280 Z" fillRule="evenodd" fill="#0b0d10" />
+    {/* дворник */}
+    <g transform={`rotate(${-20 + wiper * 0.3} 40 262)`}><rect x="40" y="259" width="150" height="5" rx="2" fill="#16191d" /></g>
+    {/* приборная панель */}
+    <path d="M-200 300 Q135 250 470 300 L470 680 L-200 680 Z" fill="#101317" />
+    <g transform="translate(70 312)">
+      <circle r="34" fill="#07090b" stroke="#1d2127" strokeWidth="3" /><circle r="26" fill="none" stroke={P.neon} strokeWidth="1.5" opacity=".7" />
+      <line x1="0" y1="0" x2={-18} y2={10} stroke={P.neon2} strokeWidth="2" />
+      <rect x="54" y="-18" width="44" height="22" rx="3" fill="#07090b" /><text x="76" y="-2" textAnchor="middle" fontSize="11" fill={P.neon2} fontFamily="DejaVu Sans Mono">-40°</text>
+      <rect x="54" y="10" width="44" height="10" rx="2" fill="#07090b" /><rect x="56" y="12" width={6 + 4 * Math.abs(Math.sin(t / 40))} height="6" fill="#ff3b3b" />
+    </g>
+    {/* руль */}
+    <g transform="translate(70 420)"><circle r="78" fill="none" stroke="#14171b" strokeWidth="16" /><rect x="-60" y="-8" width="120" height="16" fill="#14171b" /><circle r="16" fill="#14171b" /></g>
+    {/* пар дыхания */}
+    {[0, 1].map((i) => { const k = ((t * 0.5 + i * 50) % 100) / 100; return <circle key={i} cx={200 + k * 30} cy={330 - k * 60} r={6 + k * 16} fill="#dfe6ec" opacity={0.12 * (1 - k)} />; })}
+  </g>);
+}
+
+const MAP = { hallway: Hallway, hallway_feet: (p) => <Hallway {...p} feet />, stairwell: Stairwell, car_snow: CarSnow, car_snow_lights: (p) => <CarSnow {...p} lights />, room: Room, noir_room: Room, hacker_room: Room, street: Street, noir_city: Street, interrogation: Interrogation, n_office: Office, office: Office, police_street: PoliceStreet };
 export const NOIR_BGS = Object.keys(MAP);
 
 export function NoirBackground({ name, t = 0, P }) {
