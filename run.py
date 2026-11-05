@@ -180,7 +180,7 @@ def build_props(s):
             hu = h.get("ui") or []
             for u in (hu if isinstance(hu, list) else [hu]):
                 if u.get("type") == "notify":
-                    ev.append((int(h["dur"] * u.get("at", 0.12)) / FPS, "ping", 0.9))
+                    ev.append((0.05, "ping", 0.9))  # v15.1: уведомление на первом кадре
         for sg in segments[1:]:
             t0 = sg["start"] / FPS
             if sg["kind"] == "scene":
