@@ -300,7 +300,7 @@ AMBIENCE = {
     "london": _amb_city, "old_street": _amb_city, "paris": _amb_city, "harbor": _amb_sea, "beach_night": _amb_sea,
     "town": _amb_fire, "forest": _amb_birds, "jungle": _amb_birds, "campus": _amb_birds,
     "office": _amb_room, "room": _amb_room, "museum": _amb_room, "classroom": _amb_room, "war": _amb_war,
-    "winter_city": _amb_wind,
+    "winter_city": _amb_wind, "car_snow": _amb_wind, "hallway": _amb_room, "stairwell": _amb_wind,
 }
 
 
@@ -389,5 +389,53 @@ def _glitch(sr):  # v15: цифровой «срыв» на склейке
     return (hold * 0.6 + np.sign(np.sin(2 * np.pi * 120 * t)) * 0.3) * np.exp(-t * 14) * 0.5
 
 
-ACTION_SFX = {"ping": _ping, "glitch": _glitch, "thunder": _thunder, "wings": _wings, "stamp": _stamp, "paper": _paper, "snap": _snap,
+# v18 «триллер»: сердце, стук в дверь, вибрация телефона, дверной звонок, низкий гул напряжения
+def _heart(sr):  # один удар «тук-тук»
+    t = np.arange(int(sr * 0.5)) / sr
+    def thump(t0, a):
+        tt = np.clip(t - t0, 0, None)
+        return np.sin(2 * np.pi * 52 * tt) * np.exp(-tt * 28) * a * (t >= t0)
+    return (thump(0.0, 1.0) + thump(0.16, 0.7)) * 0.9
+
+
+def _knock(sr):  # три глухих удара в дверь
+    n = int(sr * 1.1)
+    out = np.zeros(n)
+    for k in range(3):
+        i = int(k * 0.24 * sr)
+        L = int(0.18 * sr)
+        tt = np.arange(L) / sr
+        hit = (np.sin(2 * np.pi * 95 * tt) * 1.0 + _onepole(_noise(L, 11 + k), 900, sr) * 2.5) * np.exp(-tt * 30)
+        out[i:i + L] += hit
+    return out * 0.8
+
+
+def _buzz(sr):  # вибрация телефона
+    t = np.arange(int(sr * 0.9)) / sr
+    gate = ((t % 0.45) < 0.32).astype(float)
+    return np.sign(np.sin(2 * np.pi * 150 * t)) * 0.18 * gate * (0.6 + 0.4 * np.sin(2 * np.pi * 9 * t))
+
+
+def _bell(sr):  # дверной звонок «дин-дон»
+    t = np.arange(int(sr * 1.3)) / sr
+    a = np.sin(2 * np.pi * 659 * t) * np.exp(-t * 3.5) * (t < 0.6)
+    tb = np.clip(t - 0.5, 0, None)
+    b = np.sin(2 * np.pi * 523 * tb) * np.exp(-tb * 3) * (t >= 0.5)
+    return (a + b) * 0.45
+
+
+def _drone(sr):  # нарастающий низкий гул перед поворотом
+    n = int(sr * 2.5)
+    t = np.arange(n) / sr
+    x = np.sin(2 * np.pi * 41 * t) + 0.5 * np.sin(2 * np.pi * 61.5 * t) + _onepole(_noise(n, 21), 200, sr) * 3
+    return x * (t / 2.5) ** 2 * 0.5
+
+
+def _hit(sr):  # резкий удар-«стингер» на повороте
+    b = _boom(sr)
+    t = np.arange(len(b)) / sr
+    return b * 1.0 + np.sin(2 * np.pi * 220 * t) * np.exp(-t * 4) * 0.25
+
+
+ACTION_SFX = {"heart": _heart, "knock": _knock, "buzz": _buzz, "bell": _bell, "drone": _drone, "hit": _hit, "ping": _ping, "glitch": _glitch, "thunder": _thunder, "wings": _wings, "stamp": _stamp, "paper": _paper, "snap": _snap,
               "clock": _clocktick, "fire": lambda sr: _amb_fire(int(sr * 1.5), sr, 9) * 0.3}
