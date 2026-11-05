@@ -270,7 +270,7 @@ function Alert({ ui, f, font }) {
     <div style={{ position: "absolute", left: 60, right: 60, top: 560, textAlign: "center", fontFamily: font }}>
       <div style={{ display: "inline-block", background: N.red, color: "#fff", fontSize: 38, fontWeight: 900, padding: "14px 30px", borderRadius: 12,
         opacity: 0.75 + 0.25 * blink, transform: `scale(${clamp(p, 0, 1.3)})`, boxShadow: glow(N.red, 16) }}>{ui.title || "СРОЧНО"}</div>
-      <div style={{ fontSize: String(ui.big || "").length > 13 ? Math.min(130, 2000 / String(ui.big).length) : Math.min(150, 1300 / Math.max(6, String(ui.big || "").length)), fontWeight: 900, color: N.red, marginTop: 60, textShadow: glow(N.red, 30), whiteSpace: String(ui.big || "").length > 13 ? "normal" : "nowrap", lineHeight: 1.05, padding: "0 40px" }}>{big}</div>
+      <div style={{ fontSize: Math.min(940 / (0.82 * Math.max(4, ...String(ui.big || "").split(/\s+/).map((w) => w.length))), String(ui.big || "").length > 13 ? Math.min(130, 2000 / String(ui.big).length) : Math.min(150, 1300 / Math.max(6, String(ui.big || "").length))), fontWeight: 900, color: N.red, marginTop: 60, textShadow: glow(N.red, 30), whiteSpace: String(ui.big || "").length > 13 ? "normal" : "nowrap", lineHeight: 1.05, padding: "0 40px" }}>{big}</div>
       {ui.sub ? <div style={{ fontSize: 36, color: N.text, fontWeight: 700, marginTop: 24, opacity: clamp(k * 2) }}>{ui.sub}</div> : null}
     </div>
   );
@@ -448,6 +448,53 @@ function Closeup({ ui, f, font }) {
       {[...Array(30)].map((_, i) => <circle key={i} cx={-100 + ((i * 37 + f * 2) % 200)} cy={-100 + ((i * 53 + f * (2 + (i % 3))) % 200)} r={1 + (i % 3)} fill="#fff" opacity=".7" />)}
       {ui.clear ? [0, 1, 2].map((i) => { const k = ((f + i * 12) % 40) / 40; return <circle key={i} cx={55 + k * 40} cy={-25 - k * 30} r={6 + k * 14} fill="#cfd8e0" opacity={0.4 * (1 - k) * easeOut(prog(f, 30, 10))} />; }) : null}
     </svg>);
+  else if (ui.kind === "wall") art = (  // v19: надпись маркером на обоях
+    <svg viewBox="-100 -100 200 200" width="820" height="820">
+      <rect x="-100" y="-100" width="200" height="200" fill="#c9b458" />
+      {[...Array(9)].map((_, i) => <rect key={i} x={-100 + i * 24} y="-100" width="9" height="200" fill="#b39f45" opacity=".6" />)}
+      <rect x="-100" y="-100" width="200" height="200" fill="#000" opacity=".25" />
+      <ellipse cx="40" cy="70" rx="50" ry="22" fill="#6b5a2a" opacity=".35" />
+      {(ui.text || "").split("|").map((ln, i, arr) => (
+        <text key={i} x="0" y={-10 + (i - (arr.length - 1) / 2) * 34} textAnchor="middle" fontSize="21" fontWeight="900" fill="#1a1208"
+          transform={`rotate(${-4 + i * 3})`} opacity={clamp(prog(f, 6 + i * 8, 6))} fontFamily="DejaVu Sans" style={{ letterSpacing: 1 }}>{ln}</text>))}
+      <path d="M-70 56 Q-20 46 60 58" stroke="#1a1208" strokeWidth="3" fill="none" opacity={clamp(prog(f, 26, 6))} />
+    </svg>);
+  else if (ui.kind === "eyes") {  // v19: глаза барса во весь экран, в зрачке отражается герой
+    const bl = ui.blink && f > 30 && f < 36;
+    art = (
+      <svg viewBox="-100 -100 200 200" width="900" height="900">
+        <rect x="-100" y="-100" width="200" height="200" fill="#d8d3c6" />
+        {[[-80, -70], [-60, -84], [70, -76], [86, -50], [-90, 30], [90, 40], [0, -90]].map(([x, y], i) => <circle key={i} cx={x} cy={y} r="7" fill="#33322f" opacity=".7" />)}
+        {[-44, 44].map((x, i) => bl ? <path key={i} d={`M${x - 36} 0 Q${x} 16 ${x + 36} 0`} stroke="#222" strokeWidth="5" fill="none" /> : <g key={i}>
+          <ellipse cx={x} cy="0" rx="38" ry="40" fill="#9fa79a" /><ellipse cx={x} cy="0" rx="33" ry="35" fill="#141412" />
+          <g opacity={0.35 + 0.25 * Math.sin(f / 9)} transform={`translate(${x + 6} 8) scale(.5)`} fill="#e8d98a"><circle cx="0" cy="-30" r="7" /><rect x="-8" y="-22" width="16" height="30" rx="5" /></g>
+          {ui.wrong ? <circle cx={x} cy="0" r="4" fill="#ff2a2a" opacity={0.5 + 0.4 * Math.sin(f / 5)} /> : <circle cx={x + 12} cy="-14" r="7" fill="#fff" />}
+        </g>)}
+      </svg>);
+  }
+  else if (ui.kind === "phone") {  // v19: экран телефона — «фото» барса в жёлтом зале
+    const bl = ui.blink && f > 34 && f < 40;
+    art = (
+      <svg viewBox="-60 -110 120 220" width="470" height="861">
+        <rect x="-58" y="-108" width="116" height="216" rx="14" fill="#0a0a0a" stroke="#2a2a2a" strokeWidth="2" />
+        <rect x="-54" y="-100" width="108" height="200" rx="8" fill="#000" />
+        <rect x="-54" y="-82" width="108" height="112" fill="#c9b458" />
+        {[...Array(5)].map((_, i) => <rect key={i} x={-50 + i * 22} y="-78" width="14" height="4" fill="#fffbe6" />)}
+        <rect x="-54" y="10" width="108" height="20" fill="#8a7a44" />
+        <g transform="translate(4 34) scale(.95)">
+          <ellipse cx="0" cy="-40" rx="30" ry="38" fill="#c7c1b2" />
+          <ellipse cx="0" cy="-86" rx="32" ry="28" fill="#e6e2d8" />
+          {[[-8, -106], [0, -109], [8, -106], [-24, -84], [24, -84]].map(([x, y], i) => <circle key={i} cx={x} cy={y} r="2" fill="#33322f" />)}
+          {[-12, 12].map((x, i) => bl ? <path key={i} d={`M${x - 9} -89 Q${x} -84 ${x + 9} -89`} stroke="#222" strokeWidth="3" fill="none" /> : <g key={i}><ellipse cx={x} cy="-89" rx="9" ry="10" fill="#171614" /><circle cx={x + 3} cy="-93" r="2.6" fill="#fff" /></g>)}
+          <path d="M-4 -76 L4 -76 L0 -71 Z" fill="#3a2a2a" />
+          <ellipse cx="20" cy={-46 - (bl ? 8 : 0)} rx="14" ry="15" fill="#e6e2d8" /><ellipse cx="20" cy={-42 - (bl ? 8 : 0)} rx="7" ry="6" fill="#1c1b19" />
+          {[[-8, -51], [-3, -55], [3, -55], [8, -51]].map(([x, y], i) => <ellipse key={i} cx={20 + x} cy={y - (bl ? 8 : 0)} rx="2.6" ry="3" fill="#1c1b19" />)}
+        </g>
+        <rect x="-50" y="38" width="26" height="9" rx="2" fill="#333" /><text x="-37" y="45" textAnchor="middle" fontSize="6.5" fill="#fff" fontFamily="DejaVu Sans">Фото</text>
+        <text x="-50" y="60" fontSize="6.4" fontWeight="700" fill="#fff" fontFamily="DejaVu Sans" opacity={clamp(prog(f, 10, 8))}>{ui.caption || ""}</text>
+        {[[44, -10, "♥"], [44, 8, "…"], [44, 26, "➦"]].map(([x, y, c], i) => <text key={i} x={x} y={y} fontSize="9" fill="#fff" textAnchor="middle">{c}</text>)}
+      </svg>);
+  }
   return (
     <div style={{ position: "absolute", left: 0, right: 0, top: 300, display: "flex", flexDirection: "column", alignItems: "center", fontFamily: font }}>
       <div style={{ transform: `scale(${z})`, filter: "drop-shadow(0 30px 60px rgba(0,0,0,.7))" }}>{art}</div>
