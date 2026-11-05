@@ -445,6 +445,7 @@ function ThrillFX({ fx = {}, f }) {
     const beat = Math.max(Math.exp(-ph * 14), 0.7 * Math.exp(-Math.abs(ph - 0.16) * 14));
     out.push(<div key="p" style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) ${46 - beat * 8}%, rgba(${fx.red ? "120,0,10" : "0,0,0"},${0.35 + beat * 0.3}) 100%)` }} />);
   }
+  if (fx.gray) out.push(<div key="g" style={{ position: "absolute", inset: 0, background: "#808080", mixBlendMode: "saturation", opacity: fx.gray }} />);  // v19: сон выцветает
   if (fx.red) out.push(<div key="r" style={{ position: "absolute", inset: 0, background: "#ff1a2a", mixBlendMode: "soft-light", opacity: fx.red * (0.6 + 0.4 * Math.sin(f / 6)) }} />);
   return <>{out}</>;
 }
