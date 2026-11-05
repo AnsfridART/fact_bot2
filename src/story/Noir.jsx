@@ -270,7 +270,7 @@ function Alert({ ui, f, font }) {
     <div style={{ position: "absolute", left: 60, right: 60, top: 560, textAlign: "center", fontFamily: font }}>
       <div style={{ display: "inline-block", background: N.red, color: "#fff", fontSize: 38, fontWeight: 900, padding: "14px 30px", borderRadius: 12,
         opacity: 0.75 + 0.25 * blink, transform: `scale(${clamp(p, 0, 1.3)})`, boxShadow: glow(N.red, 16) }}>{ui.title || "СРОЧНО"}</div>
-      <div style={{ fontSize: Math.min(940 / (0.82 * Math.max(4, ...String(ui.big || "").split(/\s+/).map((w) => w.length))), String(ui.big || "").length > 13 ? Math.min(130, 2000 / String(ui.big).length) : Math.min(150, 1300 / Math.max(6, String(ui.big || "").length))), fontWeight: 900, color: N.red, marginTop: 60, textShadow: glow(N.red, 30), whiteSpace: String(ui.big || "").length > 13 ? "normal" : "nowrap", lineHeight: 1.05, padding: "0 40px" }}>{big}</div>
+      <div style={{ fontSize: Math.min(940 / (0.95 * Math.max(4, ...String(ui.big || "").split(/\s+/).map((w) => w.length))), String(ui.big || "").length > 13 ? 999 : 940 / (0.95 * String(ui.big || "").length), String(ui.big || "").length > 13 ? Math.min(130, 2000 / String(ui.big).length) : Math.min(150, 1300 / Math.max(6, String(ui.big || "").length))), fontWeight: 900, color: N.red, marginTop: 60, textShadow: glow(N.red, 30), whiteSpace: String(ui.big || "").length > 13 ? "normal" : "nowrap", lineHeight: 1.05, padding: "0 40px" }}>{big}</div>
       {ui.sub ? <div style={{ fontSize: 36, color: N.text, fontWeight: 700, marginTop: 24, opacity: clamp(k * 2) }}>{ui.sub}</div> : null}
     </div>
   );
@@ -491,7 +491,10 @@ function Closeup({ ui, f, font }) {
           {[[-8, -51], [-3, -55], [3, -55], [8, -51]].map(([x, y], i) => <ellipse key={i} cx={20 + x} cy={y - (bl ? 8 : 0)} rx="2.6" ry="3" fill="#1c1b19" />)}
         </g>
         <rect x="-50" y="38" width="26" height="9" rx="2" fill="#333" /><text x="-37" y="45" textAnchor="middle" fontSize="6.5" fill="#fff" fontFamily="DejaVu Sans">Фото</text>
-        <text x="-50" y="60" fontSize="6.4" fontWeight="700" fill="#fff" fontFamily="DejaVu Sans" opacity={clamp(prog(f, 10, 8))}>{ui.caption || ""}</text>
+        <text x="-50" y="60" fontSize="5.6" fontWeight="700" fill="#fff" fontFamily="DejaVu Sans" opacity={clamp(prog(f, 10, 8))}>{ui.caption || ""}</text>
+        {ui.sleeper ? <g transform="translate(-30 27) scale(.7)" opacity={clamp(prog(f, 14, 10))}>
+          <rect x="-36" y="-16" width="58" height="14" rx="7" fill="#3a4a3a" /><circle cx="30" cy="-10" r="9" fill="#d9b08c" /><path d="M24 -18 Q32 -22 38 -14" stroke="#2a1d14" strokeWidth="4" fill="none" />
+        </g> : null}
         {[[44, -10, "♥"], [44, 8, "…"], [44, 26, "➦"]].map(([x, y, c], i) => <text key={i} x={x} y={y} fontSize="9" fill="#fff" textAnchor="middle">{c}</text>)}
       </svg>);
   }
