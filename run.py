@@ -94,6 +94,54 @@ def clean(text):
     return text.replace("*", "").replace("|", " ")
 
 
+# v17: второй голос для реплик персонажей. Реплика — текст в «ёлочках» после двоеточия или из 3+ слов
+# («безопасный счёт», «майор полиции» остаются основному голосу). Куски озвучиваются отдельно и склеиваются.
+def dialogue_parts(text):
+    import re
+    parts, pos = [], 0
+    for m in re.finditer(r"«([^«»]+)»", text):
+        inner = m.group(1).strip()
+        before = text[pos:m.start()].strip()
+        starts = not before or before[-1] in ".!?…"
+        if not (before.endswith(":") or (starts and len(inner.split()) >= 3)):
+            continue
+        if re.search(r"\w", before):
+            parts.append((False, before))
+        # точка/вопрос сразу после кавычки — это конец реплики, отдаём её второму голосу
+        after = re.match(r"\s*([.!?…]+)", text[m.end():])
+        if after:
+            inner += after.group(1)
+            pos = m.end() + after.end()
+        else:
+            pos = m.end()
+        if inner[-1] not in ".!?…,":
+            inner += "."
+        parts.append((True, inner))
+    tail = text[pos:].strip()
+    if re.search(r"\w", tail):
+        parts.append((False, tail))
+    return parts
+
+
+def synth_voiced(text, wav, mul, voice, voice2):
+    parts = dialogue_parts(text) if voice2 else []
+    if not any(q for q, _ in parts):
+        return tts.synthesize(text, wav, speed_mul=mul, voice=voice)
+    pieces = []
+    for k, (q, chunk) in enumerate(parts):
+        piece = f"{wav}.p{k}.wav"
+        tts.synthesize(chunk, piece, speed_mul=mul, voice=voice2 if q else voice)
+        pieces.append(piece)
+    # склейка с короткой паузой между голосами, приводим всё к одному формату
+    ins = sum([["-i", x] for x in pieces], [])
+    flt = "".join(f"[{k}:a]aformat=sample_rates=48000:channel_layouts=mono,apad=pad_dur=0.12[a{k}];" for k in range(len(pieces)))
+    flt += "".join(f"[a{k}]" for k in range(len(pieces))) + f"concat=n={len(pieces)}:v=0:a=1[out]"
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", *ins, "-filter_complex", flt, "-map", "[out]", wav], check=True)
+    for x in pieces:
+        os.remove(x)
+    return wav
+
+
 # ---------- Сборка данных ----------
 def build_props(s):
     if os.path.isdir(config.PUBLIC_DIR):
@@ -127,7 +175,7 @@ def build_props(s):
         wav = f"seg{i}.wav"
         # v15: хук звучит быстрее и напористее остальных фраз; у истории может быть свой голос и темп
         mul = float(s.get("voice_speed", 1.08 if noir else 1.0)) * (1.1 if p["kind"] == "hook" else 1.0)
-        tts.synthesize(clean(p["text"]), os.path.join(config.PUBLIC_DIR, wav), speed_mul=mul, voice=s.get("voice"))
+        synth_voiced(clean(p["text"]), os.path.join(config.PUBLIC_DIR, wav), mul, s.get("voice"), s.get("voice2"))
         frames, env, first, last = audio_info(os.path.join(config.PUBLIC_DIR, wav))
         gap = 0.0 if p["kind"] == "loop" else 0.12 if p["kind"] in ("scene", "hook") else 0.9 if p["kind"] == "choice" else 0.35
         dur = max(frames + int(gap * FPS), int(1.6 * FPS)) + int(float(p.get("hold", 0)) * FPS)  # v16: «правила» держим дольше, чтобы успели прочитать
