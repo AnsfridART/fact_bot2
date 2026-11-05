@@ -178,6 +178,14 @@ export function Person({ look = {}, anim = "idle", t = 0, mouth = 0, expr, phase
           <path d="M10 -112 L2 -90 L6 -70" stroke={shade(L.shirt, 0.6)} strokeWidth="2" fill="none" /></g>}
         {!L.coat && !L.dress && <path d="M-8 -112 L0 -104 L8 -112" stroke={shade(L.shirt, 0.7)} strokeWidth="2" fill="none" />}
         {L.tie && <path d="M0 -110 L-4 -100 L0 -80 L4 -100 Z" fill={L.tie} />}
+        {L.hood && <g>{/* v16: детали худи — шов, шнурки, карман-кенгуру, резинка */}
+          <line x1="0" y1="-108" x2="0" y2="-60" stroke={shade(L.shirt, 0.7)} strokeWidth="1.2" />
+          <path d="M-6 -110 Q-7 -96 -5 -88" stroke={shade(L.shirt, 1.6)} strokeWidth="1.4" fill="none" strokeLinecap="round" />
+          <path d="M6 -110 Q7 -96 5 -88" stroke={shade(L.shirt, 1.6)} strokeWidth="1.4" fill="none" strokeLinecap="round" />
+          <circle cx="-5" cy="-87" r="1.3" fill={shade(L.shirt, 1.8)} /><circle cx="5" cy="-87" r="1.3" fill={shade(L.shirt, 1.8)} />
+          <path d="M-17 -78 L17 -78 L20 -60 L-20 -60 Z" fill={shade(L.shirt, 0.82)} />
+          <path d="M-17 -78 L-20 -60 M17 -78 L20 -60" stroke={shade(L.shirt, 0.65)} strokeWidth="1" />
+          <rect x="-26" y="-58" width="52" height="6" rx="3" fill={shade(L.shirt, 0.75)} /></g>}
         {held === "rifle" && <g transform="translate(-4 -88) rotate(-12)"><rect x="-6" y="-4" width="60" height="6" rx="2" fill="#3a2d20" /><rect x="40" y="-6" width="26" height="4" fill="#222" /></g>}
         {held === "painting" && <g transform="translate(0 -92)"><rect x="-24" y="-18" width="48" height="58" rx="2" fill="#6b4a22" /><rect x="-19" y="-13" width="38" height="48" fill="#3f5a3f" /><ellipse cx="0" cy="4" rx="9" ry="12" fill="#c49a6c" /></g>}
         {arm(1, p.ra)}
