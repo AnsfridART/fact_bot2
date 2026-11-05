@@ -275,12 +275,72 @@ def _yandex_full(text, wav_path, voice=None, emotion=None, speed=None):
     return wav_path
 
 
+# v17: голоса, которые есть только в API v3 (у них же роли strict/good и сдвиг тона)
+V1_VOICES = {"filipp", "ermil", "jane", "omazh", "zahar", "marina", "madirus", "madi_ru", "alena"}
+
+
+def parse_voice(spec):
+    """«kirill:strict:-150» → ("kirill", "strict", -150). Роль и сдвиг тона (Гц) необязательны."""
+    parts = (spec or "").split(":")
+    voice = parts[0] or config.YANDEX_VOICE
+    role = parts[1] if len(parts) > 1 and parts[1] else None
+    pitch = float(parts[2]) if len(parts) > 2 and parts[2] else 0.0
+    return voice, role, pitch
+
+
+def _yandex_v3(text, wav_path, voice, role=None, speed=1.0, pitch=0.0):
+    import base64, json as _json, time
+    hints = [{"voice": voice}, {"speed": float(speed)}]
+    if role:
+        hints.append({"role": role})
+    if pitch:
+        hints.append({"pitchShift": float(pitch)})
+    body = {"text": text, "hints": hints, "unsafeMode": True, "loudnessNormalizationType": "LUFS",
+            "outputAudioSpec": {"rawAudio": {"audioEncoding": "LINEAR16_PCM", "sampleRateHertz": 48000}}}
+    headers = {"Authorization": f"Api-Key {config.SPEECHKIT_API_KEY}"}
+    if config.YC_FOLDER_ID:
+        headers["x-folder-id"] = config.YC_FOLDER_ID
+    r = None
+    for pause in (0, 2, 5):
+        time.sleep(pause)
+        r = requests.post("https://tts.api.cloud.yandex.net/tts/v3/utteranceSynthesis", headers=headers, json=body, timeout=90)
+        if r.ok or r.status_code in (400, 401, 403):
+            break
+    if not r.ok:
+        raise RuntimeError(f"SpeechKit v3 {r.status_code}: {r.text[:300]}")
+    pcm = b""
+    for line in r.text.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        chunk = _json.loads(line).get("result", {}).get("audioChunk", {}).get("data")
+        if chunk:
+            pcm += base64.b64decode(chunk)
+    if not pcm:
+        raise RuntimeError("SpeechKit v3: пустой ответ")
+    raw = wav_path + ".raw.wav"
+    _write_wav(raw, np.frombuffer(pcm, dtype=np.int16), 48000)
+    trim = "silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.02,"
+    _ffmpeg(raw, wav_path, trim + PRESETS[config.YANDEX_PRESET if config.YANDEX_PRESET in PRESETS else "clean"])
+    os.remove(raw)
+    return wav_path
+
+
+def yandex_say(text, wav_path, spec=None, speed=None):
+    """Единая точка для SpeechKit: спецификация голоса «голос[:роль[:тон]]» — сама выбирает API v1 или v3."""
+    voice, role, pitch = parse_voice(spec or config.YANDEX_VOICE)
+    sp = speed or float(config.YANDEX_SPEED)
+    if voice in V1_VOICES and not pitch and role in (None, "neutral", "good", "evil"):
+        return _yandex_full(text, wav_path, voice=voice, emotion=role, speed=sp)
+    return _yandex_v3(text, wav_path, voice, role, sp, pitch)
+
+
 def synthesize(text: str, wav_path: str, speed_mul: float = 1.0, voice: str = None) -> str:
     """speed_mul > 1 — быстрее (v15: хук бодрее); voice — свой голос SpeechKit для истории."""
     if config.TTS_ENGINE == "yandex" and config.SPEECHKIT_API_KEY:
         try:
             sp = round(min(1.6, float(config.YANDEX_SPEED) * speed_mul), 2)
-            return _yandex_full(text, wav_path, voice=voice, speed=sp)
+            return yandex_say(text, wav_path, spec=voice, speed=sp)
         except Exception as e:
             print("SpeechKit не сработал, запасной голос Microsoft:", e)
             try:
