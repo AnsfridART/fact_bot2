@@ -412,12 +412,51 @@ export function Tape({ text, f, font }) {
     <div style={{ position: "absolute", left: -120, right: -120, top: 640, height: 150, transform: `rotate(-7deg) translateX(${out * 1400}px)`,
       background: N.red, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 18px 50px rgba(0,0,0,.5)",
       borderTop: "6px solid #fff", borderBottom: "6px solid #fff" }}>
-      <div style={{ fontFamily: font, fontWeight: 900, fontSize: 104, color: "#fff", letterSpacing: 4, whiteSpace: "nowrap" }}>{text}</div>
+      <div style={{ fontFamily: font, fontWeight: 900, fontSize: Math.min(104, 1350 / Math.max(8, text.length)), color: "#fff", letterSpacing: 4, whiteSpace: "nowrap" }}>{text}</div>
     </div>
   );
 }
 
-const UI = { rules: Rules, reveal: Reveal, case: Case, notify: Notify, wallet: Wallet, chat: Chat, card: Card, doc: Doc, table: Table, timer: Timer, alert: Alert, chain: Chain, call: Call, form: Form };
+// v18: крупные планы предметов для триллеров — датчик дыма, блик объектива, глазок, выхлопная труба
+function Closeup({ ui, f, font }) {
+  const z = 1 + 0.08 * easeOut(prog(f, 0, 60));
+  const glint = ui.glint ? (f > 18 ? 0.6 + 0.4 * Math.sin(f / 3) : 0) : 0;
+  let art = null;
+  if (ui.kind === "detector") art = (
+    <svg viewBox="-100 -100 200 200" width="760" height="760">
+      <circle r="90" fill="#d9d6cf" /><circle r="70" fill="#cdc9c0" /><circle r="70" fill="none" stroke="#b9b4aa" strokeWidth="2" />
+      {[...Array(12)].map((_, i) => <rect key={i} x="-3" y="-62" width="6" height="22" rx="3" fill="#b6b0a5" transform={`rotate(${i * 30})`} />)}
+      <circle r="26" fill="#c4bfb5" />
+      <circle cx="24" cy="38" r="5" fill="#300" /><circle cx="24" cy="38" r="3" fill="#ff2a2a" opacity={(f >> 4) % 2 ? 1 : 0.3} />
+      <circle cx="-18" cy="-6" r="4" fill="#111" />
+      {glint ? <g opacity={glint}><circle cx="-18" cy="-6" r="22" fill="#8fd8ff" opacity=".35" /><circle cx="-18" cy="-6" r="9" fill="#bfeaff" /><path d="M-18 -46 L-14 -10 L22 -6 L-14 -2 L-18 34 L-22 -2 L-58 -6 L-22 -10 Z" fill="#fff" /></g> : null}
+    </svg>);
+  else if (ui.kind === "peephole") art = (
+    <svg viewBox="-100 -100 200 200" width="760" height="760">
+      <circle r="96" fill="#000" /><circle r="80" fill="#2a2a20" />
+      <defs><radialGradient id="ph"><stop offset="0" stopColor="#d8c48a" stopOpacity=".55" /><stop offset="1" stopColor="#000" stopOpacity=".95" /></radialGradient></defs>
+      <rect x="-80" y="-80" width="160" height="160" fill="url(#ph)" />
+      <g transform={`translate(${Math.sin(f / 20) * 3} 0)`}><ellipse cx="0" cy="-12" rx="22" ry="27" fill="#1a1712" /><path d="M-48 80 Q-44 18 0 14 Q44 18 48 80 Z" fill="#14120e" />{ui.who === "neighbor" ? <rect x="-14" y="-18" width="28" height="6" rx="3" fill="#8a7a55" opacity=".6" /> : null}</g>
+      <circle r="80" fill="none" stroke="#000" strokeWidth="18" />
+    </svg>);
+  else if (ui.kind === "exhaust") art = (
+    <svg viewBox="-100 -100 200 200" width="760" height="760">
+      <rect x="-100" y="-100" width="200" height="200" fill="#0b1a24" />
+      <path d="M-100 20 Q0 -10 100 25 L100 100 L-100 100 Z" fill="#e9eef3" />
+      <rect x="-90" y="-40" width="130" height="34" rx="6" fill="#2b2f33" /><ellipse cx="40" cy="-23" rx="10" ry="17" fill="#111" />
+      <ellipse cx="40" cy="-23" rx={10 * (1 - easeOut(prog(f, 20, 30)) * 0)} ry="17" fill="#f3f6f8" opacity={ui.clear ? 1 - easeOut(prog(f, 10, 30)) : 1} />
+      {[...Array(30)].map((_, i) => <circle key={i} cx={-100 + ((i * 37 + f * 2) % 200)} cy={-100 + ((i * 53 + f * (2 + (i % 3))) % 200)} r={1 + (i % 3)} fill="#fff" opacity=".7" />)}
+      {ui.clear ? [0, 1, 2].map((i) => { const k = ((f + i * 12) % 40) / 40; return <circle key={i} cx={55 + k * 40} cy={-25 - k * 30} r={6 + k * 14} fill="#cfd8e0" opacity={0.4 * (1 - k) * easeOut(prog(f, 30, 10))} />; }) : null}
+    </svg>);
+  return (
+    <div style={{ position: "absolute", left: 0, right: 0, top: 300, display: "flex", flexDirection: "column", alignItems: "center", fontFamily: font }}>
+      <div style={{ transform: `scale(${z})`, filter: "drop-shadow(0 30px 60px rgba(0,0,0,.7))" }}>{art}</div>
+      {ui.label ? <div style={{ marginTop: 10, fontSize: 30, letterSpacing: 6, fontWeight: 900, color: N.acc, opacity: clamp(prog(f, 8, 8)) }}>{ui.label}</div> : null}
+    </div>
+  );
+}
+
+const UI = { closeup: Closeup, rules: Rules, reveal: Reveal, case: Case, notify: Notify, wallet: Wallet, chat: Chat, card: Card, doc: Doc, table: Table, timer: Timer, alert: Alert, chain: Chain, call: Call, form: Form };
 export function UiCard({ ui, f, font, dur, instant }) {
   const C = UI[ui.type];
   if (!C) return null;
