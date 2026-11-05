@@ -182,7 +182,7 @@ def build_props(s):
         seg = {"kind": p["kind"], "start": start, "dur": dur, "audio": wav, "env": env,
                "words": word_timings(p["text"].replace("|", " "), first, last)}
         for k in ("title", "emotion", "tag", "alert", "cam", "big", "bg", "actors", "focus", "tint", "camY", "insert", "count", "map", "angle", "weather", "lights",
-                  "ui", "hud", "uiAt", "options", "question", "hint", "next", "clue", "nextTitle", "tape"):
+                  "ui", "hud", "uiAt", "options", "question", "hint", "next", "clue", "nextTitle", "tape", "fx"):
             if p.get(k) is not None:  # focus=0 — тоже значение
                 seg[k] = p[k]
         if p["kind"] in ("scene", "hook") and not (p.get("bg") or p.get("actors") or p.get("map") or p.get("ui")):
@@ -195,6 +195,8 @@ def build_props(s):
                 prev = next((x["image"] for x in reversed(segments) if x.get("image")), None)
                 if prev:
                     seg["image"] = prev
+        if p.get("sfx") and p["kind"] != "hook":
+            seg["sfx_list"] = p["sfx"]
         if p["kind"] == "hook" and dur > 3.5 * FPS:  # v14: длинный хук — главная причина ухода в первые секунды
             WARNINGS.append(f"хук длится {dur / FPS:.1f} с (лучше до 3 с): «{clean(p['text'])}»")
         segments.append(seg)
@@ -206,6 +208,7 @@ def build_props(s):
         props["hudLabels"] = s.get("hud_labels")
         props["part"] = s.get("part")
         props["theme"] = s.get("theme", "noir")
+        props["thriller"] = s.get("mode") == "thriller"
     # музыка: свои треки из папки music/, иначе генерируем загадочный эмбиент (подмешивается после рендера)
     tracks = glob.glob(os.path.join(config.MUSIC_DIR, "*.mp3"))
     try:
@@ -224,7 +227,11 @@ def build_props(s):
         WARNINGS.append(f"музыка не сгенерировалась: {e}")
     # звуковые эффекты: удар + свуш на первом кадре, свуш на смене сцен, удар на финальной фразе
     try:
+        thr = s.get("mode") == "thriller"
         ev = [(0.0, "boom", 0.8), (0.0, "whoosh", 0.6)]
+        h0 = (s.get("hook") or {})
+        for kind, at, vol in h0.get("sfx", []):
+            ev.append((at * (segments[0]["dur"] / FPS if segments else 0), kind, vol))
         if noir and segments:  # уведомление в хуке
             h = segments[0]
             hu = h.get("ui") or []
@@ -253,8 +260,14 @@ def build_props(s):
                     ev += [(t0 + k / FPS, "thunder", 0.8) for k in range(0, sg["dur"], every)]
                 if a.get("anim") == "fly" and a.get("kind") in ("crow", "crows"):
                     ev.append((t0 + 0.1, "wings", 0.6))
+            if thr:  # v18: звуки триллера — сердце по темпу сцены и события из сценария
+                bpm = (sg.get("fx") or {}).get("pulse")
+                if bpm:
+                    ev += [(t0 + k * 60 / bpm, "heart", 0.75) for k in range(int(sg["dur"] / FPS * bpm / 60) + 1)]
+            for kind, at, vol in sg.get("sfx_list", []):
+                ev.append((t0 + sg["dur"] * at / FPS, kind, vol))
             if noir:  # v15: звуки интерфейсов и монтажа
-                if sg["kind"] in ("scene", "choice") and t0 > 0:
+                if sg["kind"] in ("scene", "choice") and t0 > 0 and not thr:
                     ev.append((t0, "glitch", 0.45))
                 uis = sg.get("ui") or []
                 uis = uis if isinstance(uis, list) else [uis]
