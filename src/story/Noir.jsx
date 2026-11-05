@@ -31,6 +31,7 @@ export function fmt(n, dec = 0, spaced = true) {
   return (n < 0 ? "-" : "") + ii + (d ? "." + d : "");
 }
 function tweenValue(a, b, k) {
+  if (a === b || k >= 1 || a === undefined) return b ?? "";  // v15.1: без лишнего пересчёта («02:47» не превращается в «2:47»)
   const pa = parseNum(a), pb = parseNum(b);
   if (!pb) return b ?? "";
   if (!pa || pa.pre !== pb.pre || pa.post !== pb.post) return b;
@@ -97,8 +98,8 @@ function Phone({ children, f, at = 0, w = 620, h = 860, top = 380 }) {
 }
 
 // ---------- Карточки интерфейсов ----------
-function Notify({ ui, f, font, top = 330 }) {
-  const p = pop(f, 0, 8);
+function Notify({ ui, f, font, top = 330, instant }) {
+  const p = instant ? 1 + 0.06 * Math.sin(Math.min(1, f / 10) * Math.PI) : pop(f, 0, 8);
   return (
     <div style={{ position: "absolute", left: 90, right: 90, top: top - 160 * (1 - clamp(p)), opacity: clamp(p * 2), fontFamily: font,
       background: "rgba(250,248,255,.96)", borderRadius: 34, padding: "26px 30px", display: "flex", gap: 24, alignItems: "center",
@@ -126,7 +127,7 @@ function Wallet({ ui, f, font }) {
         <div style={{ fontSize: 34, fontWeight: 800, textAlign: "left", marginBottom: 40 }}>{ui.title || "Кошелёк"}</div>
         <div style={{ width: 150, height: 150, borderRadius: "50%", margin: "0 auto 40px", background: ui.color || "#f7931a", color: "#fff",
           fontSize: 92, fontWeight: 900, lineHeight: "150px", boxShadow: glow(ui.color || "#f7931a", 22) }}>{ui.icon || "₿"}</div>
-        <div style={{ fontSize: 92, fontWeight: 900, letterSpacing: -2, color: done ? N.text : "#fff",
+        <div style={{ fontSize: Math.min(92, 540 / (fmt(to, dec, Math.abs(to) >= 10000).length * 0.72)), fontWeight: 900, letterSpacing: -2, color: done ? N.text : "#fff", whiteSpace: "nowrap",
           transform: `scale(${done ? 1 + 0.08 * (1 - easeOut(prog(f, 8 + (ui.len || 40), 8))) : 1})` }}>{fmt(n, dec, Math.abs(to) >= 10000)}</div>
         <div style={{ fontSize: 34, color: N.dim, fontWeight: 700, marginTop: 6 }}>{ui.unit || "BTC"}</div>
         {ui.sub ? <div style={{ fontSize: 40, color: N.green, fontWeight: 800, marginTop: 24, opacity: clamp(k * 1.5) }}>{ui.sub}</div> : null}
@@ -368,10 +369,10 @@ function Case({ ui, f, font }) {
 }
 
 const UI = { reveal: Reveal, case: Case, notify: Notify, wallet: Wallet, chat: Chat, card: Card, doc: Doc, table: Table, timer: Timer, alert: Alert, chain: Chain, call: Call, form: Form };
-export function UiCard({ ui, f, font, dur }) {
+export function UiCard({ ui, f, font, dur, instant }) {
   const C = UI[ui.type];
   if (!C) return null;
-  return <C ui={ui} f={f} font={font} dur={dur} />;
+  return <C ui={ui} f={f} font={font} dur={dur} instant={instant} />;
 }
 
 // ---------- Эффекты стиля поверх кадра ----------
