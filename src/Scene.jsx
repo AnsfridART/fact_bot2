@@ -439,8 +439,9 @@ function NoirScene({ seg, f, font, idx }) {
       <div style={{ position: "absolute", inset: 0 }}>
         <StageView seg={{ ...seg, style: "noir" }} f={f} mouth={mouth} font={font} transition="none" />
         {over.map((u, i) => {
-          const at = Math.floor(seg.dur * (u.at ?? (hook ? 0.12 : 0.25)));
-          return f >= at ? <UiCard key={i} ui={u} f={f - at} font={font} dur={seg.dur - at} /> : null;
+          // v15.1: в хуке уведомление с деньгами видно уже на кадре 0 — это главный «крючок» ленты
+          const at = hook ? 0 : Math.floor(seg.dur * (u.at ?? 0.25));
+          return f >= at ? <UiCard key={i} ui={u} f={f - at} font={font} dur={seg.dur - at} instant={hook} /> : null;
         })}
       </div>
     );
