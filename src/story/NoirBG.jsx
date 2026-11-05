@@ -293,7 +293,73 @@ function CarSnow({ P, t, lights = false }) {
   </g>);
 }
 
-const MAP = { hallway: Hallway, hallway_feet: (p) => <Hallway {...p} feet />, stairwell: Stairwell, car_snow: CarSnow, car_snow_lights: (p) => <CarSnow {...p} lights />, room: Room, noir_room: Room, hacker_room: Room, street: Street, noir_city: Street, interrogation: Interrogation, n_office: Office, office: Office, police_street: PoliceStreet };
+
+// ---------- v19: бэкрумс — бесконечные жёлтые залы, лампы-панели, колонны, мокрый ковёр ----------
+function Backrooms({ P, t, exit = false }) {
+  const Zf = exit ? 3.2 : 10, W = 330, CY = -230, FY = 160;
+  const pr = (X, Y, Z) => [135 + X / Z, 255 + Y / Z];
+  const pts = (a) => a.map((q) => q.join(",")).join(" ");
+  const wall = P.wall, wall2 = mix(P.wall, "#000000", 0.18), ceil = mix(P.wall, "#ffffff", 0.35), carpet = P.floor;
+  const zs = []; for (let z = 0.6; z < Zf; z += 0.42) zs.push(z);
+  const lamps = []; for (const z of [1.15, 2.05, 2.95, 3.85, 5.2, 6.55, 7.9]) if (z + 0.35 < Zf) for (const x of [-140, 140]) lamps.push([x, z]);
+  const pillars = exit ? [[-190, 2.0]] : [[-175, 2.6], [175, 3.4], [-175, 5.6], [175, 7.2]];
+  return (<g>
+    <rect x="-200" y="-200" width="670" height="455" fill={ceil} />
+    <rect x="-200" y="255" width="670" height="425" fill={carpet} />
+    {/* потолочная сетка */}
+    {zs.map((z, i) => { const [x1, y] = pr(-W, CY, z), [x2] = pr(W, CY, z); return <line key={"cz" + i} x1={x1} y1={y} x2={x2} y2={y} stroke={mix(ceil, "#000000", 0.18)} strokeWidth={1.4 / Math.sqrt(z)} />; })}
+    {[...Array(11)].map((_, i) => { const X = -W + i * 66, a = pr(X, CY, 0.5), b = pr(X, CY, Zf); return <line key={"cx" + i} x1={a[0]} y1={a[1]} x2={b[0]} y2={b[1]} stroke={mix(ceil, "#000000", 0.18)} strokeWidth="1" />; })}
+    {/* лампы */}
+    {lamps.map(([x, z], i) => {
+      const on = (Math.floor(t / 3) * 7919 + i * 131) % 37 < (i === 3 ? 6 : 1) ? 0.25 : 1;
+      const q = [pr(x - 42, CY + 1, z), pr(x + 42, CY + 1, z), pr(x + 42, CY + 1, z + 0.35), pr(x - 42, CY + 1, z + 0.35)];
+      const [gx, gy] = pr(x, FY, z + 0.2);
+      return <g key={"l" + i}><polygon points={pts(q)} fill="#fffbe6" opacity={on} />
+        <ellipse cx={gx} cy={gy} rx={90 / z} ry={22 / z} fill="#fff6c8" opacity={0.14 * on} /></g>;
+    })}
+    {/* боковые стены с полосами обоев */}
+    {[-1, 1].map((d) => <g key={"w" + d}>
+      <polygon points={pts([pr(d * W, CY, 0.5), pr(d * W, CY, Zf), pr(d * W, FY, Zf), pr(d * W, FY, 0.5)])} fill={wall2} />
+      {zs.map((z, i) => { const a = pr(d * W, CY, z), b = pr(d * W, FY, z); return <line key={i} x1={a[0]} y1={a[1]} x2={b[0]} y2={b[1]} stroke={mix(wall2, "#000000", 0.12)} strokeWidth={2.2 / z} />; })}
+      <polygon points={pts([pr(d * W, FY - 14, 0.5), pr(d * W, FY - 14, Zf), pr(d * W, FY, Zf), pr(d * W, FY, 0.5)])} fill={mix(wall2, "#000000", 0.3)} />
+    </g>)}
+    {/* дальняя стена */}
+    <polygon points={pts([pr(-W, CY, Zf), pr(W, CY, Zf), pr(W, FY, Zf), pr(-W, FY, Zf)])} fill={wall} />
+    {[...Array(15)].map((_, i) => { const X = -W + 22 + i * 44, a = pr(X, CY, Zf), b = pr(X, FY, Zf); return <line key={"fw" + i} x1={a[0]} y1={a[1]} x2={b[0]} y2={b[1]} stroke={wall2} strokeWidth={6 / Zf} />; })}
+    {exit ? (() => {
+      const [dx1, dy1] = pr(-38, FY - 205, Zf), [dx2, dy2] = pr(38, FY, Zf), [sx, sy] = pr(0, FY - 240, Zf);
+      const glow = 0.75 + 0.25 * Math.sin(t / 6);
+      return <g>
+        <rect x={dx1 - 3} y={dy1 - 3} width={dx2 - dx1 + 6} height={dy2 - dy1 + 3} fill={mix(wall, "#000000", 0.45)} />
+        <rect x={dx1} y={dy1} width={dx2 - dx1} height={dy2 - dy1} fill="#5a4a2a" />
+        <rect x={dx1 + 2} y={dy1 + 2} width={dx2 - dx1 - 4} height={dy2 - dy1 - 2} fill="none" stroke="#3a2f1a" strokeWidth="1.2" />
+        <circle cx={dx2 - 7} cy={(dy1 + dy2) / 2} r="2" fill="#d8c88a" />
+        <rect x={dx1} y={dy2 - 2} width={dx2 - dx1} height="2" fill="#fff4c0" opacity=".9" />
+        <rect x={sx - 22} y={sy - 7} width="44" height="13" rx="2" fill="#0d3a1c" />
+        <text x={sx} y={sy + 3} textAnchor="middle" fontSize="9" fontWeight="900" fill="#5dff8a" opacity={glow} fontFamily="DejaVu Sans">ВЫХОД</text>
+        <ellipse cx={sx} cy={sy} rx="40" ry="18" fill="#5dff8a" opacity={0.12 * glow} />
+      </g>;
+    })() : null}
+    {/* колонны */}
+    {pillars.sort((a, b) => b[1] - a[1]).map(([X, z], i) => {
+      const [x1, y1] = pr(X - 24, CY, z), [x2, y2] = pr(X + 24, FY, z), [xs] = pr(X + (X < 0 ? 24 : -24), CY, z + 0.18);
+      const side = X < 0 ? [[x2, y1], [xs, pr(0, CY, z + 0.18)[1]], [xs, pr(0, FY, z + 0.18)[1]], [x2, y2]] : [[x1, y1], [xs, pr(0, CY, z + 0.18)[1]], [xs, pr(0, FY, z + 0.18)[1]], [x1, y2]];
+      return <g key={"p" + i}>
+        <polygon points={pts(side)} fill={mix(wall, "#000000", 0.28)} />
+        <rect x={x1} y={y1} width={x2 - x1} height={y2 - y1} fill={wall} />
+        {[0.25, 0.5, 0.75].map((k, j) => <line key={j} x1={x1 + (x2 - x1) * k} y1={y1} x2={x1 + (x2 - x1) * k} y2={y2} stroke={wall2} strokeWidth={2.4 / z} />)}
+        <rect x={x1} y={y2 - 14 / z} width={x2 - x1} height={14 / z} fill={mix(wall, "#000000", 0.35)} />
+      </g>;
+    })}
+    {/* дымка к горизонту и пятна на ковре */}
+    <defs><radialGradient id="brh" cx=".5" cy=".5" r=".5"><stop offset="0" stopColor="#fff3b0" stopOpacity=".55" /><stop offset="1" stopColor="#fff3b0" stopOpacity="0" /></radialGradient></defs>
+    <ellipse cx="135" cy="255" rx="150" ry="70" fill="url(#brh)" />
+    {[[60, 380, 40], [210, 420, 55], [150, 330, 26], [-20, 450, 60]].map(([x, y, r], i) => <ellipse key={"s" + i} cx={x} cy={y} rx={r} ry={r * 0.28} fill="#000" opacity=".1" />)}
+    <rect x="-200" y="255" width="670" height="425" fill="#000" opacity=".08" />
+  </g>);
+}
+
+const MAP = { backrooms: Backrooms, backrooms_exit: (p) => <Backrooms {...p} exit />, hallway: Hallway, hallway_feet: (p) => <Hallway {...p} feet />, stairwell: Stairwell, car_snow: CarSnow, car_snow_lights: (p) => <CarSnow {...p} lights />, room: Room, noir_room: Room, hacker_room: Room, street: Street, noir_city: Street, interrogation: Interrogation, n_office: Office, office: Office, police_street: PoliceStreet };
 export const NOIR_BGS = Object.keys(MAP);
 
 export function NoirBackground({ name, t = 0, P }) {
