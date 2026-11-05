@@ -23,6 +23,7 @@ SPEECHKIT_API_KEY = os.getenv("SPEECHKIT_API_KEY")
 YANDEX_VOICE = os.getenv("YANDEX_VOICE", "madirus")        # filipp, ermil, zahar, madirus, alexander...
 YANDEX_EMOTION = os.getenv("YANDEX_EMOTION", "none")     # good / neutral (у ermil), пусто — без эмоции
 YANDEX_SPEED = os.getenv("YANDEX_SPEED", "1.05")
+YANDEX_PRESET = os.getenv("YANDEX_PRESET", "clean")    # обработка голоса: clean / deep / energetic
 YC_FOLDER_ID = os.getenv("YC_FOLDER_ID")
 FALLBACK_VOICE = "ru-RU-DmitryNeural"      # запасной голос edge-tts
 
