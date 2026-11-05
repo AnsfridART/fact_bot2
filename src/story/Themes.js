@@ -46,6 +46,13 @@ export const THEMES = {
     grade: { filter: "grayscale(.75) contrast(1.15)", overlay: "radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 40%, rgba(0,0,0,.75) 100%)" },
     fear: "#e01e2e", hope: "#d8d8d8", rim: "#e01e2e", weather: null, music: "mystery",
   },
+  // v19: бэкрумс — болезненно-жёлтый свет, гул ламп, мокрый ковёр
+  backrooms: {
+    ui: { bg: "#0d0b04", panel: "#17140a", panel2: "#211d0e", line: "#3a3318", acc: "#ffe14a", yellow: "#ffe14a", red: "#ff3b3b", cyan: "#f2e8b0", text: "#fbf6dc", dim: "#a99d6a", good: "#ffe14a", warn: "#ff9a3c", light: false },
+    bg: { sky: "#2a2410", wall: "#c9b458", wall2: "#b39f45", floor: "#8a7a44", furn: "#a8954a", furn2: "#b9a552", wood: "#6b5a2a", light: "#fff8d2", neon: "#ffe14a", neon2: "#ff3b3b", screen: "#fff3b0", window: "#fff8d2" },
+    grade: { filter: "saturate(1.05) contrast(1.06)", overlay: "radial-gradient(ellipse at 50% 42%, rgba(0,0,0,0) 45%, rgba(20,14,0,.7) 100%)" },
+    fear: "#ff3b3b", hope: "#fff3b0", rim: "#ffe14a", weather: null, music: "mystery",
+  },
 };
 
 // атмосфера по умолчанию по теме истории (если в сценарии не указано "theme")
