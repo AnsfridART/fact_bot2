@@ -250,6 +250,12 @@ function cameraFor(seg, f, actors) {
     if (a) {
       const p = actorPos(a, 0), s = a.s ?? 1;
       const head = a.kind === "person" ? 140 : a.kind === "emu" ? 110 : 40;
+      if (seg.style === "noir") {
+        // v17: в нуаре лицо держим ~1.3 с (пока висит лента), потом только до среднего плана — не на общий
+        const k = easeInOut(prog(f, 40, 12));
+        z = lerp(2.4, 1.75, k); cx = lerp(p.x, lerp(135, p.x, 0.6), k); cy = lerp(p.y - head * s + 6, p.y - 100 * s, k);
+        return { z: z + 0.04 * Math.sin(f / 20), cx: cx + sx, cy: cy + sy };
+      }
       const k = easeInOut(prog(f, 4, 14));            // 4 кадра держим лицо, затем отъезд
       z = lerp(2.4, z, k); cx = lerp(p.x, cx, k); cy = lerp(p.y - head * s + 6, cy, k);
     }
