@@ -552,7 +552,7 @@ function NoirCover({ data, seg, font }) {
       </div>
       <div style={{ position: "absolute", top: 430, left: 50, right: 50, textAlign: "center", fontFamily: font, fontWeight: 900, textTransform: "uppercase", lineHeight: 1.04, ...outline(18) }}>
         {lines.map((line, i) => (
-          <div key={i} style={{ fontSize: Math.min(124, 960 / Math.max(4, line.replace(/\*/g, "").length * 0.72)) }}>
+          <div key={i} style={{ fontSize: Math.min(124, 940 / Math.max(4, line.replace(/\*/g, "").length * 0.86)) }}>
             {parseWords(line).map((w, k) => <span key={k} style={{ color: w.key ? N.acc : "#fff" }}>{(k ? " " : "") + w.w}</span>)}
           </div>
         ))}
