@@ -6,6 +6,9 @@ import { Insert } from "./story/Inserts.jsx";
 import { MapScene } from "./story/Map.jsx";
 import { NoirHUD, UiCard, UiBackdrop, NoirFX, NoirCaptions, ChoiceScreen, N, applyTheme, Tape } from "./story/Noir.jsx";
 import { Stage as StageView, NOIR_SHOT } from "./story/Stage.jsx";
+import { THEMES } from "./story/Themes.js";
+// v17: хук (и петля в конце) у светлых атмосфер всегда тёмный — светлый первый кадр теряется в ленте
+const hookTheme = (name, seg) => ((seg.kind === "hook" || seg.kind === "loop") && THEMES[name] && THEMES[name].ui.light ? "noir" : name);
 
 const S = 4; // сцена рисуется в координатах 270x480, а выводится в 1080x1920
 const GOLD = "#F2B84B";
@@ -476,7 +479,7 @@ function NoirScene({ seg, f, font, idx, th, chance = 100 }) {
 }
 
 function NoirFrame({ segs, seg, f, frame, data, font, src, ImgComp }) {
-  const th = applyTheme(data.theme);
+  const th = applyTheme(hookTheme(data.theme, seg));
   const i = segs.indexOf(seg);
   const chance = (hudState(segs, i) || {}).chance ?? 100;
   let body;
@@ -537,7 +540,7 @@ export function Scene({ frame, data, src, ImgComp, font = "Montserrat, DejaVu Sa
 
 // Обложка ролика: кадр из начала истории, плашка «ИСТОРИЯ #N», крупный заголовок.
 function NoirCover({ data, seg, font }) {
-  const th = applyTheme(data.theme);
+  const th = applyTheme(hookTheme(data.theme, { kind: "hook" }));
   const lines = (seg.title || "").split("|").filter(Boolean);
   return (
     <div style={{ position: "absolute", inset: 0, width: 1080, height: 1920, overflow: "hidden", background: N.bg }}>
