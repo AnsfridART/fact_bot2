@@ -425,7 +425,31 @@ function hudState(segs, i) {
   return st;
 }
 
-function NoirScene({ seg, f, font, idx, th, chance = 100 }) {
+// v18 «триллер»: темнота, луч фонаря, мигающий свет, пульс сердца, красная тревога — всё задаётся в сцене полем fx
+function ThrillFX({ fx = {}, f }) {
+  const out = [];
+  const dark = fx.dark || 0;
+  let flick = 0;
+  if (fx.flicker) {  // свет «моргает» короткими провалами
+    const ph = (f * 7919 + 13) % 97;
+    flick = ph < 6 ? 0.85 : ph < 9 ? 0.4 : 0;
+    if (f % 53 < 3) flick = 0.9;
+  }
+  if (dark || flick) out.push(<div key="d" style={{ position: "absolute", inset: 0, background: "#000", opacity: Math.max(dark * 0.6, flick) }} />);
+  if (fx.torch) {  // луч фонаря медленно гуляет по кадру, вокруг почти полная темнота
+    const x = 540 + Math.sin(f / 23) * 260, y = 820 + Math.cos(f / 31) * 220;
+    out.push(<div key="t" style={{ position: "absolute", inset: 0, background: `radial-gradient(circle at ${x}px ${y}px, rgba(0,0,0,0) 0, rgba(0,0,0,0) 240px, rgba(0,0,0,.55) 380px, rgba(0,0,0,.9) 600px)` }} />);
+  }
+  if (fx.pulse) {  // виньетка бьётся в такт сердцу
+    const period = 1800 / fx.pulse, ph = (f % period) / period;
+    const beat = Math.max(Math.exp(-ph * 14), 0.7 * Math.exp(-Math.abs(ph - 0.16) * 14));
+    out.push(<div key="p" style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) ${46 - beat * 8}%, rgba(${fx.red ? "120,0,10" : "0,0,0"},${0.35 + beat * 0.3}) 100%)` }} />);
+  }
+  if (fx.red) out.push(<div key="r" style={{ position: "absolute", inset: 0, background: "#ff1a2a", mixBlendMode: "soft-light", opacity: fx.red * (0.6 + 0.4 * Math.sin(f / 6)) }} />);
+  return <>{out}</>;
+}
+
+function NoirScene({ seg, f, font, idx, th, chance = 100, thr = false }) {
   th = th || applyTheme(null);
   const uis = seg.ui ? (Array.isArray(seg.ui) ? seg.ui : [seg.ui]) : [];
   const hasStage = !!(seg.actors || seg.bg);
@@ -467,11 +491,12 @@ function NoirScene({ seg, f, font, idx, th, chance = 100 }) {
     );
   }
   // «глитч» на входе в сцену: кадр дёргается по горизонтали
-  const jitter = !hook && f < 5 ? Math.sin(f * 7.3 + idx) * 26 * (1 - f / 5) : 0;
+  const jitter = !hook && !thr && f < 5 ? Math.sin(f * 7.3 + idx) * 26 * (1 - f / 5) : 0;
   return (
     <div style={{ position: "absolute", inset: 0, overflow: "hidden", background: N.bg, transform: `translateX(${jitter}px)` }}>
       {body}
-      <NoirFX f={f} flash={flash} chance={chance} />
+      <NoirFX f={f} flash={thr ? flash * 0.35 : flash} chance={chance} />
+      {thr ? <ThrillFX fx={seg.fx} f={f} /> : null}
       {hook ? <Tape text={seg.tape} f={f} font={font} /> : null}
       {seg.tag ? <Tags seg={{ tag: seg.tag, alert: seg.alert }} f={f} font={font} top={300} /> : seg.alert ? <Tags seg={{ alert: seg.alert }} f={f} font={font} top={300} /> : null}
     </div>
@@ -484,7 +509,7 @@ function NoirFrame({ segs, seg, f, frame, data, font, src, ImgComp }) {
   const chance = (hudState(segs, i) || {}).chance ?? 100;
   let body;
   if (seg.kind === "loop" && segs[0]) {
-    body = <NoirScene seg={{ ...segs[0], start: seg.start, dur: seg.dur }} f={Math.min(f, 6)} font={font} idx={0} th={th} chance={chance} />;
+    body = <NoirScene seg={{ ...segs[0], start: seg.start, dur: seg.dur }} f={Math.min(f, 6)} font={font} idx={0} th={th} chance={chance} thr={data.thriller} />;
   } else if (seg.kind === "choice") {
     body = <><ChoiceScreen seg={seg} f={f} font={font} /><NoirFX f={f} chance={chance} flash={0.5 * (1 - easeOut(prog(f, 0, 5)))} /></>;
   } else if (seg.kind === "punch") {
@@ -492,7 +517,7 @@ function NoirFrame({ segs, seg, f, frame, data, font, src, ImgComp }) {
   } else if (seg.kind === "intro" || seg.kind === "outro") {
     body = <HostScene seg={seg} f={f} frame={frame} font={font} />;
   } else {
-    body = <NoirScene seg={seg} f={f} font={font} idx={i} th={th} chance={chance} />;
+    body = <NoirScene seg={seg} f={f} font={font} idx={i} th={th} chance={chance} thr={data.thriller} />;
   }
   const cur = hudState(segs, i);
   const prev = seg.hud ? hudState(segs, i - 1) : cur;
