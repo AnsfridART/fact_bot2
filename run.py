@@ -111,7 +111,7 @@ def build_props(s):
     if s.get("choice"):  # v15: экран выбора «а что сделал бы ты?» перед развязкой
         c = s["choice"]
         plan.append({"kind": "choice", "text": c["text"], "options": c.get("options", []),
-                     "question": c.get("question"), "hint": c.get("hint"), "next": c.get("next"), "clue": c.get("clue")})
+                     "question": c.get("question"), "hint": c.get("hint"), "next": c.get("next"), "clue": c.get("clue"), "nextTitle": c.get("next_title")})
     if s.get("punch"):
         plan.append({"kind": "punch", "text": s["punch"]["text"], "big": s["punch"]["big"]})
     if not noir or s.get("outro"):  # в нуар-стиле профессор не выходит, если outro не задан явно
@@ -130,11 +130,11 @@ def build_props(s):
         tts.synthesize(clean(p["text"]), os.path.join(config.PUBLIC_DIR, wav), speed_mul=mul, voice=s.get("voice"))
         frames, env, first, last = audio_info(os.path.join(config.PUBLIC_DIR, wav))
         gap = 0.0 if p["kind"] == "loop" else 0.12 if p["kind"] in ("scene", "hook") else 0.9 if p["kind"] == "choice" else 0.35
-        dur = max(frames + int(gap * FPS), int(1.6 * FPS))
+        dur = max(frames + int(gap * FPS), int(1.6 * FPS)) + int(float(p.get("hold", 0)) * FPS)  # v16: «правила» держим дольше, чтобы успели прочитать
         seg = {"kind": p["kind"], "start": start, "dur": dur, "audio": wav, "env": env,
                "words": word_timings(p["text"].replace("|", " "), first, last)}
         for k in ("title", "emotion", "tag", "alert", "cam", "big", "bg", "actors", "focus", "tint", "camY", "insert", "count", "map", "angle", "weather", "lights",
-                  "ui", "hud", "uiAt", "options", "question", "hint", "next", "clue"):
+                  "ui", "hud", "uiAt", "options", "question", "hint", "next", "clue", "nextTitle", "tape"):
             if p.get(k) is not None:  # focus=0 — тоже значение
                 seg[k] = p[k]
         if p["kind"] in ("scene", "hook") and not (p.get("bg") or p.get("actors") or p.get("map") or p.get("ui")):
@@ -157,13 +157,15 @@ def build_props(s):
         props["style"] = "noir"
         props["hudLabels"] = s.get("hud_labels")
         props["part"] = s.get("part")
+        props["theme"] = s.get("theme", "noir")
     # музыка: свои треки из папки music/, иначе генерируем загадочный эмбиент (подмешивается после рендера)
     tracks = glob.glob(os.path.join(config.MUSIC_DIR, "*.mp3"))
     try:
         if tracks:
             shutil.copy(random.choice(tracks), "work_music.audio")
         else:
-            music.generate("work_music.audio.wav", start / FPS + 1, seed, s.get("mood", "tense" if noir else "mystery"))
+            theme_mood = {"dossier": "mystery", "silence": "mystery", "storm": "epic"}.get(s.get("theme"), "tense")
+            music.generate("work_music.audio.wav", start / FPS + 1, seed, s.get("mood", theme_mood if noir else "mystery"))
             # атмосфера мест подмешивается к музыке, чтобы вместе приглушаться под голос
             music.ambience_track("work_amb.wav", segments, FPS, start / FPS)
             subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", "work_music.audio.wav", "-i", "work_amb.wav",
@@ -366,7 +368,8 @@ def main():
         WARNINGS.append(f"обложка не получилась: {str(e)[:200]}")
     say("Подпись для публикации:\n\n"
         f"<code>{html.escape(caption(s))}</code>\n\n"
-        f"Описание для YouTube:\n<code>{html.escape(s.get('description', ''))}</code>")
+        f"Описание для YouTube:\n<code>{html.escape(s.get('description', ''))}</code>"
+        + (f"\n\nТеги для YouTube:\n<code>{html.escape(s['yt_tags'])}</code>" if s.get("yt_tags") else ""))
 
     if rest:
         with open(path, "w", encoding="utf-8") as f:
