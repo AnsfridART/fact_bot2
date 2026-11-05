@@ -295,7 +295,15 @@ def _amb_war(n, sr, seed):
     return out
 
 
+def _amb_hum(n, sr, seed):  # v19: бэкрумс — гул люминесцентных ламп и жужжание дросселя
+    t = np.arange(n) / sr
+    hum = np.sin(2 * np.pi * 50 * t) * 0.6 + np.sin(2 * np.pi * 100 * t) * 0.35 + np.sign(np.sin(2 * np.pi * 100 * t)) * 0.04
+    buzz = _onepole(_noise(n, seed), 2500, sr) * 0.25 * (0.6 + 0.4 * np.sin(2 * np.pi * 0.13 * t))
+    return (hum + buzz) * (0.85 + 0.15 * np.sin(2 * np.pi * 0.07 * t))
+
+
 AMBIENCE = {
+    "backrooms": _amb_hum, "backrooms_exit": _amb_hum,
     "field_dusk": _amb_wind, "outback": _amb_wind, "sky": _amb_wind, "night_field": _amb_wind,
     "london": _amb_city, "old_street": _amb_city, "paris": _amb_city, "harbor": _amb_sea, "beach_night": _amb_sea,
     "town": _amb_fire, "forest": _amb_birds, "jungle": _amb_birds, "campus": _amb_birds,
@@ -437,5 +445,14 @@ def _hit(sr):  # резкий удар-«стингер» на повороте
     return b * 1.0 + np.sin(2 * np.pi * 220 * t) * np.exp(-t * 4) * 0.25
 
 
-ACTION_SFX = {"heart": _heart, "knock": _knock, "buzz": _buzz, "bell": _bell, "drone": _drone, "hit": _hit, "ping": _ping, "glitch": _glitch, "thunder": _thunder, "wings": _wings, "stamp": _stamp, "paper": _paper, "snap": _snap,
+def _purr(sr):  # v19: ровное, «записанное» мурчание ~2 с
+    n = int(sr * 2.2)
+    t = np.arange(n) / sr
+    am = (0.5 + 0.5 * np.sin(2 * np.pi * 24 * t)) ** 2 * (0.75 + 0.25 * np.sin(2 * np.pi * 0.9 * t))
+    x = _onepole(_noise(n, 31), 320, sr) * 6 + np.sin(2 * np.pi * 48 * t) * 0.3
+    env = np.minimum(1, t / 0.15) * np.minimum(1, (2.2 - t) / 0.2)
+    return x * am * env * 0.7
+
+
+ACTION_SFX = {"purr": _purr, "heart": _heart, "knock": _knock, "buzz": _buzz, "bell": _bell, "drone": _drone, "hit": _hit, "ping": _ping, "glitch": _glitch, "thunder": _thunder, "wings": _wings, "stamp": _stamp, "paper": _paper, "snap": _snap,
               "clock": _clocktick, "fire": lambda sr: _amb_fire(int(sr * 1.5), sr, 9) * 0.3}
