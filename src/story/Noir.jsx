@@ -110,6 +110,7 @@ function Phone({ children, f, at = 0, w = 620, h = 860, top = 380 }) {
 
 // ---------- Карточки интерфейсов ----------
 function Notify({ ui, f, font, top = 330, instant }) {
+  top = ui.top ?? top;  // v20: в хуке триллера уведомление ниже заголовка-запрета
   const p = instant ? 1 + 0.06 * Math.sin(Math.min(1, f / 10) * Math.PI) : pop(f, 0, 8);
   return (
     <div style={{ position: "absolute", left: 90, right: 90, top: top - 160 * (1 - clamp(p)), opacity: clamp(p * 2), fontFamily: font,
@@ -417,6 +418,21 @@ export function Tape({ text, f, font }) {
   );
 }
 
+// v20: заголовок-запрет в хуке триллера — виден с нулевого кадра, вместо ленты. «НЕ ДАВАЙ|*ЛАПКУ*»: | — перенос, *…* — красным
+export function HookTitle({ text, f, font }) {
+  if (!text) return null;
+  const lines = text.split("|");
+  const longest = Math.max(...lines.map((l) => l.replace(/\*/g, "").length));
+  const fs = Math.min(140, 960 / (0.92 * Math.max(5, longest)));
+  const pop = f < 3 ? 1.12 - f * 0.04 : 1;
+  return (
+    <div style={{ position: "absolute", left: 0, right: 0, top: 120, textAlign: "center", fontFamily: font, fontWeight: 900, fontSize: fs, lineHeight: 1.02,
+      color: "#fff", letterSpacing: 2, transform: `scale(${pop})`, textShadow: "0 8px 0 rgba(0,0,0,.55), 0 0 40px rgba(0,0,0,.8)" }}>
+      {lines.map((l, i) => <div key={i}>{l.split(/(\*[^*]+\*)/).map((p, j) => p.startsWith("*") ? <span key={j} style={{ color: N.red }}>{p.slice(1, -1)}</span> : <span key={j}>{p}</span>)}</div>)}
+    </div>
+  );
+}
+
 // v18: крупные планы предметов для триллеров — датчик дыма, блик объектива, глазок, выхлопная труба
 function Closeup({ ui, f, font }) {
   const z = 1 + 0.08 * easeOut(prog(f, 0, 60));
@@ -448,6 +464,26 @@ function Closeup({ ui, f, font }) {
       {[...Array(30)].map((_, i) => <circle key={i} cx={-100 + ((i * 37 + f * 2) % 200)} cy={-100 + ((i * 53 + f * (2 + (i % 3))) % 200)} r={1 + (i % 3)} fill="#fff" opacity=".7" />)}
       {ui.clear ? [0, 1, 2].map((i) => { const k = ((f + i * 12) % 40) / 40; return <circle key={i} cx={55 + k * 40} cy={-25 - k * 30} r={6 + k * 14} fill="#cfd8e0" opacity={0.4 * (1 - k) * easeOut(prog(f, 30, 10))} />; }) : null}
     </svg>);
+  else if (ui.kind === "mirror") {  // v20: тест зеркала — палец к стеклу; reveal — за стеклом проступает силуэт
+    const rv = ui.reveal ? clamp(prog(f, 18, 30)) : 0;
+    art = (
+      <svg viewBox="-100 -100 200 200" width="820" height="820">
+        <rect x="-100" y="-100" width="200" height="200" fill="#d8dde0" />
+        {[...Array(5)].map((_, i) => <line key={i} x1={-100 + i * 50} y1="-100" x2={-100 + i * 50} y2="100" stroke="#b9c0c4" strokeWidth="1.5" />)}
+        <rect x="-72" y="-86" width="144" height="150" rx="4" fill="#8a949a" />
+        <defs><linearGradient id="mir" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#cfd8dc" /><stop offset=".5" stopColor="#9fadb3" /><stop offset="1" stopColor="#c4ced2" /></linearGradient></defs>
+        <rect x="-66" y="-80" width="132" height="138" fill="url(#mir)" />
+        <g opacity={rv * 0.85}><rect x="-66" y="-80" width="132" height="138" fill="#2a2416" opacity=".55" />
+          <ellipse cx="34" cy="-30" rx="14" ry="17" fill="#0a0806" /><path d="M14 -12 Q34 -20 54 -12 L58 58 L10 58 Z" fill="#0a0806" />
+          <circle cx="29" cy="-32" r="1.6" fill="#ffefc0" /><circle cx="39" cy="-32" r="1.6" fill="#ffefc0" /></g>
+        <path d="M-60 -78 L-30 -78 L-70 0 Z" fill="#fff" opacity=".18" />
+        {/* палец и его отражение: без зазора */}
+        <g transform="translate(0 6)">
+          <path d="M-9 90 L-9 6 Q-9 -4 0 -4 Q9 -4 9 6 L9 90 Z" fill="#e2b48e" /><path d="M-5 -1 Q0 -4 5 -1 L5 6 L-5 6 Z" fill="#f2d4c0" />
+          <g opacity=".55" transform={`translate(0 ${ui.gap ? -10 : -8}) scale(1 -1)`}><path d="M-9 60 L-9 6 Q-9 -4 0 -4 Q9 -4 9 6 L9 60 Z" fill="#c69a78" /></g>
+        </g>
+      </svg>);
+  }
   else if (ui.kind === "wall") art = (  // v19: надпись маркером на обоях
     <svg viewBox="-100 -100 200 200" width="820" height="820">
       <rect x="-100" y="-100" width="200" height="200" fill="#c9b458" />
