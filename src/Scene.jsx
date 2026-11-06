@@ -576,10 +576,7 @@ function NoirCover({ data, seg, font }) {
     <div style={{ position: "absolute", inset: 0, width: 1080, height: 1920, overflow: "hidden", background: N.bg }}>
       <NoirScene seg={{ ...seg, ui: undefined, kind: "scene", dur: 200 }} f={30} font={font} idx={0} th={th} />
       <div style={{ position: "absolute", inset: 0, background: "linear-gradient(rgba(6,9,13,.35), rgba(6,9,13,.85) 36%, rgba(6,9,13,0) 64%)" }} />
-      <div style={{ position: "absolute", top: 320, left: 0, right: 0, textAlign: "center", fontFamily: font }}>
-        <span style={{ background: N.acc, color: N.bg, fontWeight: 900, fontSize: 44, padding: "10px 28px", borderRadius: 12, letterSpacing: 2 }}>
-          СЦЕНАРИЙ #{data.coverNumber || 1}{data.part ? ` · ЧАСТЬ ${data.part}` : ""}</span>
-      </div>
+      {/* v22: без номера серии — ролики выходят не по порядку */}
       <div style={{ position: "absolute", top: 430, left: 50, right: 50, textAlign: "center", fontFamily: font, fontWeight: 900, textTransform: "uppercase", lineHeight: 1.04, ...outline(18) }}>
         {lines.map((line, i) => (
           <div key={i} style={{ fontSize: Math.min(124, 940 / Math.max(4, line.replace(/\*/g, "").length * 0.86)) }}>
@@ -601,11 +598,6 @@ export function Cover({ data, font = "Montserrat, DejaVu Sans, Arial" }) {
     <div style={{ position: "absolute", inset: 0, width: 1080, height: 1920, overflow: "hidden", background: "#000" }}>
       <Stage seg={shot} f={30} mouth={0} transition="none" />
       <div style={{ position: "absolute", inset: 0, background: "linear-gradient(rgba(0,0,0,.2), rgba(0,0,0,.62) 34%, rgba(0,0,0,0) 62%)" }} />
-      <div style={{ position: "absolute", top: 330, left: 0, right: 0, textAlign: "center" }}>
-        <span style={{ background: GOLD, color: NAVY, fontFamily: font, fontWeight: 900, fontSize: 46, padding: "10px 30px", borderRadius: 14, letterSpacing: 2 }}>
-          ИСТОРИЯ #{data.coverNumber || 1}
-        </span>
-      </div>
       <div style={{ position: "absolute", top: 440, left: 50, right: 50, textAlign: "center", fontFamily: font, fontWeight: 900,
         textTransform: "uppercase", lineHeight: 1.02, ...outline(18) }}>
         {lines.map((line, i) => (
