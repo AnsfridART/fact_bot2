@@ -317,7 +317,7 @@ def ambience_track(path, segments, fps, total_sec, sr=SR):
     track = np.zeros(int(sr * (total_sec + 1)))
     fade = int(0.3 * sr)
     for k, sg in enumerate(segments):
-        fn = AMBIENCE.get(sg.get("bg"))
+        fn = AMBIENCE.get(sg.get("bg")) or (_amb_hum if str(sg.get("bg", "")).startswith("backrooms") else None)
         if not fn:
             continue
         i0, n = int(sg["start"] / fps * sr), int(sg["dur"] / fps * sr) + fade
