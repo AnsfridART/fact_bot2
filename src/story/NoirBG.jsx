@@ -295,7 +295,7 @@ function CarSnow({ P, t, lights = false }) {
 
 
 // ---------- v19: бэкрумс — бесконечные жёлтые залы, лампы-панели, колонны, мокрый ковёр ----------
-function Backrooms({ P, t, exit = false }) {
+function Backrooms({ P, t, exit = false, sign = null }) {  // v22: sign — надпись маркером на двери вместо «ВЫХОД»
   const Zf = exit ? 3.2 : 10, W = 330, CY = -230, FY = 160;
   const pr = (X, Y, Z) => [135 + X / Z, 255 + Y / Z];
   const pts = (a) => a.map((q) => q.join(",")).join(" ");
@@ -335,9 +335,11 @@ function Backrooms({ P, t, exit = false }) {
         <rect x={dx1 + 2} y={dy1 + 2} width={dx2 - dx1 - 4} height={dy2 - dy1 - 2} fill="none" stroke="#3a2f1a" strokeWidth="1.2" />
         <circle cx={dx2 - 7} cy={(dy1 + dy2) / 2} r="2" fill="#d8c88a" />
         <rect x={dx1} y={dy2 - 2} width={dx2 - dx1} height="2" fill="#fff4c0" opacity=".9" />
+        {sign ? <g><rect x={(dx1 + dx2) / 2 - 17} y={dy1 + 10} width="34" height="12" fill="#efe6c8" transform={`rotate(-4 ${(dx1 + dx2) / 2} ${dy1 + 16})`} />
+          <text x={(dx1 + dx2) / 2} y={dy1 + 19.5} textAnchor="middle" fontSize={Math.min(8.5, 60 / sign.length)} fontWeight="900" fill="#1a1208" fontFamily="DejaVu Sans" transform={`rotate(-4 ${(dx1 + dx2) / 2} ${dy1 + 16})`}>{sign}</text></g> : <>
         <rect x={sx - 22} y={sy - 7} width="44" height="13" rx="2" fill="#0d3a1c" />
         <text x={sx} y={sy + 3} textAnchor="middle" fontSize="9" fontWeight="900" fill="#5dff8a" opacity={glow} fontFamily="DejaVu Sans">ВЫХОД</text>
-        <ellipse cx={sx} cy={sy} rx="40" ry="18" fill="#5dff8a" opacity={0.12 * glow} />
+        <ellipse cx={sx} cy={sy} rx="40" ry="18" fill="#5dff8a" opacity={0.12 * glow} /></>}
       </g>;
     })() : null}
     {/* колонны */}
@@ -418,6 +420,7 @@ const MAP = { dream: Dream, backrooms_sleepers: Sleepers, backrooms: Backrooms, 
 export const NOIR_BGS = Object.keys(MAP);
 
 export function NoirBackground({ name, t = 0, P }) {
+  if (String(name).startsWith("backrooms_door:")) return <Backrooms P={P} t={t} exit sign={name.slice(15)} />;  // v22: дверь с надписью
   const C = MAP[name];
   return C ? <C P={P} t={t} /> : null;
 }
