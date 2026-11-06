@@ -108,4 +108,6 @@ jobs:
           git config user.name "factbot"
           git config user.email "factbot@users.noreply.github.com"
           git add -A queue done.txt cover_number.txt
-          git diff --cached --quiet || (git commit -m "Использован сценарий" && git push)
+          git diff --cached --quiet || git commit -m "Использован сценарий"
+          # если пока шёл рендер в репозиторий что-то залили — подтягиваем и пробуем снова
+          for i in 1 2 3; do git pull --rebase origin main && git push && break; sleep 5; done
