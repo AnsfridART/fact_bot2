@@ -205,7 +205,7 @@ function Actor({ a, f, t, mouth, idx, light, gaze, zeroG, closeUp, tagC = "#3dff
   else if (a.kind === "emu") body = <Emu {...common} anim={a.anim} angry={a.angry} />;
   else if (a.kind === "crow") body = <Crow {...common} anim={a.anim} color={a.color} />;
   else if (a.kind === "cat") body = <Cat {...common} anim={a.anim} color={a.color} />;
-  else if (a.kind === "leopard") body = <Leopard {...common} anim={a.anim} wrong={a.wrong} shadow={a.shadow} />;
+  else if (a.kind === "leopard") body = <Leopard {...common} anim={a.anim} wrong={a.wrong} shadow={a.shadow} wrongAt={a.wrongAt} />;
   else if (a.kind === "rabbit") body = <Rabbit {...common} anim={a.anim} color={a.color} />;
   else if (a.kind === "flock" || a.kind === "crows" || a.kind === "rabbits") {
     const n = a.count || 12, spread = a.spread || 220;
