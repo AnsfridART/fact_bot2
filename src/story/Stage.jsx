@@ -333,7 +333,7 @@ export function Stage({ seg, f, mouth, transition = "flash", font = "DejaVu Sans
         <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="1.6" numOctaves="1" seed={f % 50} /><feColorMatrix type="saturate" values="0" /></filter>
       </defs>
       <g transform={`translate(135 240) scale(${zb}) translate(${-cxb} ${-cam.cy})`} filter={closeUp ? "url(#dof)" : undefined}>
-        {seg.pal && NOIR_BGS.includes(seg.bg) ? <NoirBackground name={seg.bg} t={f} P={seg.pal} /> : <Background name={seg.bg} t={f} />}
+        {seg.pal && (NOIR_BGS.includes(seg.bg) || String(seg.bg).startsWith("backrooms_door:")) ? <NoirBackground name={seg.bg} t={f} P={seg.pal} /> : <Background name={seg.bg} t={f} />}
         <Ambient name={seg.bg} f={f} />
       </g>
       <rect width="270" height="480" fill="url(#haze)" opacity=".6" />
