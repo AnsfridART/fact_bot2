@@ -101,9 +101,10 @@ export function Rabbit({ t = 0, anim = "hop", phase = 0, color = "#a8988a" }) {
 
 // v19: снежный барс анфас (сидит). anim: sit, paw (тянет лапку), lie (лежит, глаза закрыты), eyes (только глаза в темноте)
 // wrong — «не настоящий»: не моргает, без бликов в глазах; shadow — на полу тень с длинными человеческими руками
-export function Leopard({ t = 0, anim = "sit", phase = 0, wrong = false, shadow = false }) {
+export function Leopard({ t = 0, anim = "sit", phase = 0, wrong = false, shadow = false, wrongAt = null }) {
+  if (wrongAt != null && t >= wrongAt) wrong = true;  // v20: глаза «ломаются» посреди кадра
   const fur = "#e6e2d8", shade = "#c7c1b2", belly = "#f5f3ee", spot = "#33322f";
-  const blink = !wrong && (t + phase * 20) % 110 < 4;
+  const blink = !wrong && t > 24 && (t + phase * 20) % 110 < 4;  // v20: не моргать на первом кадре — он же превью в ленте
   const breathe = Math.sin(t / 18 + phase) * 1.2;
   const tail = Math.sin(t / 30 + phase) * 6;
   const eyes = (cy, closed) => [-12, 12].map((x, i) => (
