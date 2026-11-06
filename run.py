@@ -232,6 +232,8 @@ def build_props(s):
         h0 = (s.get("hook") or {})
         for kind, at, vol in h0.get("sfx", []):
             ev.append((at * (segments[0]["dur"] / FPS if segments else 0), kind, vol))
+        if (h0.get("fx") or {}).get("jolt") is not None:  # v20: удар на «событии» хука
+            ev.append((h0["fx"]["jolt"] / FPS, "hit", 1.0))
         if noir and segments:  # уведомление в хуке
             h = segments[0]
             hu = h.get("ui") or []
