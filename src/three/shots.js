@@ -2,6 +2,7 @@
 // t — секунды от начала сцены, D — длительность сцены, p — параметры из сценария (cast, ring, flicker…).
 import { Build, hex, lerp, lerp3, ease } from "./engine.js";
 import { kitchen, person, phone, LOOKS } from "./kit.js";
+import { LOCS, car, note } from "./locations.js";
 
 const PI = Math.PI;
 const shake = (t, a = 1) => [Math.sin(t * 1.7) * 0.012 * a + Math.sin(t * 4.1) * 0.004 * a, Math.sin(t * 2.3) * 0.01 * a, Math.cos(t * 1.3) * 0.008 * a];
@@ -21,10 +22,10 @@ function kLights(mode, t, phonePos, glow = 1, flicker = 0) {
     shadow: { at: [-0.2, 0, 0.1], fov: 2.3 }, sky: [0.06, 0.05, 0.045], gnd: [0.03, 0.022, 0.016], fog: [0.02, 0.016, 0.012], fogD: 0.03,
     post: { tint: [1.05, 0.98, 0.9], lift: [0.02, 0.015, 0.01] },
   };
-  const L = [{ p: [-3.2, 2.6, -0.1], c: [0.55, 0.68, 1.0].map((v) => v * 1.9 * fl), r: 9, dir: [1, -0.55, 0], cone: 0.5 }];
+  const L = [{ p: [-3.3, 2.75, -0.15], c: [1.8, 0.95, 0.4].map((v) => v * 1.7 * fl), r: 9, dir: [1, -0.5, 0.05], cone: 0.55 }]; // уличный натриевый фонарь в окно
   if (phonePos && glow > 0) L.push({ p: phonePos, c: hex("#7fa8ff").map((v) => v * glow * 0.55), r: 1.5 });
   L.push({ p: [0.4, 2.3, 1.6], c: [0.05, 0.05, 0.08], r: 5 });
-  return { lights: L, shadow: { at: [0.2, 0.4, 0], fov: 1.2 }, sky: [0.022, 0.028, 0.045], gnd: [0.01, 0.009, 0.008], fog: [0.006, 0.008, 0.014], fogD: 0.05 };
+  return { lights: L, shadow: { at: [0.2, 0.4, 0], fov: 1.2 }, sky: [0.03, 0.05, 0.07], gnd: [0.012, 0.012, 0.014], fog: [0.012, 0.02, 0.028], fogD: 0.03, post: { tint: [1.0, 1.0, 1.04], lift: [0.0, 0.018, 0.03] } };
 }
 const ringGlow = (t, on) => (on ? (Math.sin(t * 9) > 0 ? 1.5 : 0.9) : 1.0);
 const SOUTH = [-0.2, 0.75], EAST = [0.65, 0.1];
@@ -158,9 +159,72 @@ SHOTS["kitchen/outside"] = (t, D, p) => {
   return { items: b.items, cam, ...L, fog: [0.004, 0.006, 0.01], fogD: 0.09 };
 };
 
+// ---------- универсальный режиссёр: локация + актёры + камера описываются в сценарии ----------
+const V3 = (v) => (Array.isArray(v[0]) ? v : [v, v]);
+const pathAt = (pts, k) => { // ломаная, k 0..1 по длине
+  if (pts.length === 1) return pts[0];
+  const L = []; let tot = 0; for (let i = 1; i < pts.length; i++) { const d = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]); L.push(d); tot += d; }
+  let r = k * tot; for (let i = 1; i < pts.length; i++) { if (r <= L[i - 1] || i === pts.length - 1) { const q = L[i - 1] ? Math.min(1, r / L[i - 1]) : 1; return [lerp(pts[i - 1][0], pts[i][0], q), lerp(pts[i - 1][1], pts[i][1], q), Math.atan2(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1])]; } r -= L[i - 1]; }
+  return pts[pts.length - 1];
+};
+export function direct(w, t, D) {
+  const b = new Build(); const u = Math.min(1, t / D);
+  const key = (arr) => { let v = arr[0][1]; for (let i = 0; i < arr.length; i++) { const [f, x] = arr[i]; if (u >= f) { v = x; const nx = arr[i + 1]; if (nx && typeof x === "number") v = lerp(x, nx[1], ease((u - f) / Math.max(0.001, nx[0] - f))); } } return v; };
+  const o = { ...(w.o || {}) }; for (const [k2, arr] of Object.entries(w.anim || {})) o[k2] = key(arr);
+  const env = LOCS[w.loc](b, o, t, u) || {};
+  for (const a of w.actors || []) {
+    if ((a.show && (u < a.show[0] || u > a.show[1]))) continue;
+    let x = 0, z = 0, ry = a.ry ?? 0, pose = a.pose || "stand", phase = 0;
+    if (a.path) {
+      const [f0, f1] = a.span || [0, 1], k = Math.max(0, Math.min(1, (u - f0) / Math.max(0.01, f1 - f0)));
+      const q = pathAt(a.path, a.ease === false ? k : ease(k) * 0.3 + k * 0.7); x = q[0]; z = q[1];
+      if (a.ry === undefined && q[2] !== undefined) ry = q[2];
+      if (k > 0 && k < 1) { pose = a.run ? "run" : "walk"; phase = t * (a.run ? 10 : 6.5); }
+    } else if (a.at) { x = a.at[0]; z = a.at[1]; }
+    if (a.poses) for (const [f, ps] of a.poses) if (u >= f) pose = ps;
+    let arms = a.arms || null; if (a.armsAt) for (const [f, ar] of a.armsAt) if (u >= f) arms = ar;
+    const head = a.head || [0, 0];
+    if (a.ryAt) ry = key(a.ryAt);
+    let y = Array.isArray(a.y) ? (() => { const [f0, f1] = a.span || [0, 1]; return lerp(a.y[0], a.y[1], Math.max(0, Math.min(1, (u - f0) / Math.max(0.01, f1 - f0)))); })() : a.y || 0;
+    if (a.drift) { z -= a.drift * t; } // для трассы: объект «едет» навстречу
+    person(b, { look: typeof a.look === "string" ? LOOKS[a.look] || a.look : a.look, pose, x, z, y, ry, t, phase, arms,
+      headYaw: head[0] + (a.lookAround ? Math.sin(t * 1.3) * 0.5 : 0), headPitch: head[1], eyes: a.eyes ?? 1, scale: a.scale || 1 });
+  }
+  const c0 = { eye: (() => { const cc = w.cam || {}; const E0 = V3(cc.eye || [0, 1.6, 3]); return lerp3(E0[0], E0[1], cc.linear ? u : ease(u)); })() };
+  for (const pr0 of w.props || []) {
+    if (pr0.show && (u < pr0.show[0] || u > pr0.show[1])) continue;
+    const pr = { ...pr0 };
+    if (pr.path) { const [f0, f1] = pr.span || [0, 1]; const q = pathAt(pr.path, ease(Math.max(0, Math.min(1, (u - f0) / Math.max(0.01, f1 - f0))))); pr.x = q[0]; pr.z = q[1]; if (q[2] !== undefined && pr.autoRy !== false) pr.ry = q[2]; }
+    if (pr.drift) pr.z -= pr.drift * t;
+    if (pr.type === "phone") phone(b, pr.x, pr.y, pr.z, { ring: pr.ring, t, glow: pr.ring ? (Math.sin(t * 9) > 0 ? 1.5 : 0.9) : 1, ry: pr.ry ?? 0.3 });
+    if (pr.type === "note") note(b, pr.x, pr.y, pr.z, pr.ry || 0);
+    if (pr.type === "car") car(b, pr.x, pr.z, pr);
+    if (pr.type === "box") b.box(pr.x, pr.y || 0, pr.z, pr.w, pr.h, pr.d, pr.c || "#555555", pr);
+    if (pr.type === "spikes") for (let i = 0; i < 9; i++) b.cyl(pr.x + (i % 3) * 0.5 - 0.5, 0, pr.z + Math.floor(i / 3) * 0.4, 0.05, 0.0, 0.09, "#b0b0b0", { seg: 4, mat: "metal" });
+    if (pr.type === "blackout") b.box(c0.eye[0], c0.eye[1] - 1, c0.eye[2], 0.6, 2, 0.6, "#000000", { ns: true });
+  }
+  const c = w.cam || {}, k = c.linear ? u : ease(u);
+  const E = V3(c.eye || [0, 1.6, 3]), A = V3(c.at || [0, 1, 0]), F = Array.isArray(c.fov) ? c.fov : [c.fov || 0.9, c.fov || 0.9];
+  let eye = lerp3(E[0], E[1], k);
+  if (c.follow !== undefined) { // камера едет вместе с актёром
+    const a = w.actors[c.follow]; const q = a.path ? pathAt(a.path, Math.max(0, Math.min(1, (u - (a.span || [0, 1])[0]) / Math.max(0.01, (a.span || [0, 1])[1] - (a.span || [0, 1])[0])))) : a.at;
+    eye = [eye[0] + q[0], eye[1], eye[2] + q[1]];
+    const at0 = lerp3(A[0], A[1], k); var at = [at0[0] + q[0], at0[1], at0[2] + q[1]];
+  }
+  const cam = { eye: add3(eye, shake(t, c.shake ?? 0.6)), at: at || lerp3(A[0], A[1], k), fov: lerp(F[0], F[1], k), roll: (c.roll || 0) + (c.shake ?? 0.6) * Math.sin(t * 0.9) * 0.01 };
+  const el = env.lights || [];  // главный свет (с тенью) первым, потом свет сцены, потом остальное окружение — в шейдере 4 источника
+  const lights = [...el.slice(0, 1), ...(w.lights || []), ...el.slice(1)];
+  return { ...env, items: b.items, cam, lights, post: { ...(env.post || {}), ...(w.post || {}) } };
+}
+
 export function buildShot(name, t, D, p = {}) {
+  if (p && p.loc) { const sc = direct(p, t, D); sc.post = { time: t, ...(sc.post || {}) }; return sc; }
   const fn = SHOTS[name] || SHOTS["kitchen/ring"];
   const sc = fn(t, D, p);
   sc.post = { time: t, ...(sc.post || {}) };
+  if (name.startsWith("kitchen/")) {
+    sc.room = sc.room || [-1.7, 1.7, -2.1, 2.1, 0, 2.6];
+    if (!sc.rays) sc.rays = sc.lights[0] && sc.lights[0].dir ? { p: [-5.5, 5.4, -0.6], k: 1.0 } : { p: [-0.2, 1.9, 0.1], k: 0.6 };
+  }
   return sc;
 }
