@@ -28,6 +28,6 @@ export const Main = (props) => {
 
 export const CoverMain = (props) => (
   <AbsoluteFill style={{ backgroundColor: "#000" }}>
-    <Cover data={props} font={fontFamily} />
+    <Cover data={props} font={fontFamily} src={(p) => staticFile(p)} ImgComp={Img} />
   </AbsoluteFill>
 );
