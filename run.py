@@ -185,7 +185,23 @@ def build_props(s):
                   "ui", "hud", "uiAt", "options", "question", "hint", "next", "clue", "nextTitle", "tape", "fx", "shotOn", "hookFocus"):
             if p.get(k) is not None:  # focus=0 — тоже значение
                 seg[k] = p[k]
-        if p["kind"] in ("scene", "hook") and not (p.get("bg") or p.get("actors") or p.get("map") or p.get("ui")):
+        if p.get("shots"):  # v24: кадры от первого лица, нейросеть рисует каждый шот в стиле истории
+            files = []
+            for k, prompt in enumerate(p["shots"]):
+                img = f"shot{i}_{k}.jpg"
+                try:
+                    images.generate(prompt, os.path.join(config.PUBLIC_DIR, img), seed + i * 10 + k, "", s.get("img_style", "pov"))
+                    files.append(img)
+                except Exception as e:
+                    print("Кадр не получился:", e)
+            if not files:  # ни одного кадра — берём последний удачный из прошлых сцен
+                prev = next((x["shots"][-1] for x in reversed(segments) if x.get("shots")), None)
+                files = [prev] if prev else []
+            if files:
+                seg["shots"] = files
+            else:
+                WARNINGS.append(f"нет кадров для сцены {i}")
+        elif p["kind"] in ("scene", "hook") and not (p.get("bg") or p.get("actors") or p.get("map") or p.get("ui")):
             img = f"img{i}.jpg"
             try:
                 images.generate(p["prompt"], os.path.join(config.PUBLIC_DIR, img), seed, p.get("stock", ""))
@@ -410,7 +426,13 @@ def caption(s):
 
 
 def main():
-    s, path, rest = next_script()
+    pilot = os.getenv("MODE") == "pilot"
+    if pilot:  # v24: пробный ролик из pilot.json — без изменения очереди
+        with open("pilot.json", encoding="utf-8") as f:
+            s, path, rest = json.load(f)[0], None, None
+        say("🧪 Пилот нового стиля")
+    else:
+        s, path, rest = next_script()
     if s is None:
         say("📭 Сценарии закончились. Попроси у Claude новую пачку и загрузи файл в папку queue.")
         return
@@ -439,6 +461,8 @@ def main():
         f"Описание для YouTube:\n<code>{html.escape(s.get('description', ''))}</code>"
         + (f"\n\nТеги для YouTube:\n<code>{html.escape(s['yt_tags'])}</code>" if s.get("yt_tags") else ""))
 
+    if pilot:
+        return
     if rest:
         with open(path, "w", encoding="utf-8") as f:
             json.dump(rest, f, ensure_ascii=False, indent=1)
