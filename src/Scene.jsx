@@ -7,6 +7,7 @@ import { MapScene } from "./story/Map.jsx";
 import { NoirHUD, UiCard, UiBackdrop, NoirFX, NoirCaptions, ChoiceScreen, N, applyTheme, Tape, HookTitle as ThrTitle } from "./story/Noir.jsx";
 import { Stage as StageView, NOIR_SHOT } from "./story/Stage.jsx";
 import { THEMES } from "./story/Themes.js";
+import { World3D } from "./three/World3D.jsx";
 // v17: хук (и петля в конце) у светлых атмосфер всегда тёмный — светлый первый кадр теряется в ленте
 const hookTheme = (name, seg) => ((seg.kind === "hook" || seg.kind === "loop") && THEMES[name] && THEMES[name].ui.light ? "noir" : name);
 
@@ -492,7 +493,7 @@ function CineShots({ seg, f, src, ImgComp }) {
 function NoirScene({ seg, f, font, idx, th, chance = 100, thr = false, src, ImgComp }) {
   th = th || applyTheme(null);
   const uis = seg.ui ? (Array.isArray(seg.ui) ? seg.ui : [seg.ui]) : [];
-  const hasStage = !!(seg.actors || seg.bg || (seg.shots && ImgComp));
+  const hasStage = !!(seg.actors || seg.bg || seg.world || (seg.shots && ImgComp));
   const over = hasStage ? uis.filter((u) => u.type === "notify") : [];
   const full = uis.filter((u) => !over.includes(u));
   const uiStart = !hasStage ? 0 : full.length ? Math.floor(seg.dur * (seg.uiAt ?? 0.45)) : seg.dur;
@@ -505,7 +506,7 @@ function NoirScene({ seg, f, font, idx, th, chance = 100, thr = false, src, ImgC
     flash = Math.max(hook ? 0 : 1 - easeOut(prog(f, 0, 5)), cutF < 4 ? 1 - cutF / 4 : 0);
     body = (
       <div style={{ position: "absolute", inset: 0 }}>
-        {seg.shots && ImgComp ? <CineShots seg={seg} f={f} src={src} ImgComp={ImgComp} /> : <div style={{ position: "absolute", inset: 0, filter: th.grade.filter }}>
+        {seg.world ? <World3D world={seg.world} f={f} dur={seg.dur} /> : seg.shots && ImgComp ? <CineShots seg={seg} f={f} src={src} ImgComp={ImgComp} /> : <div style={{ position: "absolute", inset: 0, filter: th.grade.filter }}>
           <StageView seg={{ ...seg, style: "noir", pal: { ...th.bg, tag: th.ui.acc, tagText: th.ui.light ? "#ffffff" : "#06090d" }, weather: seg.weather === undefined ? th.weather : seg.weather,
             actors: seg.actors && seg.actors.map((a) => (a.look ? { ...a, look: { ...a.look, rim: th.rim } } : a)) }} f={f} mouth={mouth} font={font} transition="none" />
         </div>}
@@ -525,7 +526,7 @@ function NoirScene({ seg, f, font, idx, th, chance = 100, thr = false, src, ImgC
     const u = full[j];
     body = (
       <div style={{ position: "absolute", inset: 0, transform: `scale(${1 + kick})` }}>
-        <UiBackdrop f={f} tone={u?.tone} />
+        {seg.world ? <World3D world={seg.world} f={f} dur={seg.dur} dim={u ? 0.5 : 0} /> : <UiBackdrop f={f} tone={u?.tone} />}
         {u ? <UiCard ui={u} f={lf} font={font} dur={Math.floor(share)} /> : null}
       </div>
     );
