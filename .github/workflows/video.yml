@@ -12,6 +12,7 @@ on:
         options:
           - video
           - voices
+          - pilot
         default: video
 
 permissions:
@@ -76,7 +77,7 @@ jobs:
           key: factbot-${{ hashFiles('package.json') }}-v3
 
       - name: Установка Remotion
-        if: env.MODE == 'video'
+        if: env.MODE == 'video' || env.MODE == 'pilot'
         run: npm install --no-audit --no-fund && npx remotion browser ensure
 
       - name: Установка Python-библиотек
@@ -99,7 +100,7 @@ jobs:
         run: python voices.py
 
       - name: Создание ролика
-        if: env.MODE == 'video'
+        if: env.MODE == 'video' || env.MODE == 'pilot'
         run: python run.py
 
       - name: Сохранение очереди
