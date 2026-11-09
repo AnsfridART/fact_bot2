@@ -1,0 +1,236 @@
+[
+ {
+  "style": "noir",
+  "mode": "thriller",
+  "mood": "tense",
+  "voice": "kirill:strict",
+  "voice2": "filipp",
+  "loop": "Поэтому запомни:",
+  "title": "Звонок: «Ваш сын попал в беду»",
+  "theme": "silence",
+  "question": "У вас в семье есть кодовое слово? Пиши в комментариях",
+  "hook": {
+   "text": "Если звонят «ваш сын попал в беду» — *не называй его имя*.",
+   "title": "НЕ НАЗЫВАЙ|*ИМЯ*",
+   "ui": {
+    "type": "notify",
+    "app": "Входящий вызов",
+    "title": "Неизвестный номер",
+    "text": "+7 9•• ••• •• 08",
+    "icon": "☎",
+    "color": "#e01e2e",
+    "at": 0,
+    "top": 470
+   },
+   "fx": {
+    "dark": 0.12,
+    "pulse": 90,
+    "jolt": 27
+   },
+   "sfx": [
+    [
+     "buzz",
+     0,
+     0.9
+    ]
+   ],
+   "shots": [
+    "first-person view, an older woman's hand holding a smartphone with a bright incoming call screen, small Russian apartment kitchen at night, only the phone glow lights the room",
+    "extreme close-up of a vibrating smartphone on a kitchen table at night, screen glowing, cup of tea, dark shadows"
+   ]
+  },
+  "scenes": [
+   {
+    "text": "Одиннадцать вечера. Ирине звонит незнакомый номер. Мужской голос: «Вы мама? Ваш сын в больнице».",
+    "fx": {
+     "dark": 0.12,
+     "pulse": 100
+    },
+    "shots": [
+     "wall clock showing 11 pm in a dark small Russian apartment kitchen at night, curtains, cold street light from the window",
+     "first-person view, an older woman's hand pressing a smartphone to her ear, dark kitchen, tense"
+    ]
+   },
+   {
+    "text": "Сердце падает. Она почти кричит в трубку *имя сына*. И останавливается.",
+    "fx": {
+     "dark": 0.12,
+     "pulse": 125,
+     "red": 0.12
+    },
+    "shots": [
+     "close-up of an older woman's trembling hand covering her mouth in shock, dim kitchen light, blurred background",
+     "first-person view looking down at a smartphone in shaking hands, dark kitchen floor, cold light"
+    ]
+   },
+   {
+    "text": "Правило первое. Не называй имя и детали. Мошенник *ничего не знает*, он ждёт, что ты подскажешь сама.",
+    "ui": {
+     "type": "alert",
+     "title": "ПРАВИЛО 1",
+     "big": "НЕ ПОДСКАЗЫВАЙ",
+     "sub": "мошенник ждёт, что ты сама назовёшь имя и детали"
+    },
+    "fx": {
+     "pulse": 115
+    }
+   },
+   {
+    "text": "Ирина спрашивает, как зовут её сына. Пауза. Потом голос: «Мама, это я. Мне плохо говорить».",
+    "ui": {
+     "type": "call",
+     "name": "Неизвестный номер",
+     "sub": "00:47 · голос похож на сына"
+    },
+    "fx": {
+     "pulse": 125
+    }
+   },
+   {
+    "text": "Голос похож. Очень. Но сын *никогда* не называет её «мама». Только «мам».",
+    "fx": {
+     "dark": 0.12,
+     "pulse": 120
+    },
+    "sfx": [
+     [
+      "drone",
+      0.2,
+      0.6
+     ]
+    ],
+    "shots": [
+     "extreme macro close-up of a smartphone speaker grille glowing in the darkness, ominous, shallow depth of field",
+     "dark kitchen window at night with reflection of a worried older woman holding a phone to her ear"
+    ]
+   },
+   {
+    "text": "Правило второе. Положи трубку и *перезвони сама* на номер, который знаешь. Настоящая беда подождёт минуту.",
+    "ui": {
+     "type": "alert",
+     "title": "ПРАВИЛО 2",
+     "big": "ПОЛОЖИ И ПЕРЕЗВОНИ",
+     "sub": "сама, на номер, который знаешь"
+    },
+    "fx": {
+     "pulse": 120
+    }
+   },
+   {
+    "text": "Ирина сбрасывает и звонит сыну. Гудок. Ещё. Каждая секунда *как час*.",
+    "ui": {
+     "type": "call",
+     "name": "Сын",
+     "sub": "вызов…"
+    },
+    "fx": {
+     "pulse": 140
+    },
+    "sfx": [
+     [
+      "buzz",
+      0.3,
+      0.6
+     ]
+    ]
+   },
+   {
+    "text": "Сонный голос: «Мам, ты чего? Я дома, сплю». Ирина садится *прямо на пол*.",
+    "fx": {
+     "dark": 0.12,
+     "pulse": 80
+    },
+    "shots": [
+     "older woman sitting on the kitchen floor leaning against cabinets, phone in her lap, relief, dim warm light, seen from above",
+     "first-person view of a smartphone screen showing a call with a son, warm light, hands relaxed"
+    ]
+   },
+   {
+    "text": "Правило третье. Договоритесь в семье о *кодовом слове*. Его не должно быть нигде в соцсетях.",
+    "ui": {
+     "type": "alert",
+     "title": "ПРАВИЛО 3",
+     "big": "КОДОВОЕ СЛОВО",
+     "sub": "договоритесь в семье о слове, которого нет в соцсетях"
+    },
+    "fx": {
+     "pulse": 90
+    }
+   },
+   {
+    "text": "Они с сыном выбирают слово. Странное, смешное. Знают его *только двое*.",
+    "ui": {
+     "type": "chat",
+     "name": "Сын",
+     "status": "в сети",
+     "msgs": [
+      {
+       "me": true,
+       "text": "Кодовое слово — только наше"
+      },
+      {
+       "text": "Договорились, мам"
+      }
+     ]
+    },
+    "fx": {
+     "pulse": 70
+    }
+   },
+   {
+    "text": "Через неделю снова звонок. Голос сына: «Мам, я в беде». И он *называет кодовое слово*.",
+    "ui": {
+     "type": "call",
+     "name": "Неизвестный номер",
+     "sub": "голос сына · кодовое слово верное"
+    },
+    "fx": {
+     "pulse": 135,
+     "red": 0.12
+    },
+    "sfx": [
+     [
+      "hit",
+      0.6,
+      1
+     ]
+    ]
+   },
+   {
+    "text": "А сын в этот момент сидит рядом с ней на кухне. И *молча смотрит на телефон*.",
+    "fx": {
+     "dark": 0.12,
+     "red": 0.18,
+     "pulse": 140
+    },
+    "sfx": [
+     [
+      "hit",
+      0.5,
+      1
+     ]
+    ],
+    "shots": [
+     "dark kitchen, a young man sitting at the table silently staring at a smartphone lying on the table with a glowing incoming call screen, older woman's hand in foreground, ominous",
+     "extreme close-up of the young man's face lit only by a phone screen, eyes wide, darkness around"
+    ]
+   }
+  ],
+  "punch": {
+   "text": "Голос можно подделать. Проверь, а потом паникуй.",
+   "big": "НЕ НАЗЫВАЙ|*ИМЯ*"
+  },
+  "source": "Художественная история; схема «родственник в беде» и советы перезвонить и договориться о кодовом слове — реальные рекомендации",
+  "description": "Ночью Ирине звонят: «Ваш сын в больнице». Три правила, которые спасают родителей от мошенников. Триллер.",
+  "hashtags": [
+   "мошенники",
+   "истории",
+   "триллер",
+   "безопасность",
+   "родители",
+   "правила"
+  ],
+  "yt_tags": "мошенники, истории, триллер, безопасность, родители, правила, истории на ночь, что бы ты сделал, выживание",
+  "img_style": "pov"
+ }
+]
