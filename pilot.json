@@ -23,45 +23,78 @@
     "top": 470
    },
    "fx": {
-    "dark": 0.12,
+    "dark": 0.1,
     "pulse": 90,
     "jolt": 27
    },
    "sfx": [
     [
      "buzz",
-     0,
+     0.0,
      0.9
     ]
    ],
-   "shots": [
-    "first-person view, an older woman's hand holding a smartphone with a bright incoming call screen, small Russian apartment kitchen at night, only the phone glow lights the room",
-    "extreme close-up of a vibrating smartphone on a kitchen table at night, screen glowing, cup of tea, dark shadows"
-   ]
+   "world": {
+    "shot": "kitchen/ring",
+    "cast": {
+     "mom": {
+      "skin": "#e3b08d",
+      "shirt": "#5a3a4a",
+      "pants": "#2a2630",
+      "shoes": "#141012",
+      "hair": "#7a6656",
+      "hairStyle": "bun"
+     },
+     "son": "man"
+    },
+    "flicker": 0
+   }
   },
   "scenes": [
    {
     "text": "Одиннадцать вечера. Ирине звонит незнакомый номер. Мужской голос: «Вы мама? Ваш сын в больнице».",
     "fx": {
-     "dark": 0.12,
+     "dark": 0.1,
      "pulse": 100
     },
-    "shots": [
-     "wall clock showing 11 pm in a dark small Russian apartment kitchen at night, curtains, cold street light from the window",
-     "first-person view, an older woman's hand pressing a smartphone to her ear, dark kitchen, tense"
-    ]
+    "world": {
+     "shot": "kitchen/clock_pan",
+     "cast": {
+      "mom": {
+       "skin": "#e3b08d",
+       "shirt": "#5a3a4a",
+       "pants": "#2a2630",
+       "shoes": "#141012",
+       "hair": "#7a6656",
+       "hairStyle": "bun"
+      },
+      "son": "man"
+     },
+     "flicker": 0
+    }
    },
    {
     "text": "Сердце падает. Она почти кричит в трубку *имя сына*. И останавливается.",
     "fx": {
-     "dark": 0.12,
+     "dark": 0.1,
      "pulse": 125,
      "red": 0.12
     },
-    "shots": [
-     "close-up of an older woman's trembling hand covering her mouth in shock, dim kitchen light, blurred background",
-     "first-person view looking down at a smartphone in shaking hands, dark kitchen floor, cold light"
-    ]
+    "world": {
+     "shot": "kitchen/window_call",
+     "cast": {
+      "mom": {
+       "skin": "#e3b08d",
+       "shirt": "#5a3a4a",
+       "pants": "#2a2630",
+       "shoes": "#141012",
+       "hair": "#7a6656",
+       "hairStyle": "bun"
+      },
+      "son": "man"
+     },
+     "flicker": 1
+    }
    },
    {
     "text": "Правило первое. Не называй имя и детали. Мошенник *ничего не знает*, он ждёт, что ты подскажешь сама.",
@@ -73,7 +106,23 @@
     },
     "fx": {
      "pulse": 115
-    }
+    },
+    "world": {
+     "shot": "kitchen/cctv",
+     "cast": {
+      "mom": {
+       "skin": "#e3b08d",
+       "shirt": "#5a3a4a",
+       "pants": "#2a2630",
+       "shoes": "#141012",
+       "hair": "#7a6656",
+       "hairStyle": "bun"
+      },
+      "son": "man"
+     },
+     "flicker": 0
+    },
+    "uiAt": 0
    },
    {
     "text": "Ирина спрашивает, как зовут её сына. Пауза. Потом голос: «Мама, это я. Мне плохо говорить».",
@@ -84,12 +133,28 @@
     },
     "fx": {
      "pulse": 125
-    }
+    },
+    "world": {
+     "shot": "kitchen/ots",
+     "cast": {
+      "mom": {
+       "skin": "#e3b08d",
+       "shirt": "#5a3a4a",
+       "pants": "#2a2630",
+       "shoes": "#141012",
+       "hair": "#7a6656",
+       "hairStyle": "bun"
+      },
+      "son": "man"
+     },
+     "flicker": 0
+    },
+    "uiAt": 0.45
    },
    {
     "text": "Голос похож. Очень. Но сын *никогда* не называет её «мама». Только «мам».",
     "fx": {
-     "dark": 0.12,
+     "dark": 0.1,
      "pulse": 120
     },
     "sfx": [
@@ -99,10 +164,21 @@
       0.6
      ]
     ],
-    "shots": [
-     "extreme macro close-up of a smartphone speaker grille glowing in the darkness, ominous, shallow depth of field",
-     "dark kitchen window at night with reflection of a worried older woman holding a phone to her ear"
-    ]
+    "world": {
+     "shot": "kitchen/face",
+     "cast": {
+      "mom": {
+       "skin": "#e3b08d",
+       "shirt": "#5a3a4a",
+       "pants": "#2a2630",
+       "shoes": "#141012",
+       "hair": "#7a6656",
+       "hairStyle": "bun"
+      },
+      "son": "man"
+     },
+     "flicker": 0
+    }
    },
    {
     "text": "Правило второе. Положи трубку и *перезвони сама* на номер, который знаешь. Настоящая беда подождёт минуту.",
@@ -114,7 +190,23 @@
     },
     "fx": {
      "pulse": 120
-    }
+    },
+    "world": {
+     "shot": "kitchen/walk_phone",
+     "cast": {
+      "mom": {
+       "skin": "#e3b08d",
+       "shirt": "#5a3a4a",
+       "pants": "#2a2630",
+       "shoes": "#141012",
+       "hair": "#7a6656",
+       "hairStyle": "bun"
+      },
+      "son": "man"
+     },
+     "flicker": 0
+    },
+    "uiAt": 0
    },
    {
     "text": "Ирина сбрасывает и звонит сыну. Гудок. Ещё. Каждая секунда *как час*.",
@@ -132,18 +224,45 @@
       0.3,
       0.6
      ]
-    ]
+    ],
+    "world": {
+     "shot": "kitchen/top_spin",
+     "cast": {
+      "mom": {
+       "skin": "#e3b08d",
+       "shirt": "#5a3a4a",
+       "pants": "#2a2630",
+       "shoes": "#141012",
+       "hair": "#7a6656",
+       "hairStyle": "bun"
+      },
+      "son": "man"
+     },
+     "flicker": 0
+    },
+    "uiAt": 0.45
    },
    {
     "text": "Сонный голос: «Мам, ты чего? Я дома, сплю». Ирина садится *прямо на пол*.",
     "fx": {
-     "dark": 0.12,
+     "dark": 0.1,
      "pulse": 80
     },
-    "shots": [
-     "older woman sitting on the kitchen floor leaning against cabinets, phone in her lap, relief, dim warm light, seen from above",
-     "first-person view of a smartphone screen showing a call with a son, warm light, hands relaxed"
-    ]
+    "world": {
+     "shot": "kitchen/floor",
+     "cast": {
+      "mom": {
+       "skin": "#e3b08d",
+       "shirt": "#5a3a4a",
+       "pants": "#2a2630",
+       "shoes": "#141012",
+       "hair": "#7a6656",
+       "hairStyle": "bun"
+      },
+      "son": "man"
+     },
+     "flicker": 0
+    }
    },
    {
     "text": "Правило третье. Договоритесь в семье о *кодовом слове*. Его не должно быть нигде в соцсетях.",
@@ -155,7 +274,23 @@
     },
     "fx": {
      "pulse": 90
-    }
+    },
+    "world": {
+     "shot": "kitchen/outside",
+     "cast": {
+      "mom": {
+       "skin": "#e3b08d",
+       "shirt": "#5a3a4a",
+       "pants": "#2a2630",
+       "shoes": "#141012",
+       "hair": "#7a6656",
+       "hairStyle": "bun"
+      },
+      "son": "man"
+     },
+     "flicker": 0
+    },
+    "uiAt": 0
    },
    {
     "text": "Они с сыном выбирают слово. Странное, смешное. Знают его *только двое*.",
@@ -175,7 +310,23 @@
     },
     "fx": {
      "pulse": 70
-    }
+    },
+    "world": {
+     "shot": "kitchen/warm_talk",
+     "cast": {
+      "mom": {
+       "skin": "#e3b08d",
+       "shirt": "#5a3a4a",
+       "pants": "#2a2630",
+       "shoes": "#141012",
+       "hair": "#7a6656",
+       "hairStyle": "bun"
+      },
+      "son": "man"
+     },
+     "flicker": 0
+    },
+    "uiAt": 0.5
    },
    {
     "text": "Через неделю снова звонок. Голос сына: «Мам, я в беде». И он *называет кодовое слово*.",
@@ -192,14 +343,30 @@
      [
       "hit",
       0.6,
-      1
+      1.0
      ]
-    ]
+    ],
+    "world": {
+     "shot": "kitchen/ring_reach",
+     "cast": {
+      "mom": {
+       "skin": "#e3b08d",
+       "shirt": "#5a3a4a",
+       "pants": "#2a2630",
+       "shoes": "#141012",
+       "hair": "#7a6656",
+       "hairStyle": "bun"
+      },
+      "son": "man"
+     },
+     "flicker": 0
+    },
+    "uiAt": 0.45
    },
    {
     "text": "А сын в этот момент сидит рядом с ней на кухне. И *молча смотрит на телефон*.",
     "fx": {
-     "dark": 0.12,
+     "dark": 0.1,
      "red": 0.18,
      "pulse": 140
     },
@@ -207,13 +374,24 @@
      [
       "hit",
       0.5,
-      1
+      1.0
      ]
     ],
-    "shots": [
-     "dark kitchen, a young man sitting at the table silently staring at a smartphone lying on the table with a glowing incoming call screen, older woman's hand in foreground, ominous",
-     "extreme close-up of the young man's face lit only by a phone screen, eyes wide, darkness around"
-    ]
+    "world": {
+     "shot": "kitchen/reveal",
+     "cast": {
+      "mom": {
+       "skin": "#e3b08d",
+       "shirt": "#5a3a4a",
+       "pants": "#2a2630",
+       "shoes": "#141012",
+       "hair": "#7a6656",
+       "hairStyle": "bun"
+      },
+      "son": "man"
+     },
+     "flicker": 0
+    }
    }
   ],
   "punch": {
@@ -230,7 +408,6 @@
    "родители",
    "правила"
   ],
-  "yt_tags": "мошенники, истории, триллер, безопасность, родители, правила, истории на ночь, что бы ты сделал, выживание",
-  "img_style": "pov"
+  "yt_tags": "мошенники, истории, триллер, безопасность, родители, правила, истории на ночь, что бы ты сделал, выживание"
  }
 ]
