@@ -23,8 +23,16 @@ def _save(content, path):
     return path
 
 
-def _pollinations(prompt, path, seed):
-    url = "https://image.pollinations.ai/prompt/" + urllib.parse.quote(f"{prompt}. {STYLE}")
+# v24: кино от первого лица — мрачный фотореалистичный кадр, руки вместо лиц
+STYLES = {
+    "pov": ("cinematic film still, first-person point of view, night, low-key lighting, cold blue moonlight with warm practical lamps, "
+            "shallow depth of field, 35mm film grain, realistic, tense psychological thriller atmosphere, vertical composition, "
+            "no text, no letters, no captions, no watermark, no logos"),
+}
+
+
+def _pollinations(prompt, path, seed, style=STYLE):
+    url = "https://image.pollinations.ai/prompt/" + urllib.parse.quote(f"{prompt}. {style}")
     params = {"width": 720, "height": 1280, "model": "flux", "nologo": "true", "seed": seed, "private": "true"}
     headers = dict(UA)
     if config.POLLINATIONS_TOKEN:
@@ -41,12 +49,12 @@ def _pollinations(prompt, path, seed):
     raise RuntimeError("Pollinations: слишком много запросов")
 
 
-def _cloudflare(prompt, path, seed):
+def _cloudflare(prompt, path, seed, style=STYLE):
     if not (config.CF_ACCOUNT_ID and config.CF_API_TOKEN):
         raise RuntimeError("Cloudflare не настроен")
     url = f"https://api.cloudflare.com/client/v4/accounts/{config.CF_ACCOUNT_ID}/ai/run/@cf/black-forest-labs/flux-1-schnell"
     r = requests.post(url, headers={"Authorization": f"Bearer {config.CF_API_TOKEN}"},
-                      json={"prompt": f"{prompt}. {STYLE}", "steps": 8, "seed": seed}, timeout=120)
+                      json={"prompt": f"{prompt}. {style}", "steps": 8, "seed": seed}, timeout=120)
     r.raise_for_status()
     return _save(base64.b64decode(r.json()["result"]["image"]), path)
 
@@ -66,10 +74,11 @@ def _pixabay(query, path):
     raise RuntimeError(f"Pixabay: ничего по запросу {query}")
 
 
-def generate(prompt: str, path: str, seed: int, stock_query: str = "") -> str:
+def generate(prompt: str, path: str, seed: int, stock_query: str = "", style: str = None) -> str:
+    st = STYLES.get(style, style) if style else STYLE
     for name, fn in (("Pollinations", _pollinations), ("Cloudflare", _cloudflare)):
         try:
-            out = fn(prompt, path, seed)
+            out = fn(prompt, path, seed, st)
             print(f"{name}: готово — {prompt[:60]}")
             return out
         except Exception as e:
