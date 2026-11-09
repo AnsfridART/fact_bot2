@@ -402,8 +402,11 @@ def make_cover(s):
 
 def caption(s):
     tags = " ".join("#" + t.lstrip("#").replace(" ", "") for t in s.get("hashtags", []))
+    t = s["title"].rstrip()
+    if t and t[-1] not in ".!?…»":  # точка после названия: при вставке без переносов не слипнется с вопросом
+        t += "."
     q = f"\n\n{s['question']}" if s.get("question") else ""
-    return f"{s['title']}{q}\n\n{tags}"
+    return f"{t}{q}\n\n{tags}"
 
 
 def main():
@@ -429,7 +432,9 @@ def main():
     except Exception as e:
         print("Обложка не получилась:", e)
         WARNINGS.append(f"обложка не получилась: {str(e)[:200]}")
-    say("Подпись для публикации:\n\n"
+    say("Название для YouTube:\n"
+        f"<code>{html.escape(s['title'])} #shorts</code>\n\n"
+        "Подпись для TikTok и Instagram:\n\n"
         f"<code>{html.escape(caption(s))}</code>\n\n"
         f"Описание для YouTube:\n<code>{html.escape(s.get('description', ''))}</code>"
         + (f"\n\nТеги для YouTube:\n<code>{html.escape(s['yt_tags'])}</code>" if s.get("yt_tags") else ""))
