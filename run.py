@@ -201,7 +201,7 @@ def build_props(s):
                 seg["shots"] = files
             else:
                 WARNINGS.append(f"нет кадров для сцены {i}")
-        elif p["kind"] in ("scene", "hook") and not (p.get("bg") or p.get("actors") or p.get("map") or p.get("ui")):
+        elif p["kind"] in ("scene", "hook") and not (p.get("bg") or p.get("actors") or p.get("map") or p.get("ui") or p.get("world")):
             img = f"img{i}.jpg"
             try:
                 images.generate(p["prompt"], os.path.join(config.PUBLIC_DIR, img), seed, p.get("stock", ""))
