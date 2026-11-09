@@ -454,5 +454,29 @@ def _purr(sr):  # v19: ровное, «записанное» мурчание ~
     return x * am * env * 0.7
 
 
-ACTION_SFX = {"purr": _purr, "heart": _heart, "knock": _knock, "buzz": _buzz, "bell": _bell, "drone": _drone, "hit": _hit, "ping": _ping, "glitch": _glitch, "thunder": _thunder, "wings": _wings, "stamp": _stamp, "paper": _paper, "snap": _snap,
+def _steps(sr):
+    """v25: шаги — четыре глухих удара по бетону."""
+    out = np.zeros(int(sr * 2.0))
+    rng = np.random.default_rng(7)
+    for k in range(4):
+        n = int(sr * 0.09); t = np.arange(n) / sr
+        hit = (rng.standard_normal(n) * 0.5 + np.sin(2 * np.pi * 70 * t)) * np.exp(-t * 45)
+        hit = np.convolve(hit, np.ones(12) / 12, mode="same") * (0.55 if k % 2 else 0.45)
+        i = int(sr * 0.48 * k); out[i:i + n] += hit
+    return out
+
+
+def _click(sr):
+    """v25: щелчок замка."""
+    n = int(sr * 0.12); t = np.arange(n) / sr
+    rng = np.random.default_rng(3)
+    a = rng.standard_normal(n) * np.exp(-t * 160) * 0.8
+    b2 = np.sin(2 * np.pi * 1800 * t) * np.exp(-t * 90) * 0.4
+    out = a + b2
+    j = int(sr * 0.05)
+    out[j:] += (rng.standard_normal(n - j) * np.exp(-t[: n - j] * 200) * 0.6)
+    return out
+
+
+ACTION_SFX = {"steps": _steps, "click": _click, "purr": _purr, "heart": _heart, "knock": _knock, "buzz": _buzz, "bell": _bell, "drone": _drone, "hit": _hit, "ping": _ping, "glitch": _glitch, "thunder": _thunder, "wings": _wings, "stamp": _stamp, "paper": _paper, "snap": _snap,
               "clock": _clocktick, "fire": lambda sr: _amb_fire(int(sr * 1.5), sr, 9) * 0.3}
