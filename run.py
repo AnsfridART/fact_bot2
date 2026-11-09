@@ -182,7 +182,7 @@ def build_props(s):
         seg = {"kind": p["kind"], "start": start, "dur": dur, "audio": wav, "env": env,
                "words": word_timings(p["text"].replace("|", " "), first, last)}
         for k in ("title", "emotion", "tag", "alert", "cam", "big", "bg", "actors", "focus", "tint", "camY", "insert", "count", "map", "angle", "weather", "lights",
-                  "ui", "hud", "uiAt", "options", "question", "hint", "next", "clue", "nextTitle", "tape", "fx", "shotOn", "hookFocus"):
+                  "ui", "hud", "uiAt", "options", "question", "hint", "next", "clue", "nextTitle", "tape", "fx", "shotOn", "hookFocus", "world"):
             if p.get(k) is not None:  # focus=0 — тоже значение
                 seg[k] = p[k]
         if p.get("shots"):  # v24: кадры от первого лица, нейросеть рисует каждый шот в стиле истории
@@ -373,7 +373,7 @@ def render():
     os.makedirs(os.path.dirname(config.OUTPUT), exist_ok=True)
     subprocess.run(["npx", "remotion", "render", "src/index.jsx", "Main", config.OUTPUT,
                     "--props=./props.json", "--concurrency=100%", "--crf=20",
-                    "--timeout=120000", "--log=warn"], check=True)
+                    "--timeout=120000", "--log=warn", "--gl=swangle"], check=True)
     try:
         final = add_music(config.OUTPUT)
         shutil.move(final, config.OUTPUT)
@@ -410,7 +410,7 @@ def make_cover(s):
         json.dump(props, f, ensure_ascii=False)
     out = "output/cover.png"
     subprocess.run(["npx", "remotion", "still", "src/index.jsx", "Cover", out, "--props=./props_cover.json",
-                    "--timeout=120000", "--log=warn"], check=True)
+                    "--timeout=120000", "--log=warn", "--gl=swangle"], check=True)
     with open(COVER_FILE, "w") as f:
         f.write(str(n + 1))
     return out
