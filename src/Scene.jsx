@@ -454,10 +454,45 @@ function ThrillFX({ fx = {}, f }) {
   return <>{out}</>;
 }
 
-function NoirScene({ seg, f, font, idx, th, chance = 100, thr = false }) {
+// v24: «кино от первого лица» — кадры нейросети с движением камеры, ручной тряской, склейками и плёночным зерном
+function CineShots({ seg, f, src, ImgComp }) {
+  const shots = seg.shots || [];
+  const n = Math.max(1, shots.length), per = Math.max(1, seg.dur / n);
+  const k = Math.min(n - 1, Math.floor(f / per)), lf = f - k * per, t = clamp(lf / per);
+  const kind = (Math.floor(seg.start / 7) + k) % 4;
+  // движение камеры внутри шота: наезд, отъезд, панорама влево/вправо
+  const mv = [{ s: lerp(1.06, 1.2, t), x: 0, y: lerp(0, -1.5, t) }, { s: lerp(1.22, 1.08, t), x: 0, y: 0 },
+    { s: 1.16, x: lerp(3, -3, t), y: 0 }, { s: 1.16, x: lerp(-3, 3, t), y: lerp(1, -1, t) }][kind];
+  const sway = { x: Math.sin(f / 23 + seg.start) * 0.45 + Math.sin(f / 7.3) * 0.12, y: Math.cos(f / 31 + seg.start) * 0.35 };
+  const jolt = seg.fx && seg.fx.jolt != null && f >= seg.fx.jolt ? Math.exp(-(f - seg.fx.jolt) / 4) : 0;
+  const shake = { x: Math.sin(f * 2.9) * 2.2 * jolt, y: Math.cos(f * 3.7) * 2.2 * jolt };
+  const cutK = k > 0 ? 1 - easeOut(prog(lf, 0, 5)) : 0;  // склейка: короткая вспышка и толчок
+  const enter = seg.kind === "hook" ? 0 : 1 - easeOut(prog(f, 0, 6));
+  const sc = mv.s + 0.05 * cutK + 0.08 * enter + 0.04 * jolt;
+  const dust = [...Array(14)].map((_, i) => {
+    const p = ((f * (0.6 + (i % 5) * 0.15) + i * 137) % 1920);
+    return <div key={i} style={{ position: "absolute", left: (i * 211 + Math.sin(f / 40 + i) * 40) % 1080, top: 1920 - p, width: 3 + (i % 3), height: 3 + (i % 3), borderRadius: "50%", background: "#fff", opacity: 0.12 + (i % 4) * 0.04 }} />;
+  });
+  return (
+    <div style={{ position: "absolute", inset: 0, overflow: "hidden", background: "#000" }}>
+      {shots[k] ? <ImgComp src={src(shots[k])} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover",
+        transform: `translate(${mv.x + sway.x + shake.x}%, ${mv.y + sway.y + shake.y}%) scale(${sc})`, filter: `contrast(1.08) saturate(0.9) brightness(${0.95 - 0.2 * enter})` }} /> : null}
+      {/* грейдинг: холодные тени, тёплые света */}
+      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(10,30,50,.35), rgba(0,0,0,0) 40%, rgba(40,20,0,.18) 70%, rgba(0,0,0,.6))", mixBlendMode: "multiply" }} />
+      <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 45%, rgba(0,0,0,.75) 100%)" }} />
+      {dust}
+      {/* летербокс-полосы на хуке и склейках — ощущение кино */}
+      <div style={{ position: "absolute", left: 0, right: 0, top: 0, height: 70 * (seg.kind === "hook" ? 1 : cutK), background: "#000" }} />
+      <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: 70 * (seg.kind === "hook" ? 1 : cutK), background: "#000" }} />
+      <div style={{ position: "absolute", inset: 0, background: "#fff", opacity: 0.28 * cutK }} />
+    </div>
+  );
+}
+
+function NoirScene({ seg, f, font, idx, th, chance = 100, thr = false, src, ImgComp }) {
   th = th || applyTheme(null);
   const uis = seg.ui ? (Array.isArray(seg.ui) ? seg.ui : [seg.ui]) : [];
-  const hasStage = !!(seg.actors || seg.bg);
+  const hasStage = !!(seg.actors || seg.bg || (seg.shots && ImgComp));
   const over = hasStage ? uis.filter((u) => u.type === "notify") : [];
   const full = uis.filter((u) => !over.includes(u));
   const uiStart = !hasStage ? 0 : full.length ? Math.floor(seg.dur * (seg.uiAt ?? 0.45)) : seg.dur;
@@ -470,10 +505,10 @@ function NoirScene({ seg, f, font, idx, th, chance = 100, thr = false }) {
     flash = Math.max(hook ? 0 : 1 - easeOut(prog(f, 0, 5)), cutF < 4 ? 1 - cutF / 4 : 0);
     body = (
       <div style={{ position: "absolute", inset: 0 }}>
-        <div style={{ position: "absolute", inset: 0, filter: th.grade.filter }}>
+        {seg.shots && ImgComp ? <CineShots seg={seg} f={f} src={src} ImgComp={ImgComp} /> : <div style={{ position: "absolute", inset: 0, filter: th.grade.filter }}>
           <StageView seg={{ ...seg, style: "noir", pal: { ...th.bg, tag: th.ui.acc, tagText: th.ui.light ? "#ffffff" : "#06090d" }, weather: seg.weather === undefined ? th.weather : seg.weather,
             actors: seg.actors && seg.actors.map((a) => (a.look ? { ...a, look: { ...a.look, rim: th.rim } } : a)) }} f={f} mouth={mouth} font={font} transition="none" />
-        </div>
+        </div>}
         {over.map((u, i) => {
           // v15.1: в хуке уведомление с деньгами видно уже на кадре 0 — это главный «крючок» ленты
           const at = hook ? 0 : Math.floor(seg.dur * (u.at ?? 0.25));
@@ -514,7 +549,7 @@ function NoirFrame({ segs, seg, f, frame, data, font, src, ImgComp }) {
   const chance = (hudState(segs, i) || {}).chance ?? 100;
   let body;
   if (seg.kind === "loop" && segs[0]) {
-    body = <NoirScene seg={{ ...segs[0], start: seg.start, dur: seg.dur }} f={Math.min(f, 6)} font={font} idx={0} th={th} chance={chance} thr={data.thriller} />;
+    body = <NoirScene seg={{ ...segs[0], start: seg.start, dur: seg.dur }} f={Math.min(f, 6)} font={font} idx={0} th={th} chance={chance} thr={data.thriller} src={src} ImgComp={ImgComp} />;
   } else if (seg.kind === "choice") {
     body = <><ChoiceScreen seg={seg} f={f} font={font} /><NoirFX f={f} chance={chance} flash={0.5 * (1 - easeOut(prog(f, 0, 5)))} /></>;
   } else if (seg.kind === "punch") {
@@ -522,7 +557,7 @@ function NoirFrame({ segs, seg, f, frame, data, font, src, ImgComp }) {
   } else if (seg.kind === "intro" || seg.kind === "outro") {
     body = <HostScene seg={seg} f={f} frame={frame} font={font} />;
   } else {
-    body = <NoirScene seg={seg} f={f} font={font} idx={i} th={th} chance={chance} thr={data.thriller} />;
+    body = <NoirScene seg={seg} f={f} font={font} idx={i} th={th} chance={chance} thr={data.thriller} src={src} ImgComp={ImgComp} />;
   }
   const cur = hudState(segs, i);
   const prev = seg.hud ? hudState(segs, i - 1) : cur;
@@ -569,12 +604,12 @@ export function Scene({ frame, data, src, ImgComp, font = "Montserrat, DejaVu Sa
 }
 
 // Обложка ролика: кадр из начала истории, плашка «ИСТОРИЯ #N», крупный заголовок.
-function NoirCover({ data, seg, font }) {
+function NoirCover({ data, seg, font, src, ImgComp }) {
   const th = applyTheme(hookTheme(data.theme, { kind: "hook" }));
   const lines = (seg.title || "").split("|").filter(Boolean);
   return (
     <div style={{ position: "absolute", inset: 0, width: 1080, height: 1920, overflow: "hidden", background: N.bg }}>
-      <NoirScene seg={{ ...seg, ui: undefined, kind: "scene", dur: 200 }} f={30} font={font} idx={0} th={th} />
+      <NoirScene seg={{ ...seg, ui: undefined, kind: "scene", dur: 200 }} f={30} font={font} idx={0} th={th} src={src} ImgComp={ImgComp} />
       <div style={{ position: "absolute", inset: 0, background: "linear-gradient(rgba(6,9,13,.35), rgba(6,9,13,.85) 36%, rgba(6,9,13,0) 64%)" }} />
       {/* v22: без номера серии — ролики выходят не по порядку */}
       <div style={{ position: "absolute", top: 430, left: 50, right: 50, textAlign: "center", fontFamily: font, fontWeight: 900, textTransform: "uppercase", lineHeight: 1.04, ...outline(18) }}>
@@ -588,10 +623,10 @@ function NoirCover({ data, seg, font }) {
   );
 }
 
-export function Cover({ data, font = "Montserrat, DejaVu Sans, Arial" }) {
+export function Cover({ data, font = "Montserrat, DejaVu Sans, Arial", src, ImgComp }) {
   const seg = (data.segments || [])[0];
   if (!seg) return <div style={{ width: 1080, height: 1920, background: "#000" }} />;
-  if (data.style === "noir") return <NoirCover data={data} seg={seg} font={font} />;
+  if (data.style === "noir") return <NoirCover data={data} seg={seg} font={font} src={src} ImgComp={ImgComp} />;
   const lines = (seg.title || "").split("|").filter(Boolean);
   const shot = { ...seg, kind: "scene", focus: undefined, alert: undefined, tag: undefined, cam: "in", camY: (seg.camY ?? 305) - 50 };
   return (
