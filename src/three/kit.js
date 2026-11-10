@@ -1,89 +1,17 @@
 // Набор для 3D-сцен: персонажи и локации. Единицы — метры, пол y=0, лицо персонажа смотрит в +z.
 import { M, hex, ik } from "./engine.js";
+import { person as personV2 } from "./people.js";
 
 export const LOOKS = {
-  man: { skin: "#d9a982", shirt: "#2f4a5a", pants: "#1f2630", shoes: "#111111", hair: "#2a1d14", hairStyle: "short" },
+  man: { skin: "#d9a982", shirt: "#2f4a5a", pants: "#2a3446", shoes: "#111111", hair: "#2a1d14", hairStyle: "short", top: "jacket", outer: "#2a2a2c", beard: "stubble" },
   woman: { skin: "#e3b08d", shirt: "#7a3b3b", pants: "#2a2a33", shoes: "#1a1212", hair: "#4a2e1c", hairStyle: "long" },
   elder: { skin: "#d8a585", shirt: "#5b4e6e", pants: "#2c2a30", shoes: "#1a1616", hair: "#9a9a9a", hairStyle: "bun" },
-  boy: { skin: "#e0ae8a", shirt: "#3d6b3a", pants: "#23303d", shoes: "#151515", hair: "#3a2414", hairStyle: "short" },
-  stranger: { skin: "#b89478", shirt: "#141414", pants: "#101010", shoes: "#0a0a0a", hair: "#0d0d0d", hairStyle: "hood" },
+  boy: { skin: "#e0ae8a", shirt: "#3d6b3a", pants: "#23303d", shoes: "#151515", hair: "#3a2414", hairStyle: "short", top: "hoodie", outer: "#3d6b3a" },
+  stranger: { skin: "#b89478", shirt: "#141414", pants: "#101010", shoes: "#0a0a0a", hair: "#0d0d0d", hairStyle: "hood", top: "hoodie", outer: "#161616", beard: "stubble" },
 };
 
-// pose: stand | walk | sit | phone | sitphone | arms_up | look_phone ; phase — фаза шага (радианы)
-export function person(b, { x = 0, z = 0, y = 0, ry = 0, look = "man", pose = "stand", phase = 0, t = 0, headYaw = 0, headPitch = 0, scale = 1, eyes = 1, arms = null }) {
-  const L = typeof look === "string" ? LOOKS[look] : look;
-  const walk = pose === "walk" || pose === "run", floor = pose === "floor", sit = pose === "sit" || pose === "sitphone" || floor;
-  const amp = pose === "run" ? 1.5 : 1;
-  const sw = walk ? Math.sin(phase) : 0, breath = Math.sin(t * 2.2) * 0.008;
-  const hipY = floor ? 0.1 : sit ? 0.5 : 0.92 + (walk ? Math.abs(Math.cos(phase)) * 0.035 * amp : breath);
-  b.push(M.tr(x, y, z), M.ry(ry), M.sc(scale));
-  // ноги
-  for (const s of [-1, 1]) {
-    const swing = floor ? -1.35 - (s > 0 ? 0.25 : 0) : sit ? -1.5 : sw * 0.45 * s * amp;
-    const ph = phase + (s > 0 ? 0 : Math.PI);
-    const knee = floor ? (s > 0 ? 1.6 : 0.35) : sit ? 1.5 : walk ? Math.max(0, -Math.cos(ph)) * 0.75 * amp : 0.02;
-    b.push(M.tr(0.1 * s, hipY, 0), M.rx(swing));
-    b.cyl(0, -0.45, 0, 0.07, 0.085, 0.47, L.pants, { seg: 7, mat: "fabric" });
-    b.push(M.tr(0, -0.44, 0), M.rx(knee));
-    b.cyl(0, -0.44, 0, 0.055, 0.068, 0.45, L.pants, { seg: 7, mat: "fabric" });
-    b.box(0, -0.5, 0.045, 0.12, 0.07, 0.25, L.shoes);
-    b.pop().pop();
-  }
-  // корпус
-  b.push(M.tr(0, hipY, 0), M.rx(walk ? 0.07 * amp : floor ? -0.25 : sit ? -0.05 : 0));
-  b.cyl(0, -0.06, 0, 0.17, 0.18, 0.16, L.pants, { seg: 9, sz: 0.7 });
-  b.cyl(0, 0.08, 0, 0.18, 0.215 + breath, 0.42, L.shirt, { seg: 9, sz: 0.62, mat: "fabric" });
-  b.sph(0, 0.5, 0, 0.215, L.shirt, { seg: 9, ring: 6, sy: 0.45, sz: 0.62, mat: "fabric" });
-  if (L.hairStyle === "hood") b.sph(0, 0.53, -0.07, 0.17, L.shirt, { sy: 0.6 });
-  // голова (крупная, как в нашем 2D-стиле)
-  b.push(M.tr(0, 0.58, 0), M.ry(headYaw), M.rx(headPitch));
-  b.cyl(0, 0, 0, 0.055, 0.055, 0.1, L.skin, { seg: 7 });
-  b.sph(0, 0.2, 0, 0.145, L.skin, { seg: 12, ring: 8, sy: 1.08 });
-  b.sph(0, 0.19, 0.142, 0.022, L.skin, { seg: 6, ring: 4 });               // нос
-  for (const s of [-1, 1]) {
-    b.sph(0.052 * s, 0.225, 0.122, 0.022 * Math.max(0.15, eyes), "#f2efe8", { seg: 8, ring: 5, sz: 0.5, sy: Math.max(0.15, eyes), ns: true });
-    b.sph(0.052 * s, 0.225, 0.131, 0.012, "#120c0a", { seg: 6, ring: 4, sz: 0.5, sy: Math.max(0.15, eyes), ns: true });
-    b.box(0.052 * s, 0.258, 0.128, 0.045, 0.01, 0.012, L.hair, { ns: true });
-    b.sph(0.142 * s, 0.2, 0, 0.03, L.skin, { seg: 6, ring: 4, sx: 0.5 });   // уши
-  }
-  b.box(0, 0.13, 0.135, 0.045, 0.008, 0.01, "#7a3d34", { ns: true });
-  const H = L.hair;
-  if (L.hairStyle === "hood") { b.sph(0, 0.24, -0.06, 0.172, L.shirt, { seg: 12, ring: 8, sy: 1.08, mat: "fabric" }); b.box(0, 0.08, 0.1, 0.3, 0.06, 0.06, L.shirt); }
-  else {
-    b.sph(0, 0.255, -0.02, 0.152, H, { seg: 12, ring: 8, sy: 0.85, mat: "hair" });
-    b.sph(0, 0.2, -0.05, 0.145, H, { seg: 12, ring: 8, sz: 0.8, mat: "hair" });
-    if (L.hairStyle === "long") b.box(0, -0.12, -0.08, 0.3, 0.38, 0.12, H);
-    if (L.hairStyle === "bun") b.sph(0, 0.35, -0.12, 0.065, H);
-  }
-  b.pop();
-  // руки — по цели кисти (инверсная кинематика)
-  const ap = arms || pose;
-  for (const s of [-1, 1]) {
-    const right = s > 0; const S = [0.235 * s, 0.47, 0];
-    let T = [0.26 * s, 0.0, 0.04], pole = [0.3 * s, -0.2, -1];
-    if (walk) T = [0.29 * s, 0.05, -sw * 0.3 * s * amp];
-    if (sit) { T = floor ? [0.12 * s, 0.05, 0.35] : [0.17 * s, 0.2, 0.38]; pole = [0.6 * s, -1, 0]; }
-    const ph = ap === "phone" || ap === "sitphone";
-    if (ph && right) { T = [0.12, 0.79, 0.07]; pole = [1, -1.2, -0.2]; }
-    if (ap === "look_phone") { T = [0.05 * s, 0.33, 0.33]; pole = [0.8 * s, -1, 0]; }
-    if (ap === "arms_up") { T = [0.34 * s, 1.08, 0.1]; pole = [1 * s, 0, -0.5]; }
-    if (ap === "point" && right) { T = [0.22, 0.52, 0.78]; pole = [1, -1, 0]; }
-    if (ap === "reach" && right) { T = [0.18, 0.2, 0.58]; pole = [1, -1, 0]; }
-    if (ap === "cover" ) { T = [0.04 * s, 0.7, 0.16]; pole = [1 * s, -1, 0]; }
-    if (ap === "wave") { const w = Math.sin(t * 7 + (s > 0 ? 0 : 1.5)) * 0.18; T = [(0.42 + w) * s, 0.98, 0.12]; pole = [1 * s, -0.3, -0.5]; }
-    if (ap === "knock" && right) { T = [0.16, 0.5, 0.5 + Math.max(0, Math.sin(t * 13)) * 0.09]; pole = [1, -1, 0]; }
-    if (ap === "ear_door") { T = [0.2 * s, 0.75, 0.32]; pole = [1 * s, -1, 0]; }
-    if (ap === "hold" ) { T = [0.2 * s, 0.25, 0.32]; pole = [0.8 * s, -1, 0]; }
-    if (ap === "wheel") { T = [0.17 * s, 0.38, 0.42]; pole = [0.8 * s, -1, 0]; }
-    const { E, H } = ik(S, T, 0.3, 0.3, pole);
-    b.sph(S[0], S[1], S[2], 0.068, L.shirt, { seg: 7, ring: 5 });
-    b.seg(S, E, 0.062, 0.052, L.shirt, { mat: "fabric" }); b.sph(E[0], E[1], E[2], 0.05, L.shirt, { seg: 6, ring: 4 });
-    b.seg(E, H, 0.05, 0.042, L.shirt, { mat: "fabric" }); b.sph(H[0], H[1], H[2], 0.05, L.skin, { seg: 7, ring: 5 });
-    if ((ph && right) || (ap === "look_phone" && right)) b.box(H[0] - (ph ? 0.03 : 0.05), H[1] - 0.06, H[2] + 0.02, ph ? 0.015 : 0.09, ph ? 0.15 : 0.012, ph ? 0.08 : 0.16, "#0d0d0d", { e: ap === "look_phone" ? "#3a5a8a" : null });
-  }
-  b.pop();
-  b.pop();
-}
+// v26: персонажи вынесены в people.js (одежда, мимика, живое тело)
+export function person(b, o) { return personV2(b, { ...o, LOOKS }); }
 
 // детерминированный «случай» для расстановки окон и мусора
 export const rnd = (i) => { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
