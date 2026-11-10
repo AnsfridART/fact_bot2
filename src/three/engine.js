@@ -383,7 +383,7 @@ export class Build {
   pop() { this.stack.pop(); return this; }
   add(geo, col, o = {}) { const cv = (x) => (typeof x === "string" ? hex(x) : x); this.items.push({ geo, m: this.m, c: cv(col), c2: o.c2 ? cv(o.c2) : null, mat: MAT[o.mat] ?? o.mat ?? 0, e: o.e ? cv(o.e) : null, noShadow: o.ns }); return this; }
   // коробка: x,y,z — центр низа
-  box(x, y, z, w, h, d, col, o = {}) { this.push(M.tr(x, y, z), M.ry(o.ry || 0)); this.add(`box:${w}:${h}:${d}`, col, o); return this.pop(); }
+  box(x, y, z, w, h, d, col, o = {}) { this.push(M.tr(x, y, z), M.ry(o.ry || 0), M.rx(o.rx || 0), M.rz(o.rz || 0)); this.add(`box:${w}:${h}:${d}`, col, o); return this.pop(); }
   cyl(x, y, z, r1, r2, h, col, o = {}) { this.push(M.tr(x, y, z), M.rx(o.rx || 0), M.rz(o.rz || 0), M.s3(1, 1, o.sz || 1)); this.add(`cyl:${r1}:${r2}:${h}:${o.seg || 8}`, col, o); return this.pop(); }
   // цилиндр между двумя точками (в текущей системе координат)
   seg(a, c, r1, r2, col, o = {}) {
