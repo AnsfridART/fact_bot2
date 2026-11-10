@@ -23,7 +23,7 @@ concurrency: factbot
 jobs:
   make-video:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 75
     env:
       PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
@@ -60,7 +60,8 @@ jobs:
           cache: pip
 
       - name: Установка ffmpeg
-        timeout-minutes: 15
+        timeout-minutes: 8
+        continue-on-error: true
         run: |
           for i in 1 2 3; do
             sudo apt-get update -o Acquire::Retries=3 -o Acquire::http::Timeout=20 && \
@@ -79,6 +80,16 @@ jobs:
       - name: Установка Remotion
         if: env.MODE == 'video' || env.MODE == 'pilot'
         run: npm install --no-audit --no-fund && npx remotion browser ensure
+
+      - name: Запасной ffmpeg (из Remotion), если зеркало apt не ответило
+        if: env.MODE == 'video' || env.MODE == 'pilot'
+        run: |
+          if ! command -v ffmpeg >/dev/null; then
+            printf '#!/bin/sh\nexec npx --no-install remotion ffmpeg "$@"\n' | sudo tee /usr/local/bin/ffmpeg >/dev/null
+            sudo chmod +x /usr/local/bin/ffmpeg
+            echo "Системного ffmpeg нет — использую встроенный в Remotion"
+          fi
+          ffmpeg -version | head -1
 
       - name: Установка Python-библиотек
         run: pip install -r requirements.txt
