@@ -444,7 +444,7 @@ function ThrillFX({ fx = {}, f }) {
   if (fx.pulse) {  // виньетка бьётся в такт сердцу
     const period = 1800 / fx.pulse, ph = (f % period) / period;
     const beat = Math.max(Math.exp(-ph * 14), 0.7 * Math.exp(-Math.abs(ph - 0.16) * 14));
-    out.push(<div key="p" style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) ${46 - beat * 8}%, rgba(${fx.red ? "120,0,10" : "0,0,0"},${0.35 + beat * 0.3}) 100%)` }} />);
+    out.push(<div key="p" style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) ${46 - beat * 8}%, rgba(${fx.red ? "120,0,10" : "0,0,0"},${0.16 + beat * 0.16}) 100%)` }} />);
   }
   if (fx.jolt != null && f >= fx.jolt) {  // v20: резкое событие в первые секунды хука — вспышка и удар
     const k = Math.exp(-(f - fx.jolt) / 5);
