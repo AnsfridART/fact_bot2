@@ -93,7 +93,11 @@
         "pants": "#1d232b",
         "shoes": "#111111",
         "hair": "#2a1d14",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "jacket",
+        "outer": "#2b3038",
+        "beard": "stubble",
+        "watch": true
        },
        "path": [
         [
@@ -122,6 +126,14 @@
        "head": [
         0,
         0.35
+       ],
+       "arms": "pockets",
+       "expr": "sleepy",
+       "exprAt": [
+        [
+         0.8,
+         "suspicious"
+        ]
        ]
       }
      ],
@@ -172,7 +184,11 @@
         "pants": "#1d232b",
         "shoes": "#111111",
         "hair": "#2a1d14",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "jacket",
+        "outer": "#2b3038",
+        "beard": "stubble",
+        "watch": true
        },
        "at": [
         -1.0,
@@ -184,6 +200,17 @@
        "head": [
         0,
         0.5
+       ],
+       "expr": "suspicious",
+       "exprAt": [
+        [
+         0.6,
+         "worried"
+        ]
+       ],
+       "gaze": [
+        0,
+        -0.6
        ]
       }
      ],
@@ -257,7 +284,11 @@
         "pants": "#1d232b",
         "shoes": "#111111",
         "hair": "#2a1d14",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "jacket",
+        "outer": "#2b3038",
+        "beard": "stubble",
+        "watch": true
        },
        "at": [
         -1.0,
@@ -268,7 +299,8 @@
        "head": [
         0,
         0.5
-       ]
+       ],
+       "expr": "worried"
       },
       {
        "look": {
@@ -277,13 +309,22 @@
         "pants": "#121212",
         "shoes": "#0a0a0a",
         "hair": "#0d0d0d",
-        "hairStyle": "hood"
+        "hairStyle": "hood",
+        "top": "hoodie",
+        "outer": "#161616",
+        "beard": "stubble"
        },
        "at": [
         -16,
         7.5
        ],
-       "ry": 0.6
+       "ry": 0.6,
+       "expr": "creepy",
+       "lookAt": [
+        -1.0,
+        1.6,
+        5.85
+       ]
       }
      ],
      "post": {
@@ -388,7 +429,11 @@
         "pants": "#1d232b",
         "shoes": "#111111",
         "hair": "#2a1d14",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "jacket",
+        "outer": "#2b3038",
+        "beard": "stubble",
+        "watch": true
        },
        "at": [
         -0.38,
@@ -397,7 +442,8 @@
        "ry": 0,
        "y": 0.22,
        "pose": "sit",
-       "arms": "wheel"
+       "arms": "wheel",
+       "expr": "determined"
       }
      ],
      "o": {
@@ -446,7 +492,10 @@
         "pants": "#121212",
         "shoes": "#0a0a0a",
         "hair": "#0d0d0d",
-        "hairStyle": "hood"
+        "hairStyle": "hood",
+        "top": "hoodie",
+        "outer": "#161616",
+        "beard": "stubble"
        },
        "at": [
         -1.3,
@@ -454,10 +503,24 @@
        ],
        "ry": 1.570795,
        "arms": "knock",
-       "head": [
-        0,
-        0.15
-       ]
+       "armsAt": [
+        [
+         0.6,
+         "point"
+        ]
+       ],
+       "expr": "smile",
+       "exprAt": [
+        [
+         0.55,
+         "angry"
+        ]
+       ],
+       "talk": [
+        0.45,
+        0.85
+       ],
+       "lookAt": "cam"
       }
      ],
      "o": {
@@ -529,7 +592,11 @@
         "pants": "#1d232b",
         "shoes": "#111111",
         "hair": "#2a1d14",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "jacket",
+        "outer": "#2b3038",
+        "beard": "stubble",
+        "watch": true
        },
        "at": [
         -0.38,
@@ -541,6 +608,12 @@
        "head": [
         -1.0,
         0.0
+       ],
+       "expr": "fear",
+       "tremble": 0.5,
+       "talk": [
+        0.1,
+        0.4
        ]
       },
       {
@@ -550,13 +623,22 @@
         "pants": "#121212",
         "shoes": "#0a0a0a",
         "hair": "#0d0d0d",
-        "hairStyle": "hood"
+        "hairStyle": "hood",
+        "top": "hoodie",
+        "outer": "#161616",
+        "beard": "stubble"
        },
        "at": [
         -1.35,
         3.55
        ],
-       "ry": 1.570795
+       "ry": 1.570795,
+       "expr": "creepy",
+       "lookAt": [
+        -0.38,
+        1.3,
+        3.45
+       ]
       }
      ],
      "o": {
@@ -631,7 +713,10 @@
         "pants": "#121212",
         "shoes": "#0a0a0a",
         "hair": "#0d0d0d",
-        "hairStyle": "hood"
+        "hairStyle": "hood",
+        "top": "hoodie",
+        "outer": "#161616",
+        "beard": "stubble"
        },
        "at": [
         -1.35,
@@ -646,7 +731,9 @@
          0.5,
          0.7
         ]
-       ]
+       ],
+       "expr": "angry",
+       "arms": "crossed"
       }
      ],
      "o": {
@@ -717,7 +804,11 @@
         "pants": "#1d232b",
         "shoes": "#111111",
         "hair": "#2a1d14",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "jacket",
+        "outer": "#2b3038",
+        "beard": "stubble",
+        "watch": true
        },
        "path": [
         [
@@ -736,6 +827,20 @@
        "head": [
         0,
         0.5
+       ],
+       "expr": "calm",
+       "exprAt": [
+        [
+         0.55,
+         "shock"
+        ]
+       ],
+       "startleAt": 0.6,
+       "armsAt": [
+        [
+         0.65,
+         "mouth"
+        ]
        ]
       }
      ],
@@ -912,7 +1017,10 @@
         "pants": "#22262a",
         "shoes": "#111111",
         "hair": "#4a3420",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "sweater",
+        "beard": "full",
+        "beardColor": "#3a2818"
        },
        "path": [
         [
@@ -937,7 +1045,15 @@
          0.92,
          "stand"
         ]
-       ]
+       ],
+       "expr": "sleepy",
+       "exprAt": [
+        [
+         0.2,
+         "suspicious"
+        ]
+       ],
+       "startleAt": 0.08
       }
      ],
      "o": {
@@ -983,36 +1099,46 @@
       {
        "look": {
         "skin": "#c9a07c",
-        "shirt": "#e0681a",
+        "shirt": "#2a2a30",
         "pants": "#1e2a38",
         "shoes": "#111111",
         "hair": "#1a1410",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "vest",
+        "outer": "#e0681a",
+        "cap": "baseball",
+        "capColor": "#1e2a38",
+        "beard": "stubble"
        },
        "at": [
         -0.35,
         -0.55
        ],
        "ry": 2.99159,
-       "head": [
-        0,
-        -0.1
-       ]
+       "expr": "smile",
+       "talk": true,
+       "lookAt": "cam",
+       "arms": "point"
       },
       {
        "look": {
         "skin": "#d6ad86",
-        "shirt": "#d86a20",
+        "shirt": "#3a3a3a",
         "pants": "#232323",
         "shoes": "#111111",
         "hair": "#5a4a3a",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "vest",
+        "outer": "#d86a20",
+        "mustache": true
        },
        "at": [
         0.45,
         -0.25
        ],
-       "ry": 3.4415899999999997
+       "ry": 3.4415899999999997,
+       "expr": "suspicious",
+       "lookAround": true
       }
      ],
      "o": {
@@ -1064,34 +1190,45 @@
       {
        "look": {
         "skin": "#c9a07c",
-        "shirt": "#e0681a",
+        "shirt": "#2a2a30",
         "pants": "#1e2a38",
         "shoes": "#111111",
         "hair": "#1a1410",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "vest",
+        "outer": "#e0681a",
+        "cap": "baseball",
+        "capColor": "#1e2a38",
+        "beard": "stubble"
        },
        "at": [
         -0.3,
         -1.0
        ],
        "ry": 3.14159,
-       "arms": "look_phone"
+       "arms": "look_phone",
+       "expr": "suspicious"
       },
       {
        "look": {
         "skin": "#d6ad86",
-        "shirt": "#d86a20",
+        "shirt": "#3a3a3a",
         "pants": "#232323",
         "shoes": "#111111",
         "hair": "#5a4a3a",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "vest",
+        "outer": "#d86a20",
+        "mustache": true
        },
        "at": [
         0.5,
         -0.7
        ],
        "ry": -2.6,
-       "lookAround": true
+       "lookAround": true,
+       "arms": "pockets",
+       "expr": "angry"
       }
      ]
     },
@@ -1129,7 +1266,10 @@
         "pants": "#22262a",
         "shoes": "#111111",
         "hair": "#4a3420",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "sweater",
+        "beard": "full",
+        "beardColor": "#3a2818"
        },
        "at": [
         0.05,
@@ -1140,6 +1280,17 @@
        "head": [
         0.2,
         0
+       ],
+       "expr": "worried",
+       "talk": [
+        0.05,
+        0.45
+       ],
+       "exprAt": [
+        [
+         0.6,
+         "shock"
+        ]
        ]
       }
      ],
@@ -1191,7 +1342,10 @@
         "pants": "#22262a",
         "shoes": "#111111",
         "hair": "#4a3420",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "sweater",
+        "beard": "full",
+        "beardColor": "#3a2818"
        },
        "at": [
         0.1,
@@ -1203,7 +1357,9 @@
         0.25,
         0
        ],
-       "eyes": 0.6
+       "expr": "fear",
+       "tremble": 0.4,
+       "startleAt": 0.12
       }
      ],
      "o": {
@@ -1260,33 +1416,45 @@
       {
        "look": {
         "skin": "#c9a07c",
-        "shirt": "#e0681a",
+        "shirt": "#2a2a30",
         "pants": "#1e2a38",
         "shoes": "#111111",
         "hair": "#1a1410",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "vest",
+        "outer": "#e0681a",
+        "cap": "baseball",
+        "capColor": "#1e2a38",
+        "beard": "stubble"
        },
        "at": [
         -0.05,
         -1.35
        ],
        "ry": 3.14159,
-       "arms": "ear_door"
+       "arms": "ear_door",
+       "expr": "suspicious"
       },
       {
        "look": {
         "skin": "#d6ad86",
-        "shirt": "#d86a20",
+        "shirt": "#3a3a3a",
         "pants": "#232323",
         "shoes": "#111111",
         "hair": "#5a4a3a",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "vest",
+        "outer": "#d86a20",
+        "mustache": true
        },
        "at": [
         0.6,
         -0.8
        ],
-       "ry": -2.4
+       "ry": -2.4,
+       "expr": "angry",
+       "arms": "crossed",
+       "lookAround": true
       }
      ]
     },
@@ -1320,11 +1488,16 @@
       {
        "look": {
         "skin": "#c9a07c",
-        "shirt": "#e0681a",
+        "shirt": "#2a2a30",
         "pants": "#1e2a38",
         "shoes": "#111111",
         "hair": "#1a1410",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "vest",
+        "outer": "#e0681a",
+        "cap": "baseball",
+        "capColor": "#1e2a38",
+        "beard": "stubble"
        },
        "path": [
         [
@@ -1340,22 +1513,32 @@
         0,
         0.4
        ],
-       "ry": 3.14159
+       "ry": 3.14159,
+       "expr": "smile",
+       "talk": [
+        0.45,
+        0.9
+       ]
       },
       {
        "look": {
         "skin": "#d6ad86",
-        "shirt": "#d86a20",
+        "shirt": "#3a3a3a",
         "pants": "#232323",
         "shoes": "#111111",
         "hair": "#5a4a3a",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "vest",
+        "outer": "#d86a20",
+        "mustache": true
        },
        "at": [
         1.75,
         -0.6
        ],
-       "ry": -2.6
+       "ry": -2.6,
+       "expr": "creepy",
+       "lookAround": true
       }
      ],
      "o": {
@@ -1430,14 +1613,19 @@
         "pants": "#22262a",
         "shoes": "#111111",
         "hair": "#4a3420",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "sweater",
+        "beard": "full",
+        "beardColor": "#3a2818"
        },
        "at": [
         -0.05,
         -0.8
        ],
        "ry": 0.3,
-       "pose": "phone"
+       "pose": "phone",
+       "expr": "determined",
+       "talk": true
       },
       {
        "look": {
@@ -1446,7 +1634,8 @@
         "pants": "#3a3a5a",
         "shoes": "#222222",
         "hair": "#6a4a2a",
-        "hairStyle": "long"
+        "hairStyle": "long",
+        "top": "tshirt"
        },
        "at": [
         0.95,
@@ -1454,9 +1643,12 @@
        ],
        "ry": -2.2,
        "scale": 0.62,
-       "head": [
+       "expr": "fear",
+       "arms": "hold",
+       "lookAt": [
         0,
-        0.1
+        1.6,
+        -0.8
        ]
       }
      ],
@@ -1495,34 +1687,44 @@
       {
        "look": {
         "skin": "#c9a07c",
-        "shirt": "#e0681a",
+        "shirt": "#2a2a30",
         "pants": "#1e2a38",
         "shoes": "#111111",
         "hair": "#1a1410",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "vest",
+        "outer": "#e0681a",
+        "cap": "baseball",
+        "capColor": "#1e2a38",
+        "beard": "stubble"
        },
        "at": [
         -0.6,
         -1.2
        ],
        "ry": 3.14159,
-       "arms": "arms_up"
+       "arms": "arms_up",
+       "expr": "angry"
       },
       {
        "look": {
         "skin": "#d6ad86",
-        "shirt": "#d86a20",
+        "shirt": "#3a3a3a",
         "pants": "#232323",
         "shoes": "#111111",
         "hair": "#5a4a3a",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "vest",
+        "outer": "#d86a20",
+        "mustache": true
        },
        "at": [
         0.3,
         -1.25
        ],
        "ry": 3.14159,
-       "arms": "arms_up"
+       "arms": "arms_up",
+       "expr": "fear"
       },
       {
        "look": {
@@ -1531,13 +1733,18 @@
         "pants": "#1a2230",
         "shoes": "#0a0a0a",
         "hair": "#2a1d14",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "uniform",
+        "cap": "police"
        },
        "at": [
         0,
         0.1
        ],
-       "ry": 3.14159
+       "ry": 3.14159,
+       "arms": "stop",
+       "expr": "determined",
+       "talk": true
       }
      ],
      "o": {
@@ -1585,11 +1792,16 @@
       {
        "look": {
         "skin": "#c9a07c",
-        "shirt": "#e0681a",
+        "shirt": "#2a2a30",
         "pants": "#1e2a38",
         "shoes": "#111111",
         "hair": "#1a1410",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "vest",
+        "outer": "#e0681a",
+        "cap": "baseball",
+        "capColor": "#1e2a38",
+        "beard": "stubble"
        },
        "at": [
         0.0,
@@ -1599,7 +1811,9 @@
        "show": [
         0.62,
         0.72
-       ]
+       ],
+       "expr": "creepy",
+       "lookAt": "cam"
       }
      ],
      "o": {
@@ -1691,17 +1905,19 @@
        "pants": "#121212",
        "shoes": "#0a0a0a",
        "hair": "#0d0d0d",
-       "hairStyle": "hood"
+       "hairStyle": "hood",
+       "top": "hoodie",
+       "outer": "#161616",
+       "beard": "stubble"
       },
       "at": [
        -0.28,
        0.25
       ],
       "ry": 2.74159,
-      "head": [
-       0,
-       -0.2
-      ]
+      "expr": "creepy",
+      "lookAt": "cam",
+      "arms": "pockets"
      }
     ],
     "o": {
@@ -1753,14 +1969,25 @@
         "pants": "#1c2430",
         "shoes": "#151515",
         "hair": "#3a2614",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "coat",
+        "outer": "#3a3530",
+        "bag": true
        },
        "at": [
         0.15,
         -0.25
        ],
        "ry": 0.1,
-       "arms": "hold"
+       "arms": "hold",
+       "expr": "sleepy",
+       "exprAt": [
+        [
+         0.5,
+         "shock"
+        ]
+       ],
+       "startleAt": 0.52
       },
       {
        "look": {
@@ -1769,7 +1996,10 @@
         "pants": "#121212",
         "shoes": "#0a0a0a",
         "hair": "#0d0d0d",
-        "hairStyle": "hood"
+        "hairStyle": "hood",
+        "top": "hoodie",
+        "outer": "#161616",
+        "beard": "stubble"
        },
        "path": [
         [
@@ -1792,7 +2022,9 @@
        "show": [
         0.5,
         1
-       ]
+       ],
+       "arms": "stop",
+       "expr": "neutral"
       }
      ],
      "anim": {
@@ -1860,17 +2092,19 @@
         "pants": "#121212",
         "shoes": "#0a0a0a",
         "hair": "#0d0d0d",
-        "hairStyle": "hood"
+        "hairStyle": "hood",
+        "top": "hoodie",
+        "outer": "#161616",
+        "beard": "stubble"
        },
        "at": [
         -0.28,
         0.25
        ],
        "ry": 2.64159,
-       "head": [
-        0,
-        0.05
-       ]
+       "expr": "creepy",
+       "lookAt": "cam",
+       "arms": "pockets"
       }
      ]
     },
@@ -1913,14 +2147,23 @@
         "pants": "#1c2430",
         "shoes": "#151515",
         "hair": "#3a2614",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "coat",
+        "outer": "#3a3530",
+        "bag": true
        },
        "at": [
         0.25,
         -0.2
        ],
        "ry": -0.3,
-       "arms": "hold"
+       "arms": "hold",
+       "expr": "worried",
+       "lookAt": [
+        -0.28,
+        1.6,
+        0.25
+       ]
       },
       {
        "look": {
@@ -1929,13 +2172,18 @@
         "pants": "#121212",
         "shoes": "#0a0a0a",
         "hair": "#0d0d0d",
-        "hairStyle": "hood"
+        "hairStyle": "hood",
+        "top": "hoodie",
+        "outer": "#161616",
+        "beard": "stubble"
        },
        "at": [
         -0.28,
         0.25
        ],
-       "ry": 2.64159
+       "ry": 2.64159,
+       "expr": "creepy",
+       "arms": "pockets"
       }
      ],
      "post": {
@@ -1981,13 +2229,24 @@
         "pants": "#121212",
         "shoes": "#0a0a0a",
         "hair": "#0d0d0d",
-        "hairStyle": "hood"
+        "hairStyle": "hood",
+        "top": "hoodie",
+        "outer": "#161616",
+        "beard": "stubble"
        },
        "at": [
         -0.28,
         0.25
        ],
-       "ry": 2.64159
+       "ry": 2.64159,
+       "expr": "suspicious",
+       "exprAt": [
+        [
+         0.5,
+         "creepy"
+        ]
+       ],
+       "lookAt": "cam"
       }
      ],
      "o": {
@@ -2047,14 +2306,23 @@
         "pants": "#1c2430",
         "shoes": "#151515",
         "hair": "#3a2614",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "coat",
+        "outer": "#3a3530",
+        "bag": true
        },
        "at": [
         0.3,
         0.3
        ],
        "ry": -1.6,
-       "pose": "look_phone"
+       "pose": "look_phone",
+       "expr": "determined",
+       "lookAt": [
+        -0.3,
+        1.6,
+        0.25
+       ]
       },
       {
        "look": {
@@ -2063,13 +2331,23 @@
         "pants": "#121212",
         "shoes": "#0a0a0a",
         "hair": "#0d0d0d",
-        "hairStyle": "hood"
+        "hairStyle": "hood",
+        "top": "hoodie",
+        "outer": "#161616",
+        "beard": "stubble"
        },
        "at": [
         -0.3,
         0.25
        ],
-       "ry": 1.5
+       "ry": 1.5,
+       "expr": "creepy",
+       "lookAt": [
+        0.3,
+        1.6,
+        0.3
+       ],
+       "arms": "crossed"
       }
      ],
      "o": {
@@ -2114,13 +2392,20 @@
         "pants": "#1c2430",
         "shoes": "#151515",
         "hair": "#3a2614",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "coat",
+        "outer": "#3a3530",
+        "bag": true
        },
        "at": [
         0.3,
         0.2
        ],
-       "ry": -0.3
+       "ry": -0.3,
+       "expr": "fear",
+       "startleAt": 0.05,
+       "tremble": 0.4,
+       "arms": "hold"
       },
       {
        "look": {
@@ -2129,13 +2414,22 @@
         "pants": "#121212",
         "shoes": "#0a0a0a",
         "hair": "#0d0d0d",
-        "hairStyle": "hood"
+        "hairStyle": "hood",
+        "top": "hoodie",
+        "outer": "#161616",
+        "beard": "stubble"
        },
        "at": [
         -0.3,
         0.25
        ],
-       "ry": 0.8
+       "ry": 0.8,
+       "expr": "creepy",
+       "lookAt": [
+        0.3,
+        1.6,
+        0.2
+       ]
       }
      ],
      "o": {
@@ -2210,7 +2504,10 @@
         "pants": "#1c2430",
         "shoes": "#151515",
         "hair": "#3a2614",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "coat",
+        "outer": "#3a3530",
+        "bag": true
        },
        "path": [
         [
@@ -2230,7 +2527,9 @@
         0,
         1.4
        ],
-       "arms": "hold"
+       "arms": "hold",
+       "expr": "worried",
+       "lookAround": true
       }
      ],
      "o": {
@@ -2289,7 +2588,10 @@
         "pants": "#1c2430",
         "shoes": "#151515",
         "hair": "#3a2614",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "coat",
+        "outer": "#3a3530",
+        "bag": true
        },
        "path": [
         [
@@ -2309,7 +2611,8 @@
         0.3,
         1.5
        ],
-       "arms": "hold"
+       "arms": "hold",
+       "expr": "determined"
       }
      ],
      "o": {
@@ -2358,7 +2661,10 @@
         "pants": "#1c2430",
         "shoes": "#151515",
         "hair": "#3a2614",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "coat",
+        "outer": "#3a3530",
+        "bag": true
        },
        "at": [
         0.0,
@@ -2369,7 +2675,9 @@
        "head": [
         0.9,
         0.1
-       ]
+       ],
+       "expr": "fear",
+       "tremble": 0.6
       },
       {
        "look": {
@@ -2378,7 +2686,10 @@
         "pants": "#121212",
         "shoes": "#0a0a0a",
         "hair": "#0d0d0d",
-        "hairStyle": "hood"
+        "hairStyle": "hood",
+        "top": "hoodie",
+        "outer": "#161616",
+        "beard": "stubble"
        },
        "path": [
         [
@@ -2398,7 +2709,8 @@
         -1.4,
         -0.2
        ],
-       "ry": 3.14159
+       "ry": 3.14159,
+       "expr": "creepy"
       }
      ]
     },
@@ -2446,13 +2758,18 @@
         "pants": "#1c2430",
         "shoes": "#151515",
         "hair": "#3a2614",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "coat",
+        "outer": "#3a3530",
+        "bag": true
        },
        "at": [
         -0.6,
         -1.15
        ],
-       "ry": 1.2
+       "ry": 1.2,
+       "expr": "shock",
+       "arms": "hold"
       },
       {
        "look": {
@@ -2461,7 +2778,10 @@
         "pants": "#121212",
         "shoes": "#0a0a0a",
         "hair": "#0d0d0d",
-        "hairStyle": "hood"
+        "hairStyle": "hood",
+        "top": "hoodie",
+        "outer": "#161616",
+        "beard": "stubble"
        },
        "path": [
         [
@@ -2485,6 +2805,17 @@
         [
          0.5,
          -2.2
+        ]
+       ],
+       "expr": "smile",
+       "talk": [
+        0.45,
+        0.9
+       ],
+       "armsAt": [
+        [
+         0.5,
+         "wave"
         ]
        ]
       }
@@ -2546,7 +2877,10 @@
         "pants": "#1c2430",
         "shoes": "#151515",
         "hair": "#3a2614",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "coat",
+        "outer": "#3a3530",
+        "bag": true
        },
        "at": [
         0.1,
@@ -2556,7 +2890,20 @@
        "head": [
         0,
         0.05
-       ]
+       ],
+       "expr": "fear",
+       "arms": "hands_head",
+       "armsAt": [
+        [
+         0.0,
+         null
+        ],
+        [
+         0.55,
+         "hands_head"
+        ]
+       ],
+       "startleAt": 0.5
       }
      ],
      "o": {
@@ -2635,7 +2982,9 @@
        "pants": "#22222a",
        "shoes": "#151012",
        "hair": "#8a5a2a",
-       "hairStyle": "long"
+       "hairStyle": "long",
+       "top": "sweater",
+       "female": true
       },
       "at": [
        -1.42,
@@ -2647,7 +2996,8 @@
       "head": [
        -0.3,
        0
-      ]
+      ],
+      "expr": "sleepy"
      },
      {
       "look": {
@@ -2656,7 +3006,11 @@
        "pants": "#3a3a40",
        "shoes": "#111111",
        "hair": "#2a2a2a",
-       "hairStyle": "long"
+       "hairStyle": "long",
+       "top": "coat",
+       "outer": "#6a6a70",
+       "female": true,
+       "expr": "creepy"
       },
       "at": [
        4.4,
@@ -2717,7 +3071,11 @@
         "pants": "#3a3a40",
         "shoes": "#111111",
         "hair": "#2a2a2a",
-        "hairStyle": "long"
+        "hairStyle": "long",
+        "top": "coat",
+        "outer": "#6a6a70",
+        "female": true,
+        "expr": "creepy"
        },
        "at": [
         5.2,
@@ -2778,7 +3136,10 @@
         "pants": "#1c2228",
         "shoes": "#0a0d10",
         "hair": "#2a2018",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "shirt",
+        "glasses": true,
+        "watch": true
        },
        "at": [
         -2.18,
@@ -2787,7 +3148,8 @@
        "ry": 0,
        "y": 0.22,
        "pose": "sit",
-       "arms": "wheel"
+       "arms": "wheel",
+       "expr": "suspicious"
       },
       {
        "look": {
@@ -2796,7 +3158,9 @@
         "pants": "#22222a",
         "shoes": "#151012",
         "hair": "#8a5a2a",
-        "hairStyle": "long"
+        "hairStyle": "long",
+        "top": "sweater",
+        "female": true
        },
        "at": [
         -1.42,
@@ -2808,7 +3172,13 @@
        "head": [
         -0.7,
         0
-       ]
+       ],
+       "expr": "worried",
+       "talk": [
+        0.3,
+        0.9
+       ],
+       "arms": "point"
       }
      ],
      "o": {
@@ -2855,7 +3225,11 @@
         "pants": "#3a3a40",
         "shoes": "#111111",
         "hair": "#2a2a2a",
-        "hairStyle": "long"
+        "hairStyle": "long",
+        "top": "coat",
+        "outer": "#6a6a70",
+        "female": true,
+        "expr": "creepy"
        },
        "at": [
         5.0,
@@ -3102,7 +3476,10 @@
         "pants": "#1c2228",
         "shoes": "#0a0d10",
         "hair": "#2a2018",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "shirt",
+        "glasses": true,
+        "watch": true
        },
        "at": [
         -2.18,
@@ -3115,7 +3492,8 @@
        "head": [
         0.3,
         0
-       ]
+       ],
+       "expr": "determined"
       },
       {
        "look": {
@@ -3124,7 +3502,9 @@
         "pants": "#22222a",
         "shoes": "#151012",
         "hair": "#8a5a2a",
-        "hairStyle": "long"
+        "hairStyle": "long",
+        "top": "sweater",
+        "female": true
        },
        "at": [
         -1.42,
@@ -3136,7 +3516,10 @@
        "head": [
         2.6,
         0
-       ]
+       ],
+       "expr": "fear",
+       "tremble": 0.5,
+       "arms": "mouth"
       }
      ],
      "o": {
@@ -3262,7 +3645,10 @@
         "pants": "#1c2228",
         "shoes": "#0a0d10",
         "hair": "#2a2018",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "shirt",
+        "glasses": true,
+        "watch": true
        },
        "at": [
         1.4,
@@ -3272,6 +3658,20 @@
        "head": [
         0,
         0
+       ],
+       "expr": "worried",
+       "exprAt": [
+        [
+         0.6,
+         "relief"
+        ]
+       ],
+       "arms": "hands_head",
+       "armsAt": [
+        [
+         0.6,
+         null
+        ]
        ]
       }
      ],
@@ -3344,7 +3744,12 @@
         "pants": "#2a4a6a",
         "shoes": "#111111",
         "hair": "#3a3a3a",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "uniform",
+        "cap": "baseball",
+        "capColor": "#2a4a6a",
+        "mustache": true,
+        "age": "old"
        },
        "at": [
         1.4,
@@ -3355,6 +3760,16 @@
        "head": [
         0,
         0.3
+       ],
+       "expr": "suspicious",
+       "talk": [
+        0.35,
+        0.95
+       ],
+       "lookAt": [
+        2.4,
+        1.6,
+        3.4
        ]
       },
       {
@@ -3364,7 +3779,10 @@
         "pants": "#1c2228",
         "shoes": "#0a0d10",
         "hair": "#2a2018",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "shirt",
+        "glasses": true,
+        "watch": true
        },
        "at": [
         2.4,
@@ -3374,7 +3792,15 @@
        "head": [
         0,
         0.2
-       ]
+       ],
+       "expr": "worried",
+       "exprAt": [
+        [
+         0.75,
+         "shock"
+        ]
+       ],
+       "arms": "crossed"
       }
      ],
      "props": [
@@ -3424,7 +3850,9 @@
         "pants": "#22222a",
         "shoes": "#151012",
         "hair": "#8a5a2a",
-        "hairStyle": "long"
+        "hairStyle": "long",
+        "top": "sweater",
+        "female": true
        },
        "at": [
         0.38,
@@ -3436,6 +3864,20 @@
        "head": [
         -0.9,
         0
+       ],
+       "expr": "calm",
+       "exprAt": [
+        [
+         0.45,
+         "shock"
+        ]
+       ],
+       "startleAt": 0.47,
+       "armsAt": [
+        [
+         0.5,
+         "mouth"
+        ]
        ]
       },
       {
@@ -3445,14 +3887,23 @@
         "pants": "#3a3a40",
         "shoes": "#111111",
         "hair": "#2a2a2a",
-        "hairStyle": "long"
+        "hairStyle": "long",
+        "top": "coat",
+        "outer": "#6a6a70",
+        "female": true,
+        "expr": "creepy"
        },
        "at": [
         -7.5,
         8.5
        ],
        "ry": 2.3,
-       "arms": "wave"
+       "arms": "wave",
+       "lookAt": [
+        0.38,
+        1.3,
+        1.25
+       ]
       }
      ],
      "props": [
@@ -3604,7 +4055,9 @@
         "pants": "#2a2a33",
         "shoes": "#222222",
         "hair": "#6a4a2a",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "tshirt",
+        "beard": "stubble"
        },
        "path": [
         [
@@ -3633,7 +4086,16 @@
        "head": [
         0,
         0.05
-       ]
+       ],
+       "expr": "sleepy",
+       "exprAt": [
+        [
+         0.15,
+         "suspicious"
+        ]
+       ],
+       "startleAt": 0.1,
+       "arms": "flashlight"
       }
      ],
      "o": {
@@ -3746,14 +4208,18 @@
         "pants": "#2a2a33",
         "shoes": "#222222",
         "hair": "#6a4a2a",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "tshirt",
+        "beard": "stubble"
        },
        "at": [
         0.05,
         -0.6
        ],
        "ry": 3.14159,
-       "arms": "reach"
+       "arms": "reach",
+       "expr": "fear",
+       "tremble": 0.4
       }
      ],
      "o": {
@@ -3807,7 +4273,9 @@
         "pants": "#2a2a33",
         "shoes": "#222222",
         "hair": "#6a4a2a",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "tshirt",
+        "beard": "stubble"
        },
        "at": [
         0.1,
@@ -3819,7 +4287,9 @@
         0.3,
         0
        ],
-       "eyes": 0.7
+       "expr": "fear",
+       "startleAt": 0.6,
+       "tremble": 0.5
       }
      ],
      "o": {
@@ -3883,7 +4353,10 @@
         "pants": "#121212",
         "shoes": "#0a0a0a",
         "hair": "#0d0d0d",
-        "hairStyle": "hood"
+        "hairStyle": "hood",
+        "top": "hoodie",
+        "outer": "#161616",
+        "beard": "stubble"
        },
        "at": [
         -1.3,
@@ -3894,7 +4367,9 @@
        "head": [
         0,
         0.1
-       ]
+       ],
+       "expr": "suspicious",
+       "lookAround": true
       }
      ],
      "o": {
@@ -3943,7 +4418,10 @@
         "pants": "#121212",
         "shoes": "#0a0a0a",
         "hair": "#0d0d0d",
-        "hairStyle": "hood"
+        "hairStyle": "hood",
+        "top": "hoodie",
+        "outer": "#161616",
+        "beard": "stubble"
        },
        "path": [
         [
@@ -3967,7 +4445,8 @@
         0,
         -1.4
        ],
-       "run": true
+       "run": true,
+       "expr": "angry"
       }
      ],
      "o": {
@@ -4017,7 +4496,9 @@
         "pants": "#1a2230",
         "shoes": "#0a0a0a",
         "hair": "#2a1d14",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "uniform",
+        "cap": "police"
        },
        "at": [
         -0.4,
@@ -4028,6 +4509,16 @@
        "head": [
         0,
         0.3
+       ],
+       "expr": "suspicious",
+       "talk": [
+        0.4,
+        0.9
+       ],
+       "lookAt": [
+        -1.3,
+        1.6,
+        -1.25
        ]
       },
       {
@@ -4037,13 +4528,29 @@
         "pants": "#2a2a33",
         "shoes": "#222222",
         "hair": "#6a4a2a",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "tshirt",
+        "beard": "stubble"
        },
        "at": [
         -1.3,
         -1.25
        ],
-       "ry": 0.9
+       "ry": 0.9,
+       "expr": "worried",
+       "exprAt": [
+        [
+         0.7,
+         "shock"
+        ]
+       ],
+       "arms": "crossed",
+       "armsAt": [
+        [
+         0.7,
+         "mouth"
+        ]
+       ]
       }
      ],
      "o": {
@@ -4105,7 +4612,13 @@
         "pants": "#2a2a2a",
         "shoes": "#111111",
         "hair": "#8a8a8a",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "jacket",
+        "outer": "#3a4a3a",
+        "cap": "beanie",
+        "capColor": "#2a2a2a",
+        "age": "old",
+        "glasses": true
        },
        "at": [
         0.35,
@@ -4116,7 +4629,8 @@
        "head": [
         0,
         0.4
-       ]
+       ],
+       "expr": "calm"
       },
       {
        "look": {
@@ -4125,13 +4639,17 @@
         "pants": "#2a2a33",
         "shoes": "#222222",
         "hair": "#6a4a2a",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "tshirt",
+        "beard": "stubble"
        },
        "at": [
         -0.5,
         -0.4
        ],
-       "ry": 2.6
+       "ry": 2.6,
+       "expr": "determined",
+       "arms": "crossed"
       }
      ],
      "o": {
@@ -4173,7 +4691,9 @@
         "pants": "#2a2a33",
         "shoes": "#222222",
         "hair": "#6a4a2a",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "tshirt",
+        "beard": "stubble"
        },
        "at": [
         0.2,
@@ -4183,7 +4703,9 @@
        "head": [
         0,
         -0.1
-       ]
+       ],
+       "expr": "relief",
+       "arms": "hands_head"
       }
      ],
      "o": {
@@ -4228,14 +4750,18 @@
         "pants": "#121212",
         "shoes": "#0a0a0a",
         "hair": "#0d0d0d",
-        "hairStyle": "hood"
+        "hairStyle": "hood",
+        "top": "hoodie",
+        "outer": "#161616",
+        "beard": "stubble"
        },
        "at": [
         1.35,
         -1.25
        ],
        "ry": 3.14159,
-       "arms": "reach"
+       "arms": "reach",
+       "expr": "creepy"
       }
      ],
      "o": {
@@ -4337,14 +4863,21 @@
        "pants": "#22262a",
        "shoes": "#111111",
        "hair": "#1a1410",
-       "hairStyle": "short"
+       "hairStyle": "short",
+       "top": "jacket",
+       "outer": "#4a4036",
+       "beard": "stubble",
+       "cap": "beanie",
+       "capColor": "#222222"
       },
       "at": [
        -11.2,
        16.6
       ],
       "ry": -1.2,
-      "arms": "wave"
+      "arms": "wave",
+      "expr": "smile",
+      "lookAt": "cam"
      }
     ],
     "o": {
@@ -4417,7 +4950,11 @@
         "pants": "#1c2228",
         "shoes": "#0a0d10",
         "hair": "#3a2a1a",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "jacket",
+        "outer": "#1f2a20",
+        "beard": "full",
+        "beardColor": "#2a1d10"
        },
        "path": [
         [
@@ -4432,7 +4969,9 @@
        "span": [
         0,
         1
-       ]
+       ],
+       "arms": "pockets",
+       "expr": "calm"
       }
      ],
      "o": {
@@ -4496,7 +5035,11 @@
         "pants": "#1c2228",
         "shoes": "#0a0d10",
         "hair": "#3a2a1a",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "jacket",
+        "outer": "#1f2a20",
+        "beard": "full",
+        "beardColor": "#2a1d10"
        },
        "at": [
         -16.5,
@@ -4506,6 +5049,12 @@
        "head": [
         0,
         0
+       ],
+       "expr": "suspicious",
+       "lookAt": [
+        -11.2,
+        1.6,
+        16.6
        ]
       },
       {
@@ -4515,14 +5064,30 @@
         "pants": "#22262a",
         "shoes": "#111111",
         "hair": "#1a1410",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "jacket",
+        "outer": "#4a4036",
+        "beard": "stubble",
+        "cap": "beanie",
+        "capColor": "#222222"
        },
        "at": [
         -11.2,
         16.6
        ],
        "ry": -1.5,
-       "arms": "wave"
+       "arms": "wave",
+       "armsAt": [
+        [
+         0.5,
+         "shrug"
+        ]
+       ],
+       "expr": "smile",
+       "talk": [
+        0.25,
+        0.9
+       ]
       }
      ],
      "o": {
@@ -4589,13 +5154,19 @@
         "pants": "#1c2228",
         "shoes": "#0a0d10",
         "hair": "#3a2a1a",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "jacket",
+        "outer": "#1f2a20",
+        "beard": "full",
+        "beardColor": "#2a1d10"
        },
        "at": [
         -16.5,
         16.8
        ],
-       "ry": 1.570795
+       "ry": 1.570795,
+       "expr": "suspicious",
+       "arms": "pockets"
       },
       {
        "look": {
@@ -4604,14 +5175,20 @@
         "pants": "#22262a",
         "shoes": "#111111",
         "hair": "#1a1410",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "jacket",
+        "outer": "#4a4036",
+        "beard": "stubble",
+        "cap": "beanie",
+        "capColor": "#222222"
        },
        "at": [
         -11.2,
         16.6
        ],
        "ry": -1.5,
-       "arms": "wave"
+       "arms": "wave",
+       "expr": "smile"
       }
      ],
      "o": {
@@ -4674,14 +5251,23 @@
         "pants": "#1c2228",
         "shoes": "#0a0d10",
         "hair": "#3a2a1a",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "jacket",
+        "outer": "#1f2a20",
+        "beard": "full",
+        "beardColor": "#2a1d10"
        },
        "at": [
         -16.5,
         16.8
        ],
        "ry": 1.570795,
-       "pose": "look_phone"
+       "pose": "look_phone",
+       "expr": "determined",
+       "talk": [
+        0.05,
+        0.45
+       ]
       },
       {
        "look": {
@@ -4690,13 +5276,36 @@
         "pants": "#22262a",
         "shoes": "#111111",
         "hair": "#1a1410",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "jacket",
+        "outer": "#4a4036",
+        "beard": "stubble",
+        "cap": "beanie",
+        "capColor": "#222222"
        },
        "at": [
         -11.2,
         16.6
        ],
-       "ry": -1.5
+       "ry": -1.5,
+       "expr": "smile",
+       "exprAt": [
+        [
+         0.55,
+         "angry"
+        ]
+       ],
+       "armsAt": [
+        [
+         0.55,
+         "crossed"
+        ]
+       ],
+       "lookAt": [
+        -16.5,
+        1.6,
+        16.8
+       ]
       }
      ],
      "o": {
@@ -4762,14 +5371,19 @@
         "pants": "#1c2228",
         "shoes": "#0a0d10",
         "hair": "#3a2a1a",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "jacket",
+        "outer": "#1f2a20",
+        "beard": "full",
+        "beardColor": "#2a1d10"
        },
        "at": [
         -16.5,
         16.8
        ],
        "ry": 1.570795,
-       "pose": "look_phone"
+       "pose": "look_phone",
+       "expr": "determined"
       },
       {
        "look": {
@@ -4778,13 +5392,20 @@
         "pants": "#22262a",
         "shoes": "#111111",
         "hair": "#1a1410",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "jacket",
+        "outer": "#4a4036",
+        "beard": "stubble",
+        "cap": "beanie",
+        "capColor": "#222222"
        },
        "at": [
         -11.2,
         16.6
        ],
-       "ry": -1.5
+       "ry": -1.5,
+       "expr": "angry",
+       "arms": "crossed"
       }
      ],
      "o": {
@@ -4840,14 +5461,26 @@
         "pants": "#1c2228",
         "shoes": "#0a0d10",
         "hair": "#3a2a1a",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "jacket",
+        "outer": "#1f2a20",
+        "beard": "full",
+        "beardColor": "#2a1d10"
        },
        "at": [
         -16.5,
         16.8
        ],
        "ry": 1.570795,
-       "pose": "look_phone"
+       "pose": "look_phone",
+       "expr": "determined",
+       "exprAt": [
+        [
+         0.8,
+         "shock"
+        ]
+       ],
+       "startleAt": 0.82
       },
       {
        "look": {
@@ -4856,7 +5489,10 @@
         "pants": "#121212",
         "shoes": "#0a0a0a",
         "hair": "#0d0d0d",
-        "hairStyle": "hood"
+        "hairStyle": "hood",
+        "top": "hoodie",
+        "outer": "#161616",
+        "beard": "stubble"
        },
        "path": [
         [
@@ -4875,7 +5511,8 @@
        "span": [
         0.2,
         0.9
-       ]
+       ],
+       "expr": "creepy"
       }
      ],
      "o": {
@@ -4957,7 +5594,11 @@
         "pants": "#1c2228",
         "shoes": "#0a0d10",
         "hair": "#3a2a1a",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "jacket",
+        "outer": "#1f2a20",
+        "beard": "full",
+        "beardColor": "#2a1d10"
        },
        "path": [
         [
@@ -4977,7 +5618,8 @@
         0,
         0.9
        ],
-       "run": true
+       "run": true,
+       "expr": "fear"
       },
       {
        "look": {
@@ -4986,13 +5628,18 @@
         "pants": "#121212",
         "shoes": "#0a0a0a",
         "hair": "#0d0d0d",
-        "hairStyle": "hood"
+        "hairStyle": "hood",
+        "top": "hoodie",
+        "outer": "#161616",
+        "beard": "stubble"
        },
        "at": [
         -17.4,
         16.4
        ],
-       "ry": -0.6
+       "ry": -0.6,
+       "expr": "angry",
+       "arms": "point"
       },
       {
        "look": {
@@ -5001,13 +5648,20 @@
         "pants": "#22262a",
         "shoes": "#111111",
         "hair": "#1a1410",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "jacket",
+        "outer": "#4a4036",
+        "beard": "stubble",
+        "cap": "beanie",
+        "capColor": "#222222"
        },
        "at": [
         -12.5,
         17.2
        ],
-       "ry": -1.2
+       "ry": -1.2,
+       "expr": "angry",
+       "arms": "shrug"
       }
      ],
      "o": {
@@ -5062,7 +5716,11 @@
         "pants": "#1c2228",
         "shoes": "#0a0d10",
         "hair": "#3a2a1a",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "jacket",
+        "outer": "#1f2a20",
+        "beard": "full",
+        "beardColor": "#2a1d10"
        },
        "at": [
         -3.0,
@@ -5073,7 +5731,10 @@
        "head": [
         0,
         0
-       ]
+       ],
+       "expr": "worried",
+       "talk": true,
+       "tremble": 0.3
       }
      ],
      "o": {
@@ -5116,7 +5777,11 @@
         "pants": "#1c2228",
         "shoes": "#0a0d10",
         "hair": "#3a2a1a",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "jacket",
+        "outer": "#1f2a20",
+        "beard": "full",
+        "beardColor": "#2a1d10"
        },
        "at": [
         -14.8,
@@ -5126,7 +5791,9 @@
        "head": [
         0,
         0.25
-       ]
+       ],
+       "expr": "sad",
+       "arms": "crossed"
       }
      ],
      "o": {
@@ -5183,7 +5850,11 @@
         "pants": "#1c2228",
         "shoes": "#0a0d10",
         "hair": "#3a2a1a",
-        "hairStyle": "short"
+        "hairStyle": "short",
+        "top": "jacket",
+        "outer": "#1f2a20",
+        "beard": "full",
+        "beardColor": "#2a1d10"
        },
        "at": [
         -10.0,
@@ -5193,6 +5864,20 @@
        "head": [
         0,
         0.45
+       ],
+       "expr": "suspicious",
+       "exprAt": [
+        [
+         0.48,
+         "shock"
+        ]
+       ],
+       "startleAt": 0.5,
+       "armsAt": [
+        [
+         0.52,
+         "mouth"
+        ]
        ]
       }
      ],
