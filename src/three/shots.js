@@ -16,7 +16,7 @@ const SON = (p) => look(p, "son", "man");
 
 // свет кухни: night — луна в окно + экран телефона; warm — абажур
 function kLights(mode, t, phonePos, glow = 1, flicker = 0) {
-  const fl = flicker ? (Math.sin(t * 31) > 0.6 || Math.sin(t * 7.7) > 0.93 ? 0.35 : 1) : 1;
+  const fl = flicker ? 1 - Math.min(1, Math.max(0, Math.sin(t * 1.9) * Math.sin(t * 5.3 + 1) - 0.82) * 5.5) * 0.45 : 1;
   if (mode === "warm") return {
     lights: [{ p: [-0.2, 1.84, 0.1], c: [1.6, 1.15, 0.65].map((v) => v * fl), r: 6 }, { p: [-3, 2.4, -0.1], c: [0.25, 0.3, 0.45], r: 7 }],
     shadow: { at: [-0.2, 0, 0.1], fov: 2.3 }, sky: [0.06, 0.05, 0.045], gnd: [0.03, 0.022, 0.016], fog: [0.02, 0.016, 0.012], fogD: 0.03,
