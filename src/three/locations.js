@@ -4,7 +4,8 @@ import { M, hex } from "./engine.js";
 import { kitchen, phone, panelHouse, streetLamp, tree, rnd } from "./kit.js";
 
 const PI = Math.PI;
-const flick = (t, on = 1) => (on ? (Math.sin(t * 31) > 0.55 || Math.sin(t * 7.7) > 0.95 ? 0.25 : 1) : 1);
+// v27: мягкое и редкое «подмигивание» лампы (раньше мерцало постоянно и затемняло кадр); по умолчанию выключено
+const flick = (t, on = 0) => { if (!on) return 1; const k = Math.max(0, Math.sin(t * 1.9) * Math.sin(t * 5.3 + 1) - 0.82) * 5.5; return 1 - Math.min(1, k) * 0.45 * on; };
 
 // ---------- машина (седан, без стёкол — видно салон) ----------
 export function car(b, x, z, { ry = 0, color = "#6b6f72", lights = false, brake = false, interior = true, wheelSpin = 0, dirty = true, glass = true } = {}) {
@@ -13,8 +14,8 @@ export function car(b, x, z, { ry = 0, color = "#6b6f72", lights = false, brake 
   b.box(0, 0.28, 0, 1.72, 0.55, 4.25, color, C);                   // низ кузова
   b.box(0, 0.83, 1.45, 1.66, 0.12, 1.3, color, C);                 // капот
   b.box(0, 0.83, -1.6, 1.66, 0.14, 1.0, color, C);                 // багажник
-  b.box(0, 1.38, -0.15, 1.5, 0.06, 1.75, color, C);                // крыша
-  for (const [px, pz, h] of [[-0.74, 0.72, 0.55], [0.74, 0.72, 0.55], [-0.74, -0.15, 0.55], [0.74, -0.15, 0.55], [-0.74, -1.02, 0.55], [0.74, -1.02, 0.55]]) b.box(px, 0.83, pz, 0.06, h, 0.08, color, C);
+  b.box(0, 1.5, -0.15, 1.5, 0.06, 1.75, color, C);                 // крыша (v27: выше — голова водителя не пробивает)
+  for (const [px, pz, h] of [[-0.74, 0.72, 0.55], [0.74, 0.72, 0.55], [-0.74, -0.15, 0.55], [0.74, -0.15, 0.55], [-0.74, -1.02, 0.55], [0.74, -1.02, 0.55]]) b.box(px, 0.83, pz, 0.06, h + 0.12, 0.08, color, C);
   b.box(0, 0.83, 0.74, 1.5, 0.05, 0.05, color, C);                 // низ лобового
   for (const s of [-1, 1]) for (const wz of [1.32, -1.32]) { b.push(M.tr(0.86 * s, 0.32, wz), M.rz(PI / 2), M.ry(wheelSpin)); b.cyl(0, -0.1, 0, 0.32, 0.32, 0.2, "#0d0d0d", { seg: 10 }); b.pop(); }
   b.box(-0.6, 0.62, 2.13, 0.32, 0.12, 0.04, "#e8e8e0", { e: lights ? [2.5, 2.4, 2.0] : null, ns: true });
@@ -24,9 +25,9 @@ export function car(b, x, z, { ry = 0, color = "#6b6f72", lights = false, brake 
   b.box(0, 0.42, 2.14, 0.5, 0.11, 0.03, "#d8d8d0");                // номер
   if (glass) { // стёкла: тёмные, с бликом (в кадрах из салона их не рисуем)
     const G = "#0e1820", GO = { mat: "metal", e: [0.015, 0.025, 0.035], ns: true };
-    b.push(M.tr(0, 0.86, 0.74), M.rx(-0.75)); b.box(0, 0, 0, 1.46, 0.72, 0.02, G, GO); b.pop();
-    b.push(M.tr(0, 0.86, -1.02), M.rx(0.85)); b.box(0, 0, 0, 1.46, 0.68, 0.02, G, GO); b.pop();
-    for (const s2 of [-1, 1]) b.box(0.75 * s2, 0.86, -0.15, 0.02, 0.5, 1.72, G, GO);
+    b.push(M.tr(0, 0.86, 0.74), M.rx(-0.75)); b.box(0, 0, 0, 1.46, 0.86, 0.02, G, GO); b.pop();
+    b.push(M.tr(0, 0.86, -1.02), M.rx(0.85)); b.box(0, 0, 0, 1.46, 0.82, 0.02, G, GO); b.pop();
+    for (const s2 of [-1, 1]) b.box(0.75 * s2, 0.86, -0.15, 0.02, 0.62, 1.72, G, GO);
   }
   if (interior) {
     for (const s of [-1, 1]) { b.box(0.38 * s, 0.55, 0.05, 0.5, 0.15, 0.5, dark, { mat: "fabric" }); b.box(0.38 * s, 0.7, -0.22, 0.5, 0.62, 0.12, dark, { mat: "fabric" }); }
@@ -34,7 +35,7 @@ export function car(b, x, z, { ry = 0, color = "#6b6f72", lights = false, brake 
     b.box(0, 0.8, 0.62, 1.5, 0.22, 0.3, "#1c1e20");                  // торпедо
     b.box(-0.38, 0.95, 0.56, 0.3, 0.06, 0.04, "#0a0a0a", { e: lights ? [0.25, 0.6, 0.9] : null, ns: true }); // приборы
     b.push(M.tr(-0.38, 0.98, 0.42), M.rx(-1.1)); b.cyl(0, 0, 0, 0.17, 0.17, 0.03, "#111111", { seg: 12 }); b.pop(); // руль
-    b.box(0, 1.25, 0.6, 0.22, 0.06, 0.03, "#222222");                 // зеркало
+    b.box(0, 1.37, 0.6, 0.22, 0.06, 0.03, "#222222");                 // зеркало
   }
   b.pop();
 }
