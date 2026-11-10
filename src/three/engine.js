@@ -203,6 +203,7 @@ void main(){
     for(int i=0;i<24;i++){ q+=dl; acc+=texture(B,q).rgb*w; w*=.94; }
     c+=acc/24.*uRays; }
   c*=uExp;
+  c=mix(c, .62+.38*(1.-exp(-(c-.62)/.38)), step(.62,c)); // v27: мягкое «плечо» — светлое не выгорает в белое
   float lum=dot(c,vec3(.299,.587,.114));
   c=mix(vec3(lum),c,1.12); c*=uTint; c=c+uLift*(1.-c);
   c=(c-.5)*1.1+.5;
@@ -368,9 +369,9 @@ export class Renderer {
       this.pass(this.pBlur, this.bA, [["T", this.bB.t]], { D: [0, (1 + i) / this.bA.h] });
     }
     this.pass(this.pComp, null, [["T", this.sceneT.t], ["B", this.bA.t]], {
-      uTime: P.time || 0, uBloom: P.bloom ?? 1.4, uVig: P.vig ?? 0.75, uGrain: P.grain ?? 0.06, uCA: P.ca ?? 0.004,
+      uTime: P.time || 0, uBloom: P.bloom ?? 1.4, uVig: P.vig ?? 0.5, uGrain: P.grain ?? 0.06, uCA: P.ca ?? 0.004,
       uFlash: P.flash || 0, uTint: P.tint || [1.0, 0.97, 1.05], uLift: P.lift || [0.012, 0.016, 0.03],
-      uRays: sc.rays ? sc.rays.k ?? 0.8 : 0, uFish: P.fish || 0, uExp: P.exp ?? 1.3, uSun: this._sun, uLevels: this.ps1 ? (P.levels ?? 24) : 0 });
+      uRays: sc.rays ? sc.rays.k ?? 0.8 : 0, uFish: P.fish || 0, uExp: P.exp ?? 1.5, uSun: this._sun, uLevels: this.ps1 ? (P.levels ?? 24) : 0 });
   }
 }
 
