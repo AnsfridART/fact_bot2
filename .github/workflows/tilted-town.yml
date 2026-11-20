@@ -1,0 +1,66 @@
+name: Doctor Bob — tilted town
+on:
+  push:
+    branches: [pilot/tilted-town]
+    paths: ['tilt/**', 'tilt_audio.py', 'tilt_send.py', '.github/workflows/tilted-town.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  film:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install render tools
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y ffmpeg fonts-dejavu-core
+          pip install -r requirements.txt
+          npm install --no-audit --no-fund
+          npx remotion browser ensure
+      - name: Record voice and mix sound
+        env:
+          TTS_ENGINE: yandex
+          YANDEX_VOICE: madirus
+          YANDEX_EMOTION: none
+          SPEECHKIT_API_KEY: ${{ secrets.SPEECHKIT_API_KEY }}
+          YC_FOLDER_ID: ${{ secrets.YC_FOLDER_ID }}
+        run: python tilt_audio.py
+      - name: Render 2160 frames
+        run: npx --no-install remotion render tilt/entry.jsx TiltedTown output/tilt/picture.mp4 --concurrency=3 --crf=18 --log=warn --timeout=120000
+      - name: Verify final video
+        run: |
+          cd output/tilt
+          ffmpeg -loglevel error -i picture.mp4 -i mix.wav -map 0:v -map 1:a -c:v copy -c:a aac -b:a 160k -movflags +faststart doctor-bob.mp4
+          test "$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height,nb_frames -of csv=p=0 doctor-bob.mp4)" = "1080,1920,2160"
+          test "$(ffprobe -v error -select_streams a:0 -show_entries stream=codec_name -of csv=p=0 doctor-bob.mp4)" = aac
+          test "$(stat -c%s doctor-bob.mp4)" -lt 50000000
+          ffmpeg -v error -i doctor-bob.mp4 -vf "fps=1/6,scale=180:320,tile=6x2" -frames:v 1 storyboard.jpg
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tilted-town
+          path: |
+            output/tilt/doctor-bob.mp4
+            output/tilt/storyboard.jpg
+          retention-days: 14
+  telegram:
+    runs-on: ubuntu-latest
+    needs: film
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: tilted-town
+          path: ready
+      - name: Send one review copy
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python tilt_send.py
