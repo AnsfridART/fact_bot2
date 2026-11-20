@@ -1,0 +1,55 @@
+name: Doctor Bob clinic previews
+on:
+  push:
+    branches: [pilot/clinic-screen-tests]
+    paths: ['clinic/**', 'clinic_preview.py', '.github/workflows/clinic-preview.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  screen-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        story: [clock, magnet, mirror]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Prepare render tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg fonts-dejavu-core
+          pip install -r requirements.txt pillow
+          npm install --no-audit --no-fund
+          npx remotion browser ensure
+      - name: Render and verify
+        env:
+          TTS_ENGINE: yandex
+          YANDEX_VOICE: madirus
+          YANDEX_EMOTION: none
+          SPEECHKIT_API_KEY: ${{ secrets.SPEECHKIT_API_KEY }}
+          YC_FOLDER_ID: ${{ secrets.YC_FOLDER_ID }}
+        run: python clinic_preview.py ${{ matrix.story }} prepare
+      - uses: actions/upload-artifact@v4
+        with:
+          name: clinic-${{ matrix.story }}
+          path: |
+            output/clinic/*/preview.mp4
+            output/clinic/*/storyboard.jpg
+            output/clinic/*/cover.png
+          retention-days: 7
+      - name: Deliver to Telegram
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python clinic_preview.py ${{ matrix.story }} deliver
