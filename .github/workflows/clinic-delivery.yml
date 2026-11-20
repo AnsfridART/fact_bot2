@@ -1,0 +1,54 @@
+name: Deliver remaining clinic previews
+on:
+  push:
+    branches: [pilot/clinic-delivery]
+    paths: ['.github/workflows/clinic-delivery.yml']
+permissions:
+  contents: read
+  actions: read
+jobs:
+  delivery:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: clinic-*
+          run-id: 44808984348
+          github-token: ${{ github.token }}
+          path: previews
+      - name: Send pending files
+        shell: python
+        env:
+          BOT: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          import json, os, subprocess, time
+          from pathlib import Path
+          stories = {s['id']:s for s in json.loads(Path('clinic/stories.json').read_text())}
+          pending = [["clock","video"],["mirror","video"],["magnet","document"],["clock","document"],["mirror","document"]]
+          for name, kind in pending:
+              story = stories[name]
+              video = kind == 'video'
+              file = next((Path('previews') / ('clinic-'+name)).rglob('preview.mp4' if video else 'cover.png'))
+              method, field = ('sendVideo','video') if video else ('sendDocument','document')
+              label = ('Проба · '+story['title']+'\n'+story['caption']) if video else ('Обложка · '+story['title'])
+              url = 'https://api.telegram.org/bot'+os.environ['BOT']+'/'+method
+              for attempt in range(4):
+                  result = subprocess.run(['curl','--silent','--ipv4','--connect-timeout','15','--max-time','120',
+                      '-F','chat_id='+os.environ['CHAT'],'-F','caption='+label,'-F',field+'=@'+str(file),url],capture_output=True)
+                  if result.returncode in (6,7,35):
+                      time.sleep(2**attempt)
+                      continue
+                  if result.returncode:
+                      raise RuntimeError('Telegram transport '+str(result.returncode))
+                  response=json.loads(result.stdout)
+                  if response.get('ok'):
+                      print(name,kind,'accepted',response['result']['message_id'])
+                      break
+                  if response.get('error_code')==429:
+                      time.sleep(response.get('parameters',{}).get('retry_after',5))
+                      continue
+                  raise RuntimeError('Telegram HTTP '+str(response.get('error_code')))
+              else:
+                  raise RuntimeError('Telegram connection retries exhausted')
