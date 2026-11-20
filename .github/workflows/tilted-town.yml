@@ -1,7 +1,7 @@
 name: Doctor Bob — tilted town
 on:
   push:
-    branches: [pilot/tilted-town]
+    branches: [pilot/incline-motion]
     paths: ['tilt/**', 'tilt_audio.py', 'tilt_send.py', '.github/workflows/tilted-town.yml']
   workflow_dispatch:
 permissions:
@@ -28,7 +28,7 @@ jobs:
       - name: Record voice and mix sound
         env:
           TTS_ENGINE: yandex
-          YANDEX_VOICE: madirus
+          YANDEX_VOICE: filipp
           YANDEX_EMOTION: none
           SPEECHKIT_API_KEY: ${{ secrets.SPEECHKIT_API_KEY }}
           YC_FOLDER_ID: ${{ secrets.YC_FOLDER_ID }}

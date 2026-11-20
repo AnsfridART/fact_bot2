@@ -3,7 +3,7 @@ const TAU=Math.PI*2;
 function circle(c,x,y,r,fill){c.beginPath();c.arc(x,y,r,0,TAU);c.fillStyle=fill;c.fill()}
 function cartStatus(t){
  if(t<7)return 10+5*ramp(t,1.3,2.4);
- return 5*(ramp(t,18.25,19.30)+ramp(t,29.44,30.5)+ramp(t,41.51,42.5)-ramp(t,48.36,48.95)-ramp(t,51.40,52)-ramp(t,54.87,55.65)+ramp(t,71.09,71.73));
+ return 5*(ramp(t,18.25,19.30)+ramp(t,29.44,30.5)+ramp(t,41.51,42.5)-ramp(t,48.36,48.95)-ramp(t,51.40,52)-ramp(t,54.87,55.65));
 }
 function settings(t){
  const p=(a,b)=>ramp(t,a,b), lin=(a,b)=>clamp((t-a)/(b-a));
@@ -55,8 +55,10 @@ export function draw(c,t,story){
  const speak=story.lines.find(([a,b])=>t>a&&t<b);
  const bl=(shift)=>Math.max(0,1-Math.abs((t+shift)%3.9-2.5)/.12);
  let reach=t>10.5&&t<13.55?Math.sin(Math.PI*clamp((t-10.5)/3.05)):0;
- s.person(q.bob,q.personZ,t,{run:q.run,panic:t<3||t>34&&t<55.75?.95:.05,talk:speak?.55+.42*Math.sin(18*t):0,point:t<3?.9:.72*(ramp(t,37.9,38.4)-ramp(t,41.3,41.8)),reach,lean:-tilt*.65,blink:bl(0),look:t>67?-.8:1});
- s.person(q.baker,-.16,t+.23,{baker:true,run:q.run,face:q.baker<q.bob?1:-1,look:1,point:.7*(ramp(t,13.5,14)-ramp(t,18.6,19)),lean:-tilt*.54,blink:bl(1.3),talk:t>67&&t<69.5?.62:0});
+ const glance=(a,b,c,d)=>ramp(t,a,b)-ramp(t,c,d);
+ const heading=.72-.98*glance(13.7,14.35,16.5,17.15)-1.65*glance(25.9,26.75,29.1,29.9)-.85*glance(65,66,69.1,70.1);
+ s.person(q.bob,q.personZ,t,{turn:heading,run:q.run,panic:t<3||t>34&&t<55.75?.95:.05,talk:speak?.55+.42*Math.sin(18*t):0,point:t<3?.9:.72*(ramp(t,37.9,38.4)-ramp(t,41.3,41.8)),reach,lean:-tilt*.65,blink:bl(0),look:t>67?-.8:1});
+ s.person(q.baker,-.16,t+.23,{turn:.72-1.10*glance(14.75,15.5,17.8,18.6)-.85*glance(33,34,36.1,37),baker:true,run:q.run,face:q.baker<q.bob?1:-1,look:1,point:.7*(ramp(t,13.5,14)-ramp(t,18.6,19)),lean:-tilt*.54,blink:bl(1.3),talk:t>67&&t<69.5?.62:0});
  s.cake(q.cart,q.cartZ,t,q.air+(t<3?.45*(1-ramp(t,0,1.15)):0),t>=7&&t<11.3);
  if(t>=11.3&&t<12.45){const u=ramp(t,11.3,12.45);s.object(0,2,.39,()=>{const [x,y,,sc]=s.project(q.cart+(q.bob+.12-q.cart)*u,1.75-.33*u+.34*Math.sin(Math.PI*u),.36);circle(c,x,y,sc*.085,'#bd3347')})}
  if((t<3||t>=19.3&&t<34||t>55.75&&t<59.7)&&q.loc!=='bakery'){

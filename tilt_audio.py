@@ -58,7 +58,7 @@ def main():
     filters=[]
     for i,(start,end,line) in enumerate(story["lines"]):
         wav=OUT/f"voice-{i}.wav"
-        tts.synthesize(line,str(wav),voice="madirus")
+        tts.yandex_say(line,str(wav),spec="filipp",speed=1.15)
         length=float(subprocess.check_output(["ffprobe","-v","error","-show_entries","format=duration","-of","csv=p=0",wav]))
         tempo=max(1,length/(end-start-.01))
         inputs.extend(["-i",wav])

@@ -49,7 +49,7 @@ export class Stage {
   })
  }
 }
-const walls=['#e7b581','#da9174','#a3b6a4','#e3b887','#d9998a'];
+const walls=['#e7a052','#d87851','#599d91','#e3b887','#c96660'];
 function house(s,x,z,i,shop=false){
  const w=4.4,h=4+((i%3+3)%3)*.52,front=z+.95,col=walls[(i%5+5)%5];
  s.object(x,2,z,()=>{s.box(x,0,z,w,h,1.9,col);s.box(x,h-.12,z,w+.20,.23,2.03,'#82625d');
@@ -63,7 +63,7 @@ function house(s,x,z,i,shop=false){
  for(const dir of [-1,1])s.box(x+dir*1.33,.39,front+.08,.94,.82,.10,'#92b9b4');
  s.box(x,1.55,front+.10,3.7,.36,.13,shop?'#305c62':'#b38264');
  if(shop)s.label(x,1.61,front+.19,'П Е К А Р Н Я','#ffe6a6',20);
- for(let a=0;a<9;a++){let l=x-1.84+a*.41;let color=a%2?'#faf0c9':shop?'#ca5a49':'#60918b';
+ for(let a=0;a<9;a++){let l=x-1.84+a*.41;let color=a%2?'#faf0c9':shop?'#ca5a49':'#247e78';
  s.poly([[l,1.53,front+.20],[l+.41,1.53,front+.20],[l+.41,1.27,front+.79],[l,1.27,front+.79]],color);
  s.box(l+.205,1.18,front+.785,.406,.09,.04,color)}
  })
@@ -75,7 +75,7 @@ function posts(s,start,end,z){for(let i=start;i<end;i+=1.5){s.object(i,.5,z,()=>
 function flagLine(s,x,z){s.object(x,2.4,z,()=>{s.box(x-2,0,z,.085,3.5,.08,'#96745d');s.box(x+2,0,z,.085,3.5,.08,'#96745d');
  for(let i=0;i<12;i++){let X=x-2+i/3,Y=3.46-.32*Math.sin(i/12*Math.PI);s.line([X,Y,z],[X+.34,3.46-.32*Math.sin((i+1)/12*Math.PI),z],'#725f58',1.3);s.poly([[X,Y,z],[X+.25,Y-.02,z],[X+.14,Y-.27,z]],['#da6851','#f5cb79','#699e99'][i%3])}})}
 export function environment(s,loc,center,t,bridgeLift=0){
- const c=s.c;const sky=c.createLinearGradient(0,-100,0,800);sky.addColorStop(0,'#64acbb');sky.addColorStop(.65,'#f5d9a8');sky.addColorStop(1,'#ffe2a6');c.fillStyle=sky;c.fillRect(-900,-900,2400,2800);
+ const c=s.c;const sky=c.createLinearGradient(0,-100,0,800);sky.addColorStop(0,'#328fc1');sky.addColorStop(.65,'#ffce84');sky.addColorStop(1,'#ffe2a6');c.fillStyle=sky;c.fillRect(-900,-900,2400,2800);
  for(let i=-4;i<7;i++){const X=(i*178+234-center*5)%1500,Y=170+Math.sin(i*3+1)*73;
  c.fillStyle='#fff0cd';c.beginPath();c.ellipse(X,Y,46,8,0,0,TAU);c.ellipse(X+12,Y-6,23,10,0,0,TAU);c.fill()}
  // A separate skyline, middle facades and near props produce visible parallax.
@@ -83,12 +83,12 @@ export function environment(s,loc,center,t,bridgeLift=0){
  for(let i=start-5;i<=start+5;i++){s.box(i*4.6,0,-12,4.45,3.5+1.5*Math.sin(i*1.9+2),2,'#9fb7ad')}
  const bridge=loc==='bridge',party=loc==='party';
  for(let j=-4;j<4;j++)for(let i=start-4;i<start+5;i++){
- const x=i*4.6,z=j*2; s.poly([[x,0,z],[x+4.6,0,z],[x+4.6,0,z+2],[x,0,z+2]],bridge?'#63a7a6':j<-1?'#e9c692':(i+j)%2?'#e9c092':'#ebc394');
+ const x=i*4.6,z=j*2; s.poly([[x,0,z],[x+4.6,0,z],[x+4.6,0,z+2],[x,0,z+2]],bridge?'#258caa':j<-1?'#e9c692':(i+j)%2?'#dda967':'#ebc394');
  if(bridge){for(let k=0;k<3;k++)s.line([x+k*1.35,.01,z+.4+k*.28],[x+k*1.35+.65,.01,z+.38+k*.28],'#a7d2bd',2)}
  else s.line([x+.26,.01,z+.21],[x+.78,.01,z+.21],'#cba982',1)
  }
  if(loc==='bakery'){
- s.object(0,2,-3,()=>{s.box(0,0,-3,19,6,.20,'#669395');s.box(0,0,-2.85,18,1.30,.12,'#a5b8a2');
+ s.object(0,2,-3,()=>{s.box(0,0,-3,19,6,.20,'#257783');s.box(0,0,-2.85,18,1.30,.12,'#61a394');
  for(let i=-8;i<=8;i++)s.line([i,.06,-2.77],[i,1.23,-2.77],'#91aa98',1.6);
  s.box(-1.55,1.36,-2.74,2.0,2.07,.15,'#f0c18d');s.box(-1.55,1.47,-2.64,1.76,1.84,.10,'#afd2c6');
  s.box(-1.55,1.45,-2.54,.075,1.89,.10,'#f6d6a1');s.box(-1.55,2.38,-2.54,1.79,.075,.10,'#f6d6a1');
