@@ -9,6 +9,10 @@ permissions:
 jobs:
   delivery:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        story: [clock, mirror, magnet]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
@@ -20,13 +24,14 @@ jobs:
       - name: Send pending files
         shell: python
         env:
+          STORY: ${{ matrix.story }}
           BOT: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
           import json, os, subprocess, time
           from pathlib import Path
           stories = {s['id']:s for s in json.loads(Path('clinic/stories.json').read_text())}
-          pending = [["clock","video"],["mirror","video"],["magnet","document"],["clock","document"],["mirror","document"]]
+          pending = [(os.environ['STORY'], kind) for kind in (['document'] if os.environ['STORY']=='magnet' else ['video','document'])]
           for name, kind in pending:
               story = stories[name]
               video = kind == 'video'
@@ -34,11 +39,12 @@ jobs:
               method, field = ('sendVideo','video') if video else ('sendDocument','document')
               label = ('Проба · '+story['title']+'\n'+story['caption']) if video else ('Обложка · '+story['title'])
               url = 'https://api.telegram.org/bot'+os.environ['BOT']+'/'+method
-              for attempt in range(4):
-                  result = subprocess.run(['curl','--silent','--ipv4','--connect-timeout','15','--max-time','120',
+              for attempt in range(7):
+                  result = subprocess.run(['curl','--silent','--ipv4','--connect-timeout','10','--max-time','120','--write-out','%{stderr}%{size_upload} %{time_appconnect}',
                       '-F','chat_id='+os.environ['CHAT'],'-F','caption='+label,'-F',field+'=@'+str(file),url],capture_output=True)
-                  if result.returncode in (6,7,35):
-                      time.sleep(2**attempt)
+                  print(name,kind,'attempt',attempt+1,'transport',result.returncode,'bytes / TLS',result.stderr.decode()[-64:], flush=True)
+                  if result.returncode in (6,7,35) or (result.returncode==28 and result.stderr.decode().split()[0]=='0'):
+                      time.sleep(min(2**attempt,8))
                       continue
                   if result.returncode:
                       raise RuntimeError('Telegram transport '+str(result.returncode))
