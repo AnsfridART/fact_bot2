@@ -148,6 +148,9 @@ def build_props(s):
         shutil.rmtree(config.PUBLIC_DIR)
     os.makedirs(config.PUBLIC_DIR)
 
+    experiment = s.get("experiment")
+    if experiment is not None and experiment not in ("shadow", "lift"):
+        raise ValueError(f"Неизвестная анимация опыта: {experiment}")
     noir = s.get("style") == "noir"
     # холодный старт: сразу сцена с действием и крупным заголовком; старый формат — профессор во вступлении
     if s.get("hook"):
@@ -201,7 +204,7 @@ def build_props(s):
                 seg["shots"] = files
             else:
                 WARNINGS.append(f"нет кадров для сцены {i}")
-        elif p["kind"] in ("scene", "hook") and not (p.get("bg") or p.get("actors") or p.get("map") or p.get("ui") or p.get("world")):
+        elif not experiment and p["kind"] in ("scene", "hook") and not (p.get("bg") or p.get("actors") or p.get("map") or p.get("ui") or p.get("world")):
             img = f"img{i}.jpg"
             try:
                 images.generate(p["prompt"], os.path.join(config.PUBLIC_DIR, img), seed, p.get("stock", ""))
@@ -219,6 +222,8 @@ def build_props(s):
         start += dur
 
     props = {"segments": segments, "totalFrames": start}
+    if experiment:
+        props.update(experiment=experiment, fps=FPS)
     if noir:
         props["style"] = "noir"
         props["hudLabels"] = s.get("hud_labels")
