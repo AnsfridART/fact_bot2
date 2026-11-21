@@ -1,0 +1,110 @@
+name: Cozy story preview
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - preview/key_episode.py
+      - preview/key_story.json
+      - preview/story_audio.py
+      - .github/workflows/cozy-story.yml
+permissions:
+  contents: read
+jobs:
+  narration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: |
+          sudo apt-get update -qq && sudo apt-get install -y ffmpeg
+          pip install numpy requests edge-tts piper-tts
+          mkdir -p models
+          base=https://huggingface.co/rhasspy/piper-voices/resolve/main/ru/ru_RU/dmitri/medium
+          for ext in onnx onnx.json; do curl --retry 2 -fsSL "$base/ru_RU-dmitri-medium.$ext" -o "models/dmitri.$ext"; done
+      - name: Record narration and time captions
+        env:
+          PYTHONPATH: .
+          TTS_ENGINE: ${{ vars.TTS_ENGINE || 'edge' }}
+          SPEECHKIT_API_KEY: ${{ secrets.SPEECHKIT_API_KEY }}
+          YC_FOLDER_ID: ${{ secrets.YC_FOLDER_ID }}
+          EDGE_RATE: '+8%'
+          EDGE_PITCH: '+0Hz'
+        run: python preview/story_audio.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: timing
+          retention-days: 1
+          path: |
+            plan.json
+            captions.srt
+            voice.wav
+  shots:
+    needs: narration
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      matrix:
+        first: [0, 2, 4, 6]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: timing
+      - run: sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends blender ffmpeg
+      - name: Animate and encode two shots
+        env:
+          FIRST: ${{ matrix.first }}
+        run: |
+          for shot in "$FIRST" "$((FIRST+1))"; do
+            SHOT=$shot blender -b --python-exit-code 1 --python preview/key_episode.py > blender.log || { tail -80 blender.log; exit 1; }
+            read start end < <(python -c "import json;print(*json.load(open('plan.json'))[$shot][1:])")
+            test -s "$(printf 'frames/f%04d.png' "$end")"
+            ffmpeg -v error -framerate 20 -start_number "$start" -i frames/f%04d.png -frames:v "$((end-start+1))" -vf hqdn3d=1.1:1.1:2:2 -c:v libx264 -pix_fmt yuv420p -crf 15 "shot$shot.mp4"
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: shots-${{ matrix.first }}
+          path: shot*.mp4
+          retention-days: 1
+  delivery:
+    needs: shots
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+      - run: sudo apt-get update -qq && sudo apt-get install -y ffmpeg fonts-dejavu-core
+      - name: Composite subtitles and verify final movie
+        run: |
+          for i in {0..7}; do test -s "shot$i.mp4"; echo "file 'shot$i.mp4'" >> shots.txt; done
+          ffmpeg -v error -f concat -safe 0 -i shots.txt -i voice.wav -map 0:v -map 1:a -vf "scale=540:960,subtitles=captions.srt:original_size=540x960:force_style='Fontname=DejaVu Sans,Fontsize=14,Bold=1,Outline=1.3,Alignment=2,MarginV=51,MarginL=16,MarginR=16'" -c:v libx264 -crf 18 -c:a aac -b:a 112k -movflags +faststart cozy-story.mp4
+          ffprobe -v error -show_streams -of json cozy-story.mp4 > media.json
+          python - <<'PY'
+          import json
+          streams=json.load(open('media.json'))['streams']
+          v,a=streams
+          assert a['codec_type']=='audio' and v['codec_type']=='video'
+          assert abs(float(v['duration'])-float(a['duration']))<.25 and float(v['duration'])>=60
+          PY
+          ffmpeg -v error -ss 1 -i cozy-story.mp4 -frames:v 1 cover.jpg
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cozy-story-preview
+          retention-days: 4
+          path: |
+            cozy-story.mp4
+            cover.jpg
+      - name: Deliver movie and cover
+        env:
+          BOT: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          send(){ curl -fsS --max-time 120 -F "chat_id=$CHAT" "$@" | python -c "import json,sys;assert json.load(sys.stdin)['ok']"; }
+          base="https://api.telegram.org/bot$BOT"
+          send -F 'video=@cozy-story.mp4' -F 'supports_streaming=true' -F 'caption=Соседи за плинтусом · 1/5 · Ключ под шкафом. Тихон возвращает девочке ключ и получает приглашение в дорогу. Поехать с ней или остаться дома? #СоседиЗаПлинтусом #анимация' "$base/sendVideo"
+          send -F 'document=@cover.jpg' -F 'caption=Обложка · Ключ под шкафом' "$base/sendDocument"
