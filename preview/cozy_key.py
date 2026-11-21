@@ -93,7 +93,7 @@ area('Bounce',(1,-3,2),(.95,.82,.7),115,3,(.8,.7,.9))
 b.ops.object.camera_add(location=(-1.35,-5.4,2.0));cam=b.context.object;sc.camera=cam
 cam.rotation_euler=(Vector((.35,.69,1.04))-cam.location).to_track_quat('-Z','Y').to_euler()
 cam.data.lens=48
-sc.render.engine='CYCLES';sc.cycles.samples=4;sc.cycles.use_denoising=True
+sc.render.engine='CYCLES';sc.cycles.samples=16;sc.cycles.use_denoising=False
 sc.world=b.data.worlds.new('Evening');sc.world.color=(.15,.15,.18)
 sc.render.resolution_x=360;sc.render.resolution_y=640;sc.render.resolution_percentage=100
 sc.render.fps=18;sc.frame_start=1;sc.frame_end=144
