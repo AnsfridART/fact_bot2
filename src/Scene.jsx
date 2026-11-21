@@ -1,6 +1,7 @@
 // Вся анимация кадра. Чистый React без зависимостей от Remotion,
 // поэтому кадр можно отрендерить и в Remotion, и в обычном браузере для превью.
 import React from "react";
+import {Serial} from "./serial/Serial.jsx";
 import { Experiment } from "./experiments/Experiment.jsx";
 import { Stage } from "./story/Stage.jsx";
 import { Insert } from "./story/Inserts.jsx";
@@ -580,6 +581,9 @@ export function Scene({ frame, data, src, ImgComp, font = "Montserrat, DejaVu Sa
   const segs = data.segments || [];
   if (!segs.length) return <div style={{ width: 1080, height: 1920, background: "#000" }} />;
   const [seg, f] = currentSeg(segs, frame);
+  if (data.serial) return <div style={{position:"absolute",inset:0}}>
+    <Serial seg={seg} f={f} fps={data.fps}/><Captions seg={seg} f={f} font={font} top={1280}/>
+  </div>;
   if (data.experiment) return <div style={{position:"absolute",inset:0,overflow:"hidden"}}>
     <Experiment kind={data.experiment} shot={segs.indexOf(seg)} frame={f} duration={seg.dur} fps={data.fps} mouth={seg.env?.[f] || 0} />
     <Captions seg={seg} f={f} font={font} top={1280} />
@@ -632,6 +636,8 @@ function NoirCover({ data, seg, font, src, ImgComp }) {
 export function Cover({ data, font = "Montserrat, DejaVu Sans, Arial", src, ImgComp }) {
   const seg = (data.segments || [])[0];
   if (!seg) return <div style={{ width: 1080, height: 1920, background: "#000" }} />;
+  if (data.serial) return <div style={{position:"absolute",inset:0}}><Serial seg={seg} f={0} fps={data.fps}/>
+    <div style={{position:"absolute",left:70,right:70,top:365,color:"white",fontFamily:font,fontWeight:900,fontSize:82,...outline(11)}}>{seg.title}</div></div>;
   if (data.experiment) return <div style={{position:"absolute",inset:0}}>
     <Experiment kind={data.experiment} shot={0} frame={15} duration={60} fps={data.fps} mouth={0} />
     <div style={{position:"absolute",top:330,left:70,right:70,textAlign:"center",fontFamily:font,fontWeight:900,fontSize:92,color:"white",...outline(12)}}>{seg.title}</div>

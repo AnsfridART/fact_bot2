@@ -151,6 +151,7 @@ def build_props(s):
     experiment = s.get("experiment")
     if experiment is not None and experiment not in ("shadow", "lift"):
         raise ValueError(f"Неизвестная анимация опыта: {experiment}")
+    serial = s.get("serial", False)
     noir = s.get("style") == "noir"
     # холодный старт: сразу сцена с действием и крупным заголовком; старый формат — профессор во вступлении
     if s.get("hook"):
@@ -172,6 +173,10 @@ def build_props(s):
     if s.get("loop") and s.get("hook"):
         plan.append({"kind": "loop", "text": s["loop"]})
 
+    if serial:
+        plan[-1]["boarding"] = {**plan[-2]["boarding"], "options": s["options"]}
+        plan[-2]["boarding"]["options"] = s["options"]
+
     seed = random.randint(1, 10_000_000)
     segments, start = [], 0
     for i, p in enumerate(plan):
@@ -182,10 +187,12 @@ def build_props(s):
         frames, env, first, last = audio_info(os.path.join(config.PUBLIC_DIR, wav))
         gap = 0.0 if p["kind"] == "loop" else 0.12 if p["kind"] in ("scene", "hook") else 0.9 if p["kind"] == "choice" else 0.35
         dur = max(frames + int(gap * FPS), int(1.6 * FPS)) + int(float(p.get("hold", 0)) * FPS)  # v16: «правила» держим дольше, чтобы успели прочитать
+        if serial and p["kind"] == "scene":
+            dur = max(dur, int(10.9 * FPS))
         seg = {"kind": p["kind"], "start": start, "dur": dur, "audio": wav, "env": env,
                "words": word_timings(p["text"].replace("|", " "), first, last)}
         for k in ("title", "emotion", "tag", "alert", "cam", "big", "bg", "actors", "focus", "tint", "camY", "insert", "count", "map", "angle", "weather", "lights",
-                  "ui", "hud", "uiAt", "options", "question", "hint", "next", "clue", "nextTitle", "tape", "fx", "shotOn", "hookFocus", "world"):
+                  "ui", "hud", "uiAt", "options", "question", "hint", "next", "clue", "nextTitle", "tape", "fx", "shotOn", "hookFocus", "world", "boarding"):
             if p.get(k) is not None:  # focus=0 — тоже значение
                 seg[k] = p[k]
         if p.get("shots"):  # v24: кадры от первого лица, нейросеть рисует каждый шот в стиле истории
@@ -204,7 +211,7 @@ def build_props(s):
                 seg["shots"] = files
             else:
                 WARNINGS.append(f"нет кадров для сцены {i}")
-        elif not experiment and p["kind"] in ("scene", "hook") and not (p.get("bg") or p.get("actors") or p.get("map") or p.get("ui") or p.get("world")):
+        elif not serial and not experiment and p["kind"] in ("scene", "hook") and not (p.get("bg") or p.get("actors") or p.get("map") or p.get("ui") or p.get("world")):
             img = f"img{i}.jpg"
             try:
                 images.generate(p["prompt"], os.path.join(config.PUBLIC_DIR, img), seed, p.get("stock", ""))
@@ -222,6 +229,8 @@ def build_props(s):
         start += dur
 
     props = {"segments": segments, "totalFrames": start}
+    if serial:
+        props.update(serial=True, fps=FPS)
     if experiment:
         props.update(experiment=experiment, fps=FPS)
     if noir:
@@ -436,6 +445,13 @@ def main():
         with open("pilot.json", encoding="utf-8") as f:
             s, path, rest = json.load(f)[0], None, None
         say("🧪 Пилот нового стиля")
+    elif os.getenv("SERIAL_ACTIVE") == "1":
+        from serial_season import current
+        s = current(config.DONE_FILE)
+        if s is None:
+            print("Серия доставлена. Ждём результат голосования.")
+            return
+        path, rest = None, None
     else:
         s, path, rest = next_script()
     if s is None:
@@ -444,6 +460,9 @@ def main():
 
     build_props(s)
     video = render()
+    if s.get("serial"):
+        from serial_season import verify_video
+        verify_video(video, FPS)
 
     story = " ".join(clean(sc["text"]) for sc in s["scenes"])
     say(f"<b>{html.escape(s['title'])}</b>\n\n{html.escape(story)}\n\n"
@@ -468,7 +487,9 @@ def main():
 
     if pilot:
         return
-    if rest:
+    if path is None:
+        pass  # сериал хранит историю выборов отдельно от очереди
+    elif rest:
         with open(path, "w", encoding="utf-8") as f:
             json.dump(rest, f, ensure_ascii=False, indent=1)
     else:
@@ -477,6 +498,8 @@ def main():
         f.write(s["title"] + "\n")
     if WARNINGS:
         say("⚠️ " + html.escape("; ".join(WARNINGS)))
+    if s.get("serial"):
+        return
     left = remaining()
     if left <= 3:
         say(f"⚠️ В очереди осталось сценариев: {left}. Пора попросить у Claude новую пачку.")

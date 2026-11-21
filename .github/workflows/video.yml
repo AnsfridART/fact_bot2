@@ -1,6 +1,9 @@
 name: Ролик с фактами
 
 on:
+  push:
+    branches: [main]
+    paths: [serial/state.json]
   schedule:
     # Время в UTC. 6:17, 11:17, 16:17 UTC = 9:17, 14:17, 19:17 по Москве (не ровно в :00 — меньше задержек)
     - cron: "17 6,11,16 * * *"
@@ -21,10 +24,38 @@ permissions:
 concurrency: factbot
 
 jobs:
+  readiness:
+    runs-on: ubuntu-latest
+    outputs:
+      ready: ${{ steps.check.outputs.ready }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - id: check
+        env:
+          MODE: ${{ github.event.inputs.mode || 'video' }}
+        run: |
+          python - <<'PY'
+          import os
+          from serial_season import current, episode, load_episode
+          _, chapters = load_episode()
+          paths = [[]]
+          for chapter in chapters:
+              for choices in paths:
+                  episode({"season":"platform-zero","choices":choices}, chapters)
+              paths = [p+[option] for p in paths for option in chapter["options"]]
+          ready = os.environ['MODE'] != 'video' or current('done.txt') is not None
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as fp:
+              print('ready='+str(ready).lower(), file=fp)
+          PY
   make-video:
+    needs: readiness
+    if: needs.readiness.outputs.ready == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 75
     env:
+      SERIAL_ACTIVE: '1'
       PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -49,6 +80,8 @@ jobs:
       VOICE_PRESET: ${{ vars.VOICE_PRESET || 'smooth' }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
 
       - uses: actions/setup-node@v4
         with:
