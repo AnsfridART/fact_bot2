@@ -1,0 +1,32 @@
+name: Cozy key preview
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - .github/workflows/cozy-key-preview.yml
+      - preview/cozy_key.py
+permissions:
+  contents: read
+jobs:
+  preview:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get update -qq && sudo apt-get install -y --no-install-recommends blender ffmpeg
+      - run: blender -b --python-exit-code 1 --python preview/cozy_key.py
+      - run: |
+          test -s cozy-frames/f0144.png
+          ffmpeg -v error -framerate 18 -i cozy-frames/f%04d.png -c:v libx264 -crf 18 -pix_fmt yuv420p -movflags +faststart cozy-key.mp4
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cozy-key-preview
+          path: cozy-key.mp4
+          retention-days: 5
+      - name: Send preview to owner
+        env:
+          BOT: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          curl --silent --show-error --fail -F "chat_id=$CHAT" -F 'video=@cozy-key.mp4' -F 'caption=Проба графики · сосед с ключом · 8 секунд' "https://api.telegram.org/bot$BOT/sendVideo" -o response.json
+          python -c "import json; assert json.load(open('response.json'))['ok']"
