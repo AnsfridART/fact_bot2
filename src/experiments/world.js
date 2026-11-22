@@ -19,11 +19,11 @@ export class Stage {
   if(stroke){c.strokeStyle=stroke;c.lineWidth=w;c.stroke()}
  }
  line(a,b,col,w=2){const p=this.project(...a),q=this.project(...b),c=this.c;if(Math.min(p[2],q[2])<.15)return;c.beginPath();c.moveTo(p[0],p[1]);c.lineTo(q[0],q[1]);c.strokeStyle=col;c.lineWidth=w;c.stroke()}
- box(x,y,z,w,h,d,col){
+ box(x,y,z,w,h,d,col,paintFace){
   const X=x+w/2,A=x-w/2,Z=z+d/2,B=z-d/2,H=y+h;
   const faces=[[[[A,y,Z],[X,y,Z],[X,H,Z],[A,H,Z]],col],[[[A,H,B],[X,H,B],[X,H,Z],[A,H,Z]],shade(col,1.09)],
   [[ [A,y,B],[A,y,Z],[A,H,Z],[A,H,B] ],shade(col,.79)],[[[X,y,Z],[X,y,B],[X,H,B],[X,H,Z]],shade(col,.86)]];
-  faces.sort((a,b)=>this.depth(b[0])-this.depth(a[0]));for(const [p,color] of faces)this.poly(p,color,shade(col,.79),.65)
+  faces.sort((a,b)=>this.depth(b[0])-this.depth(a[0]));for(const [p,color] of faces){if(paintFace)paintFace(p,color);else this.poly(p,color,shade(col,.79),.65)}
  }
  depth(p){return p.reduce((n,v)=>n+this.project(...v)[2],0)/p.length}
  object(x,y,z,fn){this.objects.push([this.project(x,y,z)[2],fn])}
