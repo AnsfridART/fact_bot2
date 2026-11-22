@@ -24,8 +24,10 @@ WARNINGS = []  # проблемы, о которых стоит написать
 # ---------- Telegram ----------
 def tg(method, **kwargs):
     r = requests.post(f"https://api.telegram.org/bot{config.TELEGRAM_BOT_TOKEN}/{method}", timeout=300, **kwargs)
-    if not r.ok:
-        raise RuntimeError(f"Telegram {method}: {r.text}")
+    if not r.ok or not r.json().get("ok"):
+        raise RuntimeError(f"Telegram {method}: {r.status_code}")
+    if method == "sendVideo":
+        print("Telegram подтвердил sendVideo, message_id =", r.json()["result"]["message_id"], flush=True)
 
 
 def say(text):
@@ -184,7 +186,14 @@ def build_props(s):
         wav = f"seg{i}.wav"
         # v15: хук звучит быстрее и напористее остальных фраз; у истории может быть свой голос и темп
         mul = float(s.get("voice_speed", 1.08 if noir else 1.0)) * (1.1 if p["kind"] == "hook" else 1.0)
-        synth_voiced(clean(p["text"]), os.path.join(config.PUBLIC_DIR, wav), mul, s.get("voice"), s.get("voice2"))
+        if s.get("routeStory", {}).get("speechEngine") == "yandex":
+            if not config.SPEECHKIT_API_KEY:
+                raise RuntimeError("Для этого выпуска требуется ключ SpeechKit")
+            speaker = p.get("voice", s["voice"])
+            tts.yandex_say(clean(p["text"]), os.path.join(config.PUBLIC_DIR, wav), spec=speaker, speed=float(config.YANDEX_SPEED)*mul)
+            print(f"SpeechKit: сцена {i}, голос {speaker}", flush=True)
+        else:
+            synth_voiced(clean(p["text"]), os.path.join(config.PUBLIC_DIR, wav), mul, s.get("voice"), s.get("voice2"))
         frames, env, first, last = audio_info(os.path.join(config.PUBLIC_DIR, wav))
         gap = 0.0 if p["kind"] == "loop" else 0.12 if p["kind"] in ("scene", "hook") else 0.9 if p["kind"] == "choice" else 0.35
         dur = max(frames + int(gap * FPS), int(1.6 * FPS)) + int(float(p.get("hold", 0)) * FPS)  # v16: «правила» держим дольше, чтобы успели прочитать

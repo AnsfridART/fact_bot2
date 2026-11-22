@@ -1,3 +1,6 @@
+import { Platform, Cabin, Gradients, boardingCamera, StreetPassenger } from "./boarding/BoardingStudy.jsx";
+import platform from "./boarding/platform.webp";
+import salon from "./boarding/salon.webp";
 // Illustrations stay in source control because build_props recreates public/ for each film.
 import React from "react";
 import { Img } from "remotion";
@@ -26,11 +29,7 @@ function Type({x=0, y=0, size=13, color=ink, align="start", bold=700, spacing=0,
   return <text x={x} y={y} fill={color} fontSize={size} fontWeight={bold} textAnchor={align} letterSpacing={spacing}>{children}</text>;
 }
 function Actor({who, x, feet, height, opacity=1, tilt=0}) {
-  const width = height * 0.64;
-  return <g opacity={opacity} transform={`translate(${x} ${feet}) rotate(${tilt})`}>
-    <ellipse cx="0" cy="-1" rx={height*.12} ry={height*.021} fill="#142c2b" opacity=".25"/>
-    <image href={cast[who]} x={-width/2} y={-height} width={width} height={height} preserveAspectRatio="xMidYMax meet"/>
-  </g>;
+  return <g opacity={opacity} transform={`rotate(${tilt} ${x} ${feet})`}><StreetPassenger who={who} x={x} feet={feet} height={height} t={tilt}/></g>;
 }
 function Coach({x=180, bottom=438, width=284, door=0}) {
   const h=width*.435;
@@ -184,8 +183,20 @@ export function RouteScene({series,seg,f,cover=false}) {
   const maps=["detour","direct","choice"].includes(view);
   const background=view==="gate"||view==="times"?gate:view==="cabin"||view==="ledger"||maps?cabin:stop;
   const zoom=1+.035*t;
-  return <><div style={{display:"none"}}>{[stop,gate,cabin,nina,hero,driver,bus].map(src=><Img key={src} src={src}/>)}</div><svg viewBox="0 0 360 640" width="1080" height="1920" style={{display:"block",background:ink,fontFamily:"DejaVu Sans, sans-serif"}}>
-    <defs>
+  if (["first","second","cabin"].includes(view)) {
+    const second=view==="second", seated=view==="cabin";
+    const time=seated?6.52+4.8*t:second?3.9+2.61*Math.min(1,t*1.8):6.51*Math.min(1,t*1.35);
+    const [x,y,w]=boardingCamera(time);
+    return <svg width="1080" height="1920" viewBox="0 0 360 640" style={{fontFamily:"DejaVu Sans, sans-serif"}}>
+      <Gradients/><svg width="360" height="640" viewBox={`${x} ${y} ${w} ${w*16/9}`}>
+        {seated?<Cabin t={time}/>:<Platform t={time} second={second}/>}
+      </svg><rect y="436" width="360" height="204" fill="url(#rs-caption)"/>
+      <Caption words={seg.words} f={f}/>
+      <Type x={20} y={46} color={paper} size={12}>{seated?"ПРОХОДНАЯ · 07:26":`РЕЙС № 7 · ${time>6.2?shot.aboardAfter:shot.aboardBefore} ИЗ ${series.goal}`}</Type>
+    </svg>;
+  }
+  return <><div style={{display:"none"}}>{[stop,gate,cabin,platform,salon,bus].map(src=><Img key={src} src={src}/>)}</div><svg viewBox="0 0 360 640" width="1080" height="1920" style={{display:"block",background:ink,fontFamily:"DejaVu Sans, sans-serif"}}>
+    <Gradients/><defs>
       <linearGradient id="route-shade" x2="0" y2="1"><stop offset="0" stopColor="#081f23" stopOpacity=".8"/><stop offset=".29" stopColor="#142b28" stopOpacity=".02"/><stop offset=".66" stopColor="#092729" stopOpacity=".03"/><stop offset=".81" stopColor="#0b2628" stopOpacity=".88"/><stop offset="1" stopColor="#0a2426"/></linearGradient>
     </defs>
     <svg x="0" y="0" width="360" height="640" viewBox={`${(360-360/zoom)/2} ${(640-640/zoom)/2} ${360/zoom} ${640/zoom}`}>

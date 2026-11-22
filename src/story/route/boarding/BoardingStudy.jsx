@@ -125,7 +125,7 @@ function Doors({amount}) {
     </g>;
   }))}</g>;
 }
-function Gradients(){
+export function Gradients(){
   return <defs>
     <linearGradient id="rs-face" x2=".8" y2="1"><stop stopColor="#fff2cb"/><stop offset=".68" stopColor="#ffdfb8"/><stop offset="1" stopColor="#e9b396"/></linearGradient>
     <linearGradient id="rs-scarf" x2=".8" y2="1"><stop stopColor="#ffc27a"/><stop offset="1" stopColor="#cf6337"/></linearGradient>
@@ -137,7 +137,7 @@ function Gradients(){
   </defs>;
 }
 
-function Platform({t}) {
+export function Platform({t,second=false}) {
   const left=foot(t,[154,477],[[4.88,5.57,245,400,22],[5.97,6.52,270,371,13]]);
   const right=foot(t,[177,476],[[4.34,4.98,226,434,26],[5.52,6.14,263,368,19]]);
   const hip=[(left[0]+right[0])/2,(left[1]+right[1])/2-83+3*Math.sin(Math.PI*ease(t,4.3,6.45))];
@@ -148,7 +148,7 @@ function Platform({t}) {
   const hx=91-19*stepBack,hy=475;
   const invite=ease(t,3.70,4.35)*(1-ease(t,5.2,6.25));
   const feet=[[hx-9,hy],[hx+11,hy]];
-  const open=ease(t,1.07,1.86);
+  const open=second?1:ease(t,1.07,1.86);
   return <>
     <image href={platform} width="360" height="640" preserveAspectRatio="none"/>
     <g transform="translate(47 250) skewY(-3)">
@@ -159,27 +159,27 @@ function Platform({t}) {
     <Doors amount={open}/>
     <path d="M239 366v-44q0-5 5-6" stroke="#553f23" strokeWidth="4" fill="none" strokeLinecap="round"/>
     <path d="M238.5 363v-40q0-4 4-6" stroke="#dfa955" strokeWidth="1.6" fill="none" strokeLinecap="round"/>
-    <ellipse cx={hx-4} cy={hy+1} rx="22" ry="4.1" fill="#32292a" opacity=".27"/>
+    {!second && <g><ellipse cx={hx-4} cy={hy+1} rx="22" ry="4.1" fill="#32292a" opacity=".27"/>
     <Character t={t} hip={[hx,hy-83]} feet={feet} gaze={1} smile={invite} tilt={-3*invite}
-      leftHand={[hx-19,hy-74]} rightHand={[hx+24+37*invite,hy-78-40*invite]}/>
+      leftHand={[hx-19,hy-74]} rightHand={[hx+24+37*invite,hy-78-40*invite]}/></g>}
     <ellipse cx={(left[0]+right[0])/2-3} cy={Math.max(left[1],right[1])+1} rx="20" ry="3.4" fill="#31292a" opacity=".22"/>
-    <Character nina t={t} hip={hip} feet={[left,right]} leftHand={[hip[0]-14,hip[1]+8-4*reach]} rightHand={ninaHand}
+    <Character nina={!second} t={t} hip={hip} feet={[left,right]} leftHand={[hip[0]-14,hip[1]+8-4*reach]} rightHand={ninaHand}
       grip={reach>.68} lean={4*rampStep(t)} gaze={1-2*lookBack} tilt={-4*lookBack+3*rampStep(t)} smile={.23+.77*lookBack}/>
   </>;
 }
 function rampStep(t){return ease(t,4.10,4.65)*(1-ease(t,5.95,6.45));}
 
-function Cabin({t}) {
+export function Cabin({t}) {
   const bounce=.8*Math.sin(t*5.8)+.3*Math.sin(t*11);
   return <>
     <image href={salon} width="360" height="640" preserveAspectRatio="none"/>
     <g clipPath="url(#rs-glass)">
       <image href={salon} x={-(t-6.48)*2.3} width="360" height="640" preserveAspectRatio="none"/>
     </g>
-    {[[108,427,true],[224,436,false]].map(([x,y,nina])=><Character key={x} nina={nina} t={t} seated
+    {[[108,427,true],[224,436,false]].map(([x,y,nina])=><g key={x} transform={`translate(${2*x} 0) scale(-1 1)`}><Character nina={nina} t={t} seated
       hip={[x,y+bounce]} feet={[[x+7,y+69],[x+27,y+73]]}
       leftHand={[x+5,y-1+bounce]} rightHand={[x+27,y-2+bounce]} tilt={nina?2:-1}
-      lean={nina?2:-1} gaze={nina?1:-1} smile={.35+.56*ease(t,nina?8.15:9.2,nina?8.65:9.7)}/>)}
+      lean={nina?2:-1} gaze={nina?1:-1} smile={.35+.56*ease(t,nina?8.15:9.2,nina?8.65:9.7)}/></g>)}
     <path d={`M${-150+(t-6.48)*69} 0h42l187 567h-64z`} fill="url(#rs-sun)" opacity=".46"/>
   </>;
 }
@@ -189,7 +189,7 @@ const lines = [
   [4.14,5.0,"Я пропустил"], [5.0,5.77,"её вперёд."], [6.13,7.36,"Когда мы тронулись,"],
   [7.4,8.77,"в окне сидела Нина,"],[8.95,9.78,"а рядом я."],[10.07,11.23,"Двое из десяти."]
 ];
-function camera(t){
+export function boardingCamera(t){
   if(t<2.17) return [2+t*.6,17,350-t*1.2];
   if(t<4.42) return [49+(t-2.17)*1.8,158,252];
   if(t<6.52) {
@@ -202,7 +202,7 @@ function camera(t){
 export const studyFrames=342;
 export function BoardingStudy() {
   const frame=useCurrentFrame(),{fps}=useVideoConfig(),t=frame/fps;
-  const [x,y,w]=camera(t);
+  const [x,y,w]=boardingCamera(t);
   const caption=lines.find(([a,b])=>a<=t&&t<b)?.[2];
   return <div style={{position:"absolute",inset:0,background:"#2b2c32",fontFamily:"DejaVu Sans, sans-serif"}}>
     <div style={{display:"none"}}><Img src={platform}/><Img src={salon}/></div>
@@ -218,4 +218,13 @@ export function BoardingStudy() {
       </text>}
     </svg>
   </div>;
+}
+
+export function StreetPassenger({who,x,feet,height,t}) {
+  const nina=who==="nina", driver=who==="driver";
+  return <g transform={`translate(${x} ${feet}) scale(${height/212})`}>
+    <Character nina={nina} t={t} hip={[0,-83]} feet={[[-8,0],[11,0]]} leftHand={[-20,-74]}
+      rightHand={[30+6*Math.sin(t*2),-90-7*Math.sin(t*2)]} gaze={1} smile={.3}/>
+    {driver && <g fill="#293e50" stroke="#241c22" strokeWidth="2"><path d="M-34 -192q-2-26 23-26 22-4 42 14l-4 8-32-3-25 12z"/><path d="m3 -201 39 4q-3 7-19 6z"/><path d="M4 -156q7-7 12-3 4-2 11 2-3 5-12 1-6 4-11 0" fill="#8a7567"/></g>}
+  </g>;
 }
