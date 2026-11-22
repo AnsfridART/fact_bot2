@@ -1,0 +1,58 @@
+name: Последний сеанс · пилот
+on:
+  push:
+    paths: ['reel/**', '.github/workflows/last-screening.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  pilot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: |
+          sudo apt-get update -qq && sudo apt-get install -y ffmpeg
+          pip install pillow numpy requests edge-tts piper-tts
+          mkdir -p models
+          base=https://huggingface.co/rhasspy/piper-voices/resolve/main/ru/ru_RU/dmitri/medium
+          for ext in onnx onnx.json; do curl --retry 2 -fsSL "$base/ru_RU-dmitri-medium.$ext" -o "models/dmitri.$ext"; done
+      - name: Record narration and time captions
+        env:
+          PYTHONPATH: .
+          TTS_ENGINE: ${{ vars.TTS_ENGINE || 'edge' }}
+          SPEECHKIT_API_KEY: ${{ secrets.SPEECHKIT_API_KEY }}
+          YC_FOLDER_ID: ${{ secrets.YC_FOLDER_ID }}
+          EDGE_RATE: '+8%'
+          EDGE_PITCH: '+0Hz'
+        run: python reel/narrate.py
+      - run: python reel/render.py
+      - name: Check sound and picture
+        run: |
+          ffprobe -v error -show_streams -of json film.mp4 > probe.json
+          python - <<'PY'
+          import json
+          streams={s['codec_type']:s for s in json.load(open('probe.json'))['streams']}
+          video,audio=[float(streams[k]['duration']) for k in ['video','audio']]
+          assert video>=60 and abs(video-audio)<0.2
+          print(f'{video:.2f} seconds')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Last-screening-preview
+          path: |
+            film.mp4
+            cover.jpg
+          retention-days: 5
+      - name: Send preview to Telegram
+        env:
+          BOT: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          send(){ curl -fsS --max-time 120 -F "chat_id=$CHAT" "$@" | python -c "import json,sys;assert json.load(sys.stdin)['ok']"; }
+          base="https://api.telegram.org/bot$BOT"
+          send -F 'video=@film.mp4' -F supports_streaming=true -F 'caption=Последний сеанс · 1/5. В последний вечер кинотеатра Лена находит склейку в семейной плёнке. К реке за мамой или наверх за коробкой?' "$base/sendVideo"
+          send -F 'document=@cover.jpg' -F 'caption=Обложка · Последний сеанс' "$base/sendDocument"
