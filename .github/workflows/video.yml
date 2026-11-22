@@ -2,7 +2,7 @@ name: Ролик с фактами
 
 on:
   push:
-    branches: [preview/last-screening-classic-01]
+    branches: [preview/route-seven-01]
 permissions:
   contents: read
 

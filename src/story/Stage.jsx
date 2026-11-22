@@ -7,7 +7,9 @@ import { Truck, MachineGun, Fence, House, Desk, AmmoBox, Casings, Paper, Trunk, 
 import { Background } from "./Backgrounds.jsx";
 import { NoirBackground, NOIR_BGS } from "./NoirBG.jsx";
 
-const PROPS = { truck: Truck, gun: MachineGun, fence: Fence, house: House, desk: Desk, ammo: AmmoBox, casings: Casings, paper: Paper, trunk: Trunk, door: Door, frame: Frame, chair: LawnChair, briefcase: Briefcase, tank: Tank, wave: Wave, shelves: Shelves, smoke: Smoke, podium: Podium, letter: Letter, lightning: Lightning, stones: Stones, wheelbarrow: Wheelbarrow, palace: Palace, desks: Desks, fence2: Fence2, rocket: Rocket, computer: Computer, aquarium: Aquarium, coffin: Coffin, parachute: Parachute, bars: Bars };
+import { Bus, StopBoard } from './RouteProps.jsx';
+
+const PROPS = { routeBus: Bus, stopBoard: StopBoard, truck: Truck, gun: MachineGun, fence: Fence, house: House, desk: Desk, ammo: AmmoBox, casings: Casings, paper: Paper, trunk: Trunk, door: Door, frame: Frame, chair: LawnChair, briefcase: Briefcase, tank: Tank, wave: Wave, shelves: Shelves, smoke: Smoke, podium: Podium, letter: Letter, lightning: Lightning, stones: Stones, wheelbarrow: Wheelbarrow, palace: Palace, desks: Desks, fence2: Fence2, rocket: Rocket, computer: Computer, aquarium: Aquarium, coffin: Coffin, parachute: Parachute, bars: Bars };
 
 // Источник света для каждого места: координаты, цвет, сила
 const LIGHTS = {
