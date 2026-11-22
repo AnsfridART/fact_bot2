@@ -1,22 +1,10 @@
 name: Ролик с фактами
 
 on:
-  schedule:
-    # Время в UTC. 6:17, 11:17, 16:17 UTC = 9:17, 14:17, 19:17 по Москве (не ровно в :00 — меньше задержек)
-    - cron: "17 6,11,16 * * *"
-  workflow_dispatch:
-    inputs:
-      mode:
-        description: "Что сделать"
-        type: choice
-        options:
-          - video
-          - voices
-          - pilot
-        default: video
-
+  push:
+    branches: [preview/last-screening-classic-01]
 permissions:
-  contents: write
+  contents: read
 
 concurrency: factbot
 
@@ -33,7 +21,7 @@ jobs:
       CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
       SPEECHKIT_API_KEY: ${{ secrets.SPEECHKIT_API_KEY }}
       YC_FOLDER_ID: ${{ secrets.YC_FOLDER_ID }}
-      MODE: ${{ github.event.inputs.mode || 'video' }}
+      MODE: pilot
       TTS_ENGINE: ${{ vars.TTS_ENGINE || 'edge' }}
       YANDEX_VOICE: ${{ vars.YANDEX_VOICE || 'madirus' }}
       YANDEX_EMOTION: ${{ vars.YANDEX_EMOTION || 'none' }}
@@ -114,12 +102,3 @@ jobs:
         if: env.MODE == 'video' || env.MODE == 'pilot'
         run: python run.py
 
-      - name: Сохранение очереди
-        if: env.MODE == 'video'
-        run: |
-          git config user.name "factbot"
-          git config user.email "factbot@users.noreply.github.com"
-          git add -A queue done.txt cover_number.txt
-          git diff --cached --quiet || git commit -m "Использован сценарий"
-          # если пока шёл рендер в репозиторий что-то залили — подтягиваем и пробуем снова
-          for i in 1 2 3; do git pull --rebase origin main && git push && break; sleep 5; done
