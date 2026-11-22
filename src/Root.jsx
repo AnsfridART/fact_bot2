@@ -2,6 +2,8 @@ import React from "react";
 import { Composition } from "remotion";
 import { Main, CoverMain } from "./Main.jsx";
 
+import { BoardingStudy, studyFrames } from "./story/route/boarding/BoardingStudy.jsx";
+
 export const Root = () => (
   <>
     <Composition
@@ -14,6 +16,7 @@ export const Root = () => (
       defaultProps={{ segments: [], totalFrames: 300 }}
       calculateMetadata={({ props }) => ({ durationInFrames: Math.max(30, props.totalFrames || 30) })}
     />
+    <Composition id="RouteBoardingStudy" component={BoardingStudy} fps={30} width={720} height={1280} durationInFrames={studyFrames} />
     <Composition id="Cover" component={CoverMain} fps={30} width={1080} height={1920} durationInFrames={1}
       defaultProps={{ segments: [], coverNumber: 1 }} />
   </>
