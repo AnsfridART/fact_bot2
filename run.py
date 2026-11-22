@@ -179,6 +179,7 @@ def build_props(s):
 
     seed = random.randint(1, 10_000_000)
     segments, start = [], 0
+    boarded = 0
     for i, p in enumerate(plan):
         wav = f"seg{i}.wav"
         # v15: хук звучит быстрее и напористее остальных фраз; у истории может быть свой голос и темп
@@ -192,9 +193,16 @@ def build_props(s):
         seg = {"kind": p["kind"], "start": start, "dur": dur, "audio": wav, "env": env,
                "words": word_timings(p["text"].replace("|", " "), first, last)}
         for k in ("title", "emotion", "tag", "alert", "cam", "big", "bg", "actors", "focus", "tint", "camY", "insert", "count", "map", "angle", "weather", "lights",
-                  "ui", "hud", "uiAt", "options", "question", "hint", "next", "clue", "nextTitle", "tape", "fx", "shotOn", "hookFocus", "world", "boarding"):
+                  "ui", "hud", "uiAt", "options", "question", "hint", "next", "clue", "nextTitle", "tape", "fx", "shotOn", "hookFocus", "world", "boarding", "routeShot"):
             if p.get(k) is not None:  # focus=0 — тоже значение
                 seg[k] = p[k]
+        if s.get("routeStory") and p.get("routeShot"):
+            shot = p["routeShot"]
+            if shot.get("startTrip"):
+                boarded = 0
+            seg["routeShot"] = {**shot, "aboardBefore": boarded}
+            boarded += shot.get("boards", 0)
+            seg["routeShot"]["aboardAfter"] = boarded
         if p.get("shots"):  # v24: кадры от первого лица, нейросеть рисует каждый шот в стиле истории
             files = []
             for k, prompt in enumerate(p["shots"]):
@@ -211,7 +219,7 @@ def build_props(s):
                 seg["shots"] = files
             else:
                 WARNINGS.append(f"нет кадров для сцены {i}")
-        elif not serial and not experiment and p["kind"] in ("scene", "hook") and not (p.get("bg") or p.get("actors") or p.get("map") or p.get("ui") or p.get("world")):
+        elif not serial and not experiment and p["kind"] in ("scene", "hook") and not (p.get("bg") or p.get("actors") or p.get("map") or p.get("ui") or p.get("world") or p.get("routeShot")):
             img = f"img{i}.jpg"
             try:
                 images.generate(p["prompt"], os.path.join(config.PUBLIC_DIR, img), seed, p.get("stock", ""))
@@ -229,6 +237,8 @@ def build_props(s):
         start += dur
 
     props = {"segments": segments, "totalFrames": start}
+    if s.get("routeStory"):
+        props["routeStory"] = s["routeStory"]
     if serial:
         props.update(serial=True, fps=FPS)
     if experiment:

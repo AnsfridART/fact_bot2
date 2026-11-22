@@ -181,7 +181,8 @@ function OverShoulder() {
 }
 
 function actorPos(a, t) {
-  const k = a.to ? easeInOut(clamp(t)) : 0;
+  const { from = 0, until = 1 } = a.to ?? {};
+  const k = a.to ? easeInOut(prog(t, from, until - from)) : 0;
   return { x: lerp(a.x ?? 135, a.to?.x ?? a.x ?? 135, k), y: lerp(a.y ?? 360, a.to?.y ?? a.y ?? 360, k) };
 }
 
@@ -193,6 +194,7 @@ function Actor({ a, f, t, mouth, idx, light, gaze, zeroG, closeUp, tagC = "#3dff
   const s = (a.s ?? 1) * pop;
   const flip = a.flip ? -1 : 1;
   const common = { t: f, phase: idx * 1.7 + (a.phase || 0) };
+  const anim = a.to?.anim && t >= (a.to.from ?? 0) && t < (a.to.until ?? 1) ? a.to.anim : a.anim;
   let body = null;
   if (a.kind === "crowd") {
     const n = a.count || 8, spread = a.spread || 220, items = [];
@@ -202,7 +204,7 @@ function Actor({ a, f, t, mouth, idx, light, gaze, zeroG, closeUp, tagC = "#3dff
       items.push({ dy, el: <g key={i} transform={`translate(${dx} ${dy}) scale(${0.6 + dy / (a.depth || 40) * 0.35})`}><Person t={f} phase={i * 1.9} look={lk} anim={a.anim || "idle"} /></g> });
     }
     body = <g>{items.sort((p, q) => p.dy - q.dy).map((p) => p.el)}</g>;
-  } else if (a.kind === "person") body = <Person {...common} look={a.look} anim={a.anim} expr={a.expr} held={a.held} mouth={a.talk ? mouth : 0}
+  } else if (a.kind === "person") body = <Person {...common} look={a.look} anim={anim} expr={a.expr} held={a.held} mouth={a.talk ? mouth : 0}
     light={a.flip ? -light : light} gaze={a.flip ? -gaze : gaze} />;
   else if (a.kind === "emu") body = <Emu {...common} anim={a.anim} angry={a.angry} />;
   else if (a.kind === "crow") body = <Crow {...common} anim={a.anim} color={a.color} />;
@@ -222,8 +224,9 @@ function Actor({ a, f, t, mouth, idx, light, gaze, zeroG, closeUp, tagC = "#3dff
     body = <g>{items.sort((p, q) => p.dy - q.dy).map((p) => p.el)}</g>;
   } else if (PROPS[a.kind]) {
     const P = PROPS[a.kind];
-    body = <P t={f} {...(a.props || {})} />;
+    body = <P t={f} sceneProgress={t} {...(a.props || {})} />;
   }
+  const opacity = a.fadeOut ? 1 - prog(t, a.fadeOut.from, a.fadeOut.until - a.fadeOut.from) : 1;
   const spin = zeroG ? Math.sin(f / 41 + idx) * 6 : 0;
   // v15: метка «ТЫ» над главным героем
   const you = a.you && !closeUp ? (
@@ -231,12 +234,13 @@ function Actor({ a, f, t, mouth, idx, light, gaze, zeroG, closeUp, tagC = "#3dff
       <rect x="-20" y="-15" width="40" height="22" rx="5" fill={tagC} /><path d="M-6 7 L0 14 L6 7 Z" fill={tagC} />
       <text x="0" y="2" textAnchor="middle" fontSize="14" fontWeight="900" fill={tagT} fontFamily="Montserrat, DejaVu Sans, sans-serif">ТЫ</text>
     </g>) : null;
-  return <g transform={`translate(${x} ${y}) rotate(${spin}) scale(${s * flip} ${s})`}>{body}{you}</g>;
+  return <g opacity={opacity} transform={`translate(${x} ${y}) rotate(${spin}) scale(${s * flip} ${s})`}>{body}{you}</g>;
 }
 
 export const NOIR_SHOT = 42;
 
 function cameraFor(seg, f, actors) {
+  if (seg.cam === "wide") return { z: 1, cx: 135, cy: seg.camY ?? 305 };
   const d = Math.max(1, seg.dur), t = f / d;
   const base = { in: [1.25, 1.4], out: [1.45, 1.25], left: [1.32, 1.32], right: [1.32, 1.32], shake: [1.3, 1.38], up: [1.32, 1.32] }[seg.cam || "in"] || [1.25, 1.4];
   let z = lerp(base[0], base[1], t), cx = 135, cy = seg.camY ?? 305;
@@ -353,7 +357,7 @@ export function Stage({ seg, f, mouth, transition = "flash", font = "DejaVu Sans
       <Weather kind={seg.weather} f={f} />
       {seg.angle === "ots" ? <OverShoulder /> : null}
       <g transform={`translate(${-(cam.cx - 135) * 0.8} 0)`}>
-        <Foreground name={seg.bg} f={f} />
+        {seg.cam !== "wide" && <Foreground name={seg.bg} f={f} />}
       </g>
       <Particles name={seg.bg} f={f} />
       {tint && <rect width="270" height="480" fill={tint[0]} opacity={tint[1]} style={{ mixBlendMode: "multiply" }} />}

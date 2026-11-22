@@ -3,7 +3,12 @@ import { AbsoluteFill, Audio, Img, Sequence, staticFile, useCurrentFrame } from 
 import { loadFont } from "@remotion/google-fonts/Montserrat";
 import { Scene, Cover } from "./Scene.jsx";
 
-const { fontFamily } = loadFont();
+let legacyFont;
+function fontFor(props) {
+  if (props.segments?.[0]?.routeShot) return "DejaVu Sans, sans-serif";
+  legacyFont ??= loadFont().fontFamily;
+  return legacyFont;
+}
 
 export const Main = (props) => {
   const frame = useCurrentFrame();
@@ -15,7 +20,7 @@ export const Main = (props) => {
   };
   return (
     <AbsoluteFill style={{ backgroundColor: "#000" }}>
-      <Scene frame={frame} data={props} src={(p) => staticFile(p)} ImgComp={Img} font={fontFamily} />
+      <Scene frame={frame} data={props} src={(p) => staticFile(p)} ImgComp={Img} font={fontFor(props)} />
       {(props.segments || []).map((s, i) => (
         <Sequence key={i} from={s.start} durationInFrames={s.dur}>
           <Audio src={staticFile(s.audio)} />
@@ -28,6 +33,6 @@ export const Main = (props) => {
 
 export const CoverMain = (props) => (
   <AbsoluteFill style={{ backgroundColor: "#000" }}>
-    <Cover data={props} font={fontFamily} src={(p) => staticFile(p)} ImgComp={Img} />
+    <Cover data={props} font={fontFor(props)} src={(p) => staticFile(p)} ImgComp={Img} />
   </AbsoluteFill>
 );
