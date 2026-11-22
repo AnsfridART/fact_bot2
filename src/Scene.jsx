@@ -1,3 +1,4 @@
+import { Kingdom } from "./kingdom/Kingdom.jsx";
 import { RouteScene } from "./story/route/RouteScene.jsx";
 // Вся анимация кадра. Чистый React без зависимостей от Remotion,
 // поэтому кадр можно отрендерить и в Remotion, и в обычном браузере для превью.
@@ -582,6 +583,7 @@ export function Scene({ frame, data, src, ImgComp, font = "Montserrat, DejaVu Sa
   const segs = data.segments || [];
   if (!segs.length) return <div style={{ width: 1080, height: 1920, background: "#000" }} />;
   const [seg, f] = currentSeg(segs, frame);
+  if (seg.kingdom) return <Kingdom seg={seg} f={f} state={data.kingdomBuildings}/>;
   if (seg.routeShot) return <RouteScene series={data.routeStory} seg={seg} f={f}/>;
   if (data.serial) return <div style={{position:"absolute",inset:0}}>
     <Serial seg={seg} f={f} fps={data.fps}/><Captions seg={seg} f={f} font={font} top={1280}/>
@@ -638,6 +640,7 @@ function NoirCover({ data, seg, font, src, ImgComp }) {
 export function Cover({ data, font = "Montserrat, DejaVu Sans, Arial", src, ImgComp }) {
   const seg = (data.segments || [])[0];
   if (!seg) return <div style={{ width: 1080, height: 1920, background: "#000" }} />;
+  if (seg.kingdom) return <Kingdom seg={seg} f={10} state={data.kingdomBuildings} cover/>;
   if (seg.routeShot) return <RouteScene series={data.routeStory} seg={seg} f={0} cover/>;
   if (data.serial) return <div style={{position:"absolute",inset:0}}><Serial seg={seg} f={0} fps={data.fps}/>
     <div style={{position:"absolute",left:70,right:70,top:365,color:"white",fontFamily:font,fontWeight:900,fontSize:82,...outline(11)}}>{seg.title}</div></div>;

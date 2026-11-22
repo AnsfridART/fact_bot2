@@ -5,7 +5,7 @@ import { Scene, Cover } from "./Scene.jsx";
 
 let legacyFont;
 function fontFor(props) {
-  if (props.segments?.[0]?.routeShot) return "DejaVu Sans, sans-serif";
+  if (props.segments?.[0]?.routeShot || props.segments?.[0]?.kingdom) return "DejaVu Sans, sans-serif";
   legacyFont ??= loadFont().fontFamily;
   return legacyFont;
 }

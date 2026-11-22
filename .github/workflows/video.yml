@@ -102,3 +102,9 @@ jobs:
         if: env.MODE == 'video' || env.MODE == 'pilot'
         run: python run.py
 
+      - name: Сохранить выпуск для просмотра
+        uses: actions/upload-artifact@v4
+        with:
+          name: river-ford-episode
+          path: output/*.mp4
+          retention-days: 5
