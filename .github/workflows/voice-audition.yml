@@ -1,0 +1,55 @@
+name: River Ford voice audition
+on:
+  push:
+    branches: [preview/voice-audition]
+permissions:
+  contents: read
+jobs:
+  audition:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SPEECHKIT_API_KEY: ${{ secrets.SPEECHKIT_API_KEY }}
+      YC_FOLDER_ID: ${{ secrets.YC_FOLDER_ID }}
+      YANDEX_SPEED: ${{ vars.YANDEX_SPEED || '1.05' }}
+      YANDEX_EMOTION: ${{ vars.YANDEX_EMOTION || 'none' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install numpy requests
+      - name: Generate isolated speech samples
+        run: |
+          command -v ffmpeg || (sudo apt-get update && sudo apt-get install -y ffmpeg)
+          python - <<'PY'
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+          import tts
+
+          script = json.loads(Path("pilot.json").read_text(encoding="utf-8"))[0]
+          line = script["hook"]["text"]
+          speed = float(os.environ["YANDEX_SPEED"]) * script["voice_speed"]
+          output = Path("samples")
+          output.mkdir()
+          samples = [
+              ("01-madirus-soft", "madirus", False),
+              ("02-filipp-soft", "filipp", False),
+              ("03-alena-soft", "alena", False),
+              ("04-ermil-soft", "ermil", False),
+              ("05-madirus-whisper", "madirus", True),
+          ]
+          for name, voice, whisper in samples:
+              wav = output / f"{name}.wav"
+              tts.yandex_say(line, str(wav), spec=voice, speed=speed, profile="soft", whisper=whisper)
+              subprocess.run(["ffmpeg", "-loglevel", "error", "-i", str(wav), "-b:a", "128k",
+                              str(wav.with_suffix(".mp3"))], check=True)
+              wav.unlink()
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: river-ford-voice-samples
+          path: samples/*.mp3
+          if-no-files-found: error
