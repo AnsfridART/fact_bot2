@@ -1,1 +1,10 @@
-{"buildings": []}
+{
+  "buildings": [
+    {
+      "afterEpisode": 1,
+      "x": 3,
+      "z": 5.3,
+      "type": "farm"
+    }
+  ]
+}
