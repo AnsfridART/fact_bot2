@@ -34,18 +34,9 @@ jobs:
           speed = float(os.environ["YANDEX_SPEED"]) * script["voice_speed"]
           output = Path("samples")
           output.mkdir()
-          samples = [
-              ("01-madirus-soft", "madirus", False),
-              ("02-filipp-soft", "filipp", False),
-              ("03-alena-soft", "alena", False),
-              ("04-ermil-soft", "ermil", False),
-              ("05-marina-whisper", "madirus", True),
-              ("06-marina-whisper-six-weeks", "madirus", True),
-          ]
-          for name, voice, whisper in samples:
+          for name, role in [("01-marina-neutral", "neutral"), ("02-marina-whisper", "whisper")]:
               wav = output / f"{name}.wav"
-              text = "У нас всего шесть недель." if name.startswith("06-") else line
-              tts.yandex_say(text, str(wav), spec=voice, speed=speed, profile="soft", whisper=whisper)
+              tts._yandex_v3(line, str(wav), voice="marina", role=role, speed=speed)
               subprocess.run(["ffmpeg", "-loglevel", "error", "-i", str(wav), "-b:a", "128k",
                               str(wav.with_suffix(".mp3"))], check=True)
               wav.unlink()
