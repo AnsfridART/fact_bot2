@@ -185,7 +185,8 @@ def build_props(s):
     for i, p in enumerate(plan):
         wav = f"seg{i}.wav"
         # v15: хук звучит быстрее и напористее остальных фраз; у истории может быть свой голос и темп
-        mul = float(s.get("voice_speed", 1.08 if noir else 1.0)) * (1.1 if p["kind"] == "hook" else 1.0)
+        hook_boost = 1.1 if p["kind"] == "hook" and not p.get("whisper") else 1.0
+        mul = float(s.get("voice_speed", 1.08 if noir else 1.0)) * hook_boost
         if s.get("speechEngine", s.get("routeStory", {}).get("speechEngine")) == "yandex":
             if not config.SPEECHKIT_API_KEY:
                 raise RuntimeError("Для этого выпуска требуется ключ SpeechKit")
@@ -473,6 +474,18 @@ def caption(s):
     return f"{t}{q}\n\n{tags}"
 
 
+def youtube_tags(s):
+    tags = s.get("yt_tags")
+    if isinstance(tags, str) and tags.strip():
+        return tags.strip()
+    if isinstance(tags, list) and tags:
+        return ", ".join(tags)
+    return ", ".join(dict.fromkeys(
+        tag for tag in [s["title"].strip(), *(t.strip().lstrip("#") for t in s.get("hashtags", []))]
+        if tag
+    ))
+
+
 def main():
     pilot = os.getenv("MODE") == "pilot"
     if pilot:  # v24: пробный ролик из pilot.json — без изменения очереди
@@ -504,6 +517,7 @@ def main():
     with open(video, "rb") as fh:
         tg("sendVideo", data={"chat_id": config.TELEGRAM_CHAT_ID, "supports_streaming": "true"},
            files={"video": ("video.mp4", fh, "video/mp4")})
+    say(f"Теги для YouTube:\n<code>{html.escape(youtube_tags(s))}</code>")
     try:
         cover = make_cover(s)
         with open(cover, "rb") as fh:  # файлом, чтобы TikTok получил полное качество
@@ -516,8 +530,7 @@ def main():
         f"<code>{html.escape(s['title'])} #shorts</code>\n\n"
         "Подпись для TikTok и Instagram:\n\n"
         f"<code>{html.escape(caption(s))}</code>\n\n"
-        f"Описание для YouTube:\n<code>{html.escape(s.get('description', ''))}</code>"
-        + (f"\n\nТеги для YouTube:\n<code>{html.escape(s['yt_tags'])}</code>" if s.get("yt_tags") else ""))
+        f"Описание для YouTube:\n<code>{html.escape(s.get('description', ''))}</code>")
 
     if pilot:
         return

@@ -248,7 +248,7 @@ def _edge(text, wav_path, voice=None, rate=None, preset=None):
 
 
 STORY_VOICE_FILTERS = {
-    "soft": "highpass=f=75,equalizer=f=3500:t=q:w=1:g=-2,deesser=i=0.25",
+    "soft": "highpass=f=75,equalizer=f=3200:t=q:w=1:g=-2.5,deesser=i=0.25",
     "bright": (
         "highpass=f=100,asetrate=57100,aresample=48000,atempo=0.84063,"
         "equalizer=f=2400:t=q:w=1:g=1.5,deesser=i=0.35"
@@ -257,15 +257,15 @@ STORY_VOICE_FILTERS = {
 
 
 def _whisper_pcm(samples, sample_rate):
-    """Передаёт огибающую речи шумовому возбуждению, убирая основной тон."""
+    """Добавляет дыхание, сохраняя тихий исходный голос и разборчивость слов."""
     size, hop = sample_rate // 50, sample_rate // 200
     window = np.hanning(size)
     dry = np.pad(samples.astype(float), (size // 2, size))
     wet = np.zeros_like(dry)
     weights = np.zeros_like(dry)
     rng = np.random.default_rng(0)
-    # Сглаживаем спектр на ±200 Гц, сохраняя форманты и согласные.
-    kernel = np.hanning(9)
+    # Сглаживаем гармоники перед добавлением шума, чтобы убрать металлический оттенок.
+    kernel = np.hanning(17)
     kernel /= kernel.sum()
     for start in range(0, len(dry) - size + 1, hop):
         frame = slice(start, start + size)
@@ -276,7 +276,8 @@ def _whisper_pcm(samples, sample_rate):
         wet[frame] += breath * window
         weights[frame] += window ** 2
     result = slice(size // 2, size // 2 + len(samples))
-    return np.clip(wet[result] / weights[result], -32768, 32767).astype(np.int16)
+    breath = wet[result] / weights[result]
+    return np.clip(0.25 * samples + 0.75 * breath, -32768, 32767).astype(np.int16)
 
 
 def _story_voice(samples, raw, wav_path, profile, whisper):
@@ -285,8 +286,8 @@ def _story_voice(samples, raw, wav_path, profile, whisper):
     _write_wav(raw, samples, 48000)
     filters = ["adeclick", "afftdn=nr=5:nf=-55", STORY_VOICE_FILTERS[profile]]
     if whisper:
-        filters.append("highpass=f=180")
-    target = -18 if whisper else -15
+        filters.extend(["highpass=f=140", "lowpass=f=8500"])
+    target = -20 if whisper else -15
     filters.extend([
         "lowpass=f=11500",
         "acompressor=threshold=-19dB:ratio=2:attack=12:release=110",
@@ -321,8 +322,8 @@ def _yandex_full(text, wav_path, voice=None, emotion=None, speed=None, *, profil
         raise RuntimeError(f"SpeechKit {r.status_code}: {r.text[:300]}")
     raw = wav_path + ".raw.wav"
     samples = np.frombuffer(r.content, dtype=np.int16)
-    if profile:
-        _story_voice(samples, raw, wav_path, profile, whisper)
+    if profile or whisper:
+        _story_voice(samples, raw, wav_path, profile or "soft", whisper)
         return wav_path
     _write_wav(raw, samples, 48000)
     trim = "silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.02,"
