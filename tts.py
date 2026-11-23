@@ -259,32 +259,7 @@ STORY_VOICE_FILTERS = {
 }
 
 
-def _whisper_pcm(samples, sample_rate):
-    """Формирует непрерывный выдох по спектральной огибающей речи."""
-    size, hop = sample_rate // 25, sample_rate // 200
-    window = np.hanning(size)
-    dry = np.pad(samples.astype(float), (size // 2, size))
-    wet = np.zeros_like(dry)
-    weights = np.zeros_like(dry)
-    excitation = np.random.default_rng(0).standard_normal(len(dry))
-    kernel = np.hanning(25)
-    kernel /= kernel.sum()
-    noise_gain = np.sqrt(np.sum(window ** 2))
-    for start in range(0, len(dry) - size + 1, hop):
-        frame = slice(start, start + size)
-        power = np.abs(np.fft.rfft(dry[frame] * window)) ** 2
-        envelope = np.sqrt(np.convolve(power, kernel, mode="same"))
-        noise = np.fft.rfft(excitation[frame] * window) / noise_gain
-        wet[frame] += np.fft.irfft(envelope * noise, n=size) * window
-        weights[frame] += window ** 2
-    result = slice(size // 2, size // 2 + len(samples))
-    breath = wet[result] / weights[result]
-    return np.clip(0.20 * samples + 0.80 * breath, -32768, 32767).astype(np.int16)
-
-
 def _story_voice(samples, raw, wav_path, profile, whisper):
-    if whisper:
-        samples = _whisper_pcm(samples, 48000)
     _write_wav(raw, samples, 48000)
     filters = [STORY_VOICE_FILTERS[profile]]
     if whisper:
@@ -387,11 +362,14 @@ def _yandex_v3(text, wav_path, voice, role=None, speed=1.0, pitch=0.0):
 
 def yandex_say(text, wav_path, spec=None, speed=None, *, profile=None, whisper=False):
     """Единая точка для SpeechKit: спецификация голоса «голос[:роль[:тон]]» — сама выбирает API v1 или v3."""
-    voice, role, pitch = parse_voice(spec or config.YANDEX_VOICE)
     sp = speed or float(config.YANDEX_SPEED)
+    if whisper:
+        return _yandex_full(text, wav_path, voice="marina", emotion="whisper",
+                            speed=sp, profile="soft", whisper=True)
+    voice, role, pitch = parse_voice(spec or config.YANDEX_VOICE)
     if voice in V1_VOICES and not pitch and role in (None, "neutral", "good", "evil"):
         return _yandex_full(text, wav_path, voice=voice, emotion=role, speed=sp, profile=profile, whisper=whisper)
-    if profile or whisper:
+    if profile:
         raise ValueError("Обработка голосов сериала требует голос SpeechKit v1")
     return _yandex_v3(text, wav_path, voice, role, sp, pitch)
 
