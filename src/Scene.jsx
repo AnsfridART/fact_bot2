@@ -640,7 +640,7 @@ function NoirCover({ data, seg, font, src, ImgComp }) {
 export function Cover({ data, font = "Montserrat, DejaVu Sans, Arial", src, ImgComp }) {
   const seg = (data.segments || [])[0];
   if (!seg) return <div style={{ width: 1080, height: 1920, background: "#000" }} />;
-  if (seg.kingdom) return <Kingdom seg={seg} f={10} state={data.kingdomBuildings} cover/>;
+  if (seg.kingdom) return <Kingdom seg={seg} f={10} state={data.kingdomBuildings} coverTitle={data.kingdomCoverTitle} cover/>;
   if (seg.routeShot) return <RouteScene series={data.routeStory} seg={seg} f={0} cover/>;
   if (data.serial) return <div style={{position:"absolute",inset:0}}><Serial seg={seg} f={0} fps={data.fps}/>
     <div style={{position:"absolute",left:70,right:70,top:365,color:"white",fontFamily:font,fontWeight:900,fontSize:82,...outline(11)}}>{seg.title}</div></div>;

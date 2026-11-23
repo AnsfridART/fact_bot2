@@ -69,15 +69,18 @@ function cart(s,k){
   box(s,x,.53,z,.88,.27,1.1,timber,"oak");
   for(const dz of [-.22,.22])box(s,x,.80,z+dz,.57,.24,.31,"#d9ba81","cloth");
 }
-export function city(s,buildings){
+export function city(s,buildings,brokenBridge=false){
   hills(s);
   textured(s,[[-12,0,-10],[12,0,-10],[12,0,10],[-12,0,10]],moss,"meadow");
   textured(s,[[-12,.01,1],[12,.01,2.1],[12,.01,3.7],[-12,.01,2.6]],palette.river,"water",ink);
-  textured(s,[[-.52,.015,-7],[.52,.015,-7],[.52,.015,8],[-.52,.015,8]],palette.flagstone,"flagstone",ink);
+  for(const [a,b] of [[-7,1.1],[3.65,8]])textured(s,[[-.52,.015,a],[.52,.015,a],[.52,.015,b],[-.52,.015,b]],palette.flagstone,"flagstone",ink);
   textured(s,[[-6,.015,-1.98],[6,.015,-1.98],[6,.015,-1.48],[-6,.015,-1.48]],palette.flagstone,"flagstone");
   for(const x of [-5,-2.8,2.9,5.1])for(const z of [-2.8,-.65])s.shadow(x+.55,z+.3,1.35,.7,.18);
-  box(s,0,.10,2.35,1.28,.18,2.9,timber,"oak");
-  for(const side of [-1,1])box(s,side*.64,.29,2.35,.09,.39,2.9,"#704838","oak");
+  const spans=brokenBridge?[[1.24,.68],[3.45,.70]]:[[2.35,2.9]];
+  for(const [z,length] of spans){
+    box(s,0,.10,z,1.28,.18,length,timber,"oak");
+    for(const side of [-1,1])box(s,side*.64,.29,z,.09,.39,length,"#704838","oak");
+  }
   for(const x of [-5,-2.8,2.9,5.1])for(const z of [-2.8,-.65])house(s,x,z,x<0?"#aa5c4b":"#647e84");
   box(s,0,0,-6.1,8,1.3,.42,stone);
   box(s,0,0,-5.84,.83,.94,.11,timber,"oak");
@@ -170,7 +173,7 @@ function draw(canvas,seg,f,state){
   }
   const s=new Stage(c,cam),poly=s.poly.bind(s);s.poly=(pts,col,edge,w)=>poly(pts,col,edge?ink:null,edge?Math.max(w||1,1.2):w);
   const sky=c.createLinearGradient(0,0,0,960);sky.addColorStop(0,"#82adbd");sky.addColorStop(.6,"#f3d8a4");sky.addColorStop(1,"#bdab85");c.fillStyle=sky;c.fillRect(0,0,540,960);
-  if(cityShot){city(s,shot.plan&&p>.20?[...state,{type:shot.plan,x:3,z:5.3}]:state);if(shot.cart)cart(s,k);actor(s,"king",shot.cart?-.5:-.2,0,3.8-k*1.6,t,{walk:1,yaw:2.9});}
+  if(cityShot){city(s,shot.plan&&p>.20?[...state,{type:shot.plan,x:3,z:5.3}]:state,shot.brokenBridge);if(shot.cart)cart(s,k);actor(s,"king",shot.cart?-.5:-.2,0,shot.brokenBridge?3.92:3.8-k*1.6,t,{walk:shot.brokenBridge?0:1,yaw:2.9});}
   else {
     hall(s);
     const walk=shot.action==="descend",u=smooth(p,.04,.82);
@@ -182,6 +185,17 @@ function draw(canvas,seg,f,state){
       for(const offset of [-.65,.65])box(s,.65+offset,.93,-.25,.52,.025,.35,"#fff0bc","plaster");
       s.object(.7,.96,-.22,()=>s.cylinder(.7,.92,-.22,.12,.17,"#843d3d",8));
     }
+    if(shot.apron){
+      const cloth=[[.31,.913,-.92],[1.20,.913,-.92],[1.20,.913,-.12],[.31,.913,-.12]];
+      s.object(.75,.92,-.52,()=>textured(s,cloth,"#b9b1a1","cloth",ink));
+    }
+    if(shot.bread)for(const x of [-.26,.12]){
+      s.object(x,.99,-.4,()=>{
+        s.cylinder(x,.9,-.4,.175,.10,"#b9743c",10);
+        s.cylinder(x,1,-.4,.145,.045,"#daa361",10);
+        for(const dx of [-.04,.04])s.line([x+dx-.02,1.05,-.46],[x+dx+.02,1.05,-.34],"#865332",2);
+      });
+    }
     if(shot.sack)flourSack(s,-.13,-.35);
   }
   s.flush();
@@ -189,16 +203,17 @@ function draw(canvas,seg,f,state){
   light.addColorStop(0,"rgba(255,222,155,.17)");light.addColorStop(.63,"rgba(255,238,202,0)");light.addColorStop(1,"rgba(74,55,65,.065)");
   c.fillStyle=light;c.fillRect(0,0,540,960);
 }
-export function Kingdom({seg,f,state=[],cover=false}){
+export function Kingdom({seg,f,state=[],cover=false,coverTitle="ПОСЛЕДНИЕ ШЕСТЬ МОНЕТ"}){
   const ref=useRef(null);useLayoutEffect(()=>draw(ref.current,seg,f,state),[seg,f,state]);
   const words=seg.words||[],i=words.findIndex(w=>w.e>f),n=i<0?words.length-1:i,start=Math.floor(Math.max(n,0)/3)*3;
   const voting=seg.kingdom.vote&&!cover;
   return <div style={{position:"absolute",inset:0,fontFamily:"DejaVu Sans, sans-serif",color:"white"}}>
     <canvas ref={ref} width={1080} height={1920}/>
     <div style={{position:"absolute",top:112,left:58,fontWeight:900,fontSize:40,textShadow:"0 2px 6px #211"}}>{seg.kingdom.label}</div>
+    <div style={{position:"absolute",right:65,top:98,padding:"9px 22px",borderRadius:14,background:"#352e25",border:"3px solid #bc965d",color:"#ffe5a1",fontWeight:800,fontSize:38,fontVariantNumeric:"tabular-nums"}}>Казна · {seg.kingdom.coins??6}</div>
     {voting&&<div style={{position:"absolute",left:58,right:100,top:242,display:"flex",gap:16}}>
-      {[[ "ФЕРМА","Хлеб сегодня","#48583b"],["КАЗАРМА","Вернуть мост","#4a5366"]].map(([name,detail,background],index)=><div key={name} style={{flex:1,padding:"22px 18px",background,color:"#fff1ce",border:"3px solid #d9b77f",borderRadius:8,opacity:smooth(f,index*7,index*7+9),transform:"translateY("+((1-smooth(f,index*7,index*7+9))*20)+"px)"}}><strong style={{fontSize:42}}>{name}</strong><div style={{fontSize:32,marginTop:5}}>{detail}</div></div>)}
+      {(seg.kingdom.options??[[ "ФЕРМА","Хлеб сегодня","#48583b"],["КАЗАРМА","Вернуть мост","#4a5366"]]).map(([name,detail,background],index)=><div key={name} style={{flex:1,padding:"22px 18px",background,color:"#fff1ce",border:"3px solid #d9b77f",borderRadius:8,opacity:smooth(f,index*7,index*7+9),transform:"translateY("+((1-smooth(f,index*7,index*7+9))*20)+"px)"}}><strong style={{fontSize:42}}>{name}</strong><div style={{fontSize:32,marginTop:5}}>{detail}</div></div>)}
     </div>}
-    <div style={{position:"absolute",bottom:voting?270:360,left:60,right:60,textAlign:"center",fontSize:cover?87:62,fontWeight:900,lineHeight:1.1,textShadow:"0 4px 6px black",WebkitTextStroke:"1px #241c22"}}>{cover?"ПОСЛЕДНИЕ ШЕСТЬ МОНЕТ":words.slice(start,start+3).map(w=>w.w).join(" ")}</div>
+    <div style={{position:"absolute",bottom:voting?270:360,left:60,right:60,textAlign:"center",fontSize:cover?87:62,fontWeight:900,lineHeight:1.1,textShadow:"0 4px 6px black",WebkitTextStroke:"1px #241c22"}}>{cover?coverTitle:words.slice(start,start+3).map(w=>w.w).join(" ")}</div>
   </div>;
 }

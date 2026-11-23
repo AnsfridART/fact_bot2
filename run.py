@@ -247,6 +247,9 @@ def build_props(s):
 
     props = {"segments": segments, "totalFrames": start}
     if s.get("kingdomSeason"):
+        for seg in segments:
+            seg["kingdom"].setdefault("coins", s.get("treasury", 6))
+        props["kingdomCoverTitle"] = s.get("coverTitle", "ПОСЛЕДНИЕ ШЕСТЬ МОНЕТ")
         with open("pilots/kingdom/city.json", encoding="utf-8") as city_file:
             props["kingdomBuildings"] = [b for b in json.load(city_file)["buildings"]
                                           if b["afterEpisode"] < s["kingdomEpisode"]]
