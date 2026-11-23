@@ -259,16 +259,13 @@ STORY_VOICE_FILTERS = {
 }
 
 
-def _story_voice(samples, raw, wav_path, profile, whisper):
+def _story_voice(samples, raw, wav_path, profile):
     _write_wav(raw, samples, 48000)
     filters = [STORY_VOICE_FILTERS[profile]]
-    if whisper:
-        filters.append("highpass=f=100")
-    target = -20 if whisper else -15
     filters.extend([
         "lowpass=f=11500",
         "acompressor=threshold=-19dB:ratio=1.5:attack=20:release=160",
-        f"loudnorm=I={target}:TP=-2:LRA=8",
+        "loudnorm=I=-15:TP=-2:LRA=8",
     ])
     try:
         _ffmpeg(raw, wav_path, ",".join(filters))
@@ -276,7 +273,7 @@ def _story_voice(samples, raw, wav_path, profile, whisper):
         os.remove(raw)
 
 
-def _yandex_full(text, wav_path, voice=None, emotion=None, speed=None, *, profile=None, whisper=False):
+def _yandex_full(text, wav_path, voice=None, emotion=None, speed=None, *, profile=None):
     """Yandex SpeechKit: вся фраза одним запросом — так интонация естественнее."""
     data = {"text": text, "lang": "ru-RU", "voice": voice or config.YANDEX_VOICE,
             "speed": str(speed or config.YANDEX_SPEED), "format": "lpcm", "sampleRateHertz": "48000"}
@@ -299,8 +296,8 @@ def _yandex_full(text, wav_path, voice=None, emotion=None, speed=None, *, profil
         raise RuntimeError(f"SpeechKit {r.status_code}: {r.text[:300]}")
     raw = wav_path + ".raw.wav"
     samples = np.frombuffer(r.content, dtype=np.int16)
-    if profile or whisper:
-        _story_voice(samples, raw, wav_path, profile or "soft", whisper)
+    if profile:
+        _story_voice(samples, raw, wav_path, profile)
         return wav_path
     _write_wav(raw, samples, 48000)
     trim = "silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.02,"
@@ -355,8 +352,16 @@ def _yandex_v3(text, wav_path, voice, role=None, speed=1.0, pitch=0.0):
     raw = wav_path + ".raw.wav"
     _write_wav(raw, np.frombuffer(pcm, dtype=np.int16), 48000)
     trim = "silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.02,"
-    _ffmpeg(raw, wav_path, trim + PRESETS[config.YANDEX_PRESET if config.YANDEX_PRESET in PRESETS else "clean"])
-    os.remove(raw)
+    if role == "whisper":
+        # Сохраняем тихие слоги и снимаем яркость дыхания без шумового порога.
+        filters = ("highpass=f=90,equalizer=f=5200:t=q:w=0.8:g=-4,"
+                   "lowpass=f=10000,deesser=i=0.35,loudnorm=I=-21:TP=-3:LRA=9")
+    else:
+        filters = trim + PRESETS.get(config.YANDEX_PRESET, PRESETS["clean"])
+    try:
+        _ffmpeg(raw, wav_path, filters)
+    finally:
+        os.remove(raw)
     return wav_path
 
 
@@ -364,11 +369,10 @@ def yandex_say(text, wav_path, spec=None, speed=None, *, profile=None, whisper=F
     """Единая точка для SpeechKit: спецификация голоса «голос[:роль[:тон]]» — сама выбирает API v1 или v3."""
     sp = speed or float(config.YANDEX_SPEED)
     if whisper:
-        return _yandex_full(text, wav_path, voice="marina", emotion="whisper",
-                            speed=sp, profile="soft", whisper=True)
+        return _yandex_v3(text, wav_path, voice="marina", role="whisper", speed=sp)
     voice, role, pitch = parse_voice(spec or config.YANDEX_VOICE)
     if voice in V1_VOICES and not pitch and role in (None, "neutral", "good", "evil"):
-        return _yandex_full(text, wav_path, voice=voice, emotion=role, speed=sp, profile=profile, whisper=whisper)
+        return _yandex_full(text, wav_path, voice=voice, emotion=role, speed=sp, profile=profile)
     if profile:
         raise ValueError("Обработка голосов сериала требует голос SpeechKit v1")
     return _yandex_v3(text, wav_path, voice, role, sp, pitch)
