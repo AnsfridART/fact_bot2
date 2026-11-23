@@ -39,11 +39,13 @@ jobs:
               ("02-filipp-soft", "filipp", False),
               ("03-alena-soft", "alena", False),
               ("04-ermil-soft", "ermil", False),
-              ("05-madirus-whisper", "madirus", True),
+              ("05-marina-whisper", "madirus", True),
+              ("06-marina-whisper-six-weeks", "madirus", True),
           ]
           for name, voice, whisper in samples:
               wav = output / f"{name}.wav"
-              tts.yandex_say(line, str(wav), spec=voice, speed=speed, profile="soft", whisper=whisper)
+              text = "У нас всего шесть недель." if name.startswith("06-") else line
+              tts.yandex_say(text, str(wav), spec=voice, speed=speed, profile="soft", whisper=whisper)
               subprocess.run(["ffmpeg", "-loglevel", "error", "-i", str(wav), "-b:a", "128k",
                               str(wav.with_suffix(".mp3"))], check=True)
               wav.unlink()
