@@ -93,7 +93,8 @@ export function city(s,buildings,brokenBridge=false){
     if(type==="barracks"){house(s,x,z,"#536b81");tower(s,x+1.15,z+.4,1.6);}
   }
 }
-function hall(s){
+function hall(s,north=false){
+  const heraldry=north?"#435d79":"#a54f4d";
   textured(s,[[-8,0,-5],[8,0,-5],[8,0,7],[-8,0,7]],palette.flagstone,"flagstone");
   textured(s,[[-2.94,.01,-3],[-1.66,.01,-3],[-1.66,.01,4],[-2.94,.01,4]],"#a45850","cloth","#ad864c",2);
   for(const x of [-4,-1,2])s.poly([[x-1,.016,-3],[x+.28,.016,-3],[x+2.7,.016,2.5],[x+1.12,.016,2.5]],"rgba(255,226,156,.21)");
@@ -113,9 +114,9 @@ function hall(s){
     const front=-3.98;
     s.object(x,3.1,front,()=>{
       const banner=[[x-.31,4.18,front],[x+.31,4.18,front],[x+.31,2.63,front],[x-.31,2.63,front]];
-      textured(s,banner,"#a54f4d","cloth",ink);
-      s.poly([banner[3],banner[2],[x,2.40,front]],"#a54f4d",ink);
-      s.poly([[x,3.72,front],[x+.16,3.43,front],[x,3.14,front],[x-.16,3.43,front]],gold);
+      textured(s,banner,heraldry,"cloth",ink);
+      s.poly([banner[3],banner[2],[x,2.40,front]],heraldry,ink);
+      s.poly([[x,3.72,front],[x+.16,3.43,front],[x,3.14,front],[x-.16,3.43,front]],north?"#d4dae1":gold);
     });
   }
   for(let i=0;i<3;i++)box(s,-2.3,i*.16,-2.3-i*.34,2.6,.16,1.9-i*.3,"#ac9376");
@@ -129,19 +130,20 @@ function actor(s,role,x,y,z,t,{walk=0,yaw=0,gesture=0,mood=0,speak=false}={}){
     const line=(p,w,col=ink)=>{c.beginPath();c.moveTo(...p[0]);p.slice(1).forEach(a=>c.lineTo(...a));c.lineWidth=w;c.strokeStyle=col;c.stroke()};
     const shape=(p,col)=>{c.beginPath();c.moveTo(...p[0]);p.slice(1).forEach(a=>c.lineTo(...a));c.closePath();c.fillStyle=col;c.fill();c.strokeStyle=ink;c.lineWidth=2;c.stroke()};
     const oval=(a,b,w,h,col,edge=true)=>{c.beginPath();c.ellipse(a,b,w,h,0,0,Math.PI*2);c.fillStyle=col;c.fill();if(edge){c.strokeStyle=ink;c.lineWidth=2;c.stroke()}};
-    const swing=Math.sin(8*t)*walk,back=Math.cos(yaw)<-.18,side=Math.sin(yaw),regal=role==="king",clerk=role==="mira";
+    const swing=Math.sin(8*t)*walk,back=Math.cos(yaw)<-.18,side=Math.sin(yaw),northern=role==="rival",regal=role==="king"||northern,clerk=role==="mira";
     for(const k of [-1,1]){const foot=10*k+15*k*swing,lift=Math.max(0,k*Math.cos(8*t))*walk*9;line([[k*8,-45],[k*7+k*swing*9,-22-lift],[foot,-5-lift]],4.5);oval(foot+side*3,-4-lift,7,3.3,"#60413b")}
     c.translate(0,-Math.abs(swing)*2-Math.sin(t*3)*.7);
-    const cloth=regal?"#315d76":clerk?"#548679":"#91624a";
+    const cloth=northern?"#3b465a":regal?"#315d76":clerk?"#548679":"#91624a";
     shape([[-13,-92],[12,-93],[17,-80],[18,-43],[-16,-43],[-18,-79]],cloth);
-    if(regal)shape([[-15,-89],[-23,-47],[-16,-42],[-7,-62],[-7,-88]],"#963f4b");
+    if(regal)shape([[-15,-89],[-23,-47],[-16,-42],[-7,-62],[-7,-88]],northern?"#8fabb5":"#963f4b");
     if(!back){line([[-12,-56],[14,-55]],4,"#513c35");oval(2,-55,3,3,gold)}
     for(const k of [-1,1]){const hand=[k*(19+gesture*12)-k*swing*7,-52-gesture*(k===1?38:11)];line([[k*13,-83],[k*(22+gesture*4),-68],hand],4.2);oval(...hand,3.7,4.3,"#f4c195")}
     c.rotate(.045*Math.sin(t*3)*gesture);
     oval(0,-112,26,25,back?"#614436":"#ffe0b5");
     if(!back){for(const k of [-1,1]){const ex=side*11+k*(10-3*Math.abs(side));oval(ex,-114,4.5,5.6,"#fff5df");oval(ex+side,-114,2,2.8,ink,false);line([[ex-5,-122+k*mood*2],[ex+3,-124]],2)}
       oval(side*10+1,-101,4,1.4+(speak?2.3*Math.abs(Math.sin(13*t)):0),"#864f46")}
-    if(regal)shape([[-24,-128],[-27,-146],[-15,-138],[-7,-150],[1,-139],[13,-151],[17,-137],[26,-144],[23,-128]],gold);
+    if(northern&&!back)shape([[-23,-109],[-13,-103],[-3,-99],[8,-101],[23,-109],[19,-91],[4,-81],[-12,-91]],"#96979e");
+    if(regal)shape([[-24,-128],[-27,-146],[-15,-138],[-7,-150],[1,-139],[13,-151],[17,-137],[26,-144],[23,-128]],northern?"#d5dae3":gold);
     else{shape([[-24,-123],[-23,-134],[-10,-143],[8,-141],[23,-132],[25,-123],[8,-129],[-8,-127]],clerk?"#863f38":"#405563");if(clerk)oval(-22,-130,8,8,"#7d4237")}
     c.restore();
   });
@@ -174,7 +176,10 @@ function draw(canvas,seg,f,state){
   const s=new Stage(c,cam),poly=s.poly.bind(s);s.poly=(pts,col,edge,w)=>poly(pts,col,edge?ink:null,edge?Math.max(w||1,1.2):w);
   const sky=c.createLinearGradient(0,0,0,960);sky.addColorStop(0,"#82adbd");sky.addColorStop(.6,"#f3d8a4");sky.addColorStop(1,"#bdab85");c.fillStyle=sky;c.fillRect(0,0,540,960);
   if(cityShot){city(s,shot.plan&&p>.20?[...state,{type:shot.plan,x:3,z:5.3}]:state,shot.brokenBridge);if(shot.cart)cart(s,k);actor(s,"king",shot.cart?-.5:-.2,0,shot.brokenBridge?3.92:3.8-k*1.6,t,{walk:shot.brokenBridge?0:1,yaw:2.9});}
-  else {
+  else if(shot.set==="north"){
+    hall(s,true);
+    actor(s,"rival",-.18,0,.25,t,{yaw:-.46,gesture:.45+.24*Math.sin(t*1.8),speak:true,mood:1});
+  } else {
     hall(s);
     const walk=shot.action==="descend",u=smooth(p,.04,.82);
     actor(s,"king",walk?lerp(-2.3,-.85,u):-.85,walk?.48*(1-u):0,walk?lerp(-2.3,.25,u):.25,t,{walk:walk&&u<1?.8:0,yaw:shot.action==="turn"?lerp(3.1,-1,k):.7,gesture:Math.abs(Math.sin(t*1.4))*.8,speak:shot.role==="king",mood:.7});
@@ -211,6 +216,7 @@ export function Kingdom({seg,f,state=[],cover=false,coverTitle="ПОСЛЕДНИ
     <canvas ref={ref} width={1080} height={1920}/>
     <div style={{position:"absolute",top:112,left:58,fontWeight:900,fontSize:40,textShadow:"0 2px 6px #211"}}>{seg.kingdom.label}</div>
     <div style={{position:"absolute",right:65,top:98,padding:"9px 22px",borderRadius:14,background:"#352e25",border:"3px solid #bc965d",color:"#ffe5a1",fontWeight:800,fontSize:38,fontVariantNumeric:"tabular-nums"}}>Казна · {seg.kingdom.coins??6}</div>
+    {seg.kingdom.winterWeeks!=null&&<div style={{position:"absolute",right:65,top:174,padding:"6px 18px",borderRadius:10,background:"#344454",color:"#edf4f8",fontWeight:700,fontSize:33}}>До зимы · {seg.kingdom.winterWeeks} нед.</div>}
     {voting&&<div style={{position:"absolute",left:58,right:100,top:242,display:"flex",gap:16}}>
       {(seg.kingdom.options??[[ "ФЕРМА","Хлеб сегодня","#48583b"],["КАЗАРМА","Вернуть мост","#4a5366"]]).map(([name,detail,background],index)=><div key={name} style={{flex:1,padding:"22px 18px",background,color:"#fff1ce",border:"3px solid #d9b77f",borderRadius:8,opacity:smooth(f,index*7,index*7+9),transform:"translateY("+((1-smooth(f,index*7,index*7+9))*20)+"px)"}}><strong style={{fontSize:42}}>{name}</strong><div style={{fontSize:32,marginTop:5}}>{detail}</div></div>)}
     </div>}
