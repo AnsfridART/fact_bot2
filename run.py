@@ -190,7 +190,12 @@ def build_props(s):
             if not config.SPEECHKIT_API_KEY:
                 raise RuntimeError("Для этого выпуска требуется ключ SpeechKit")
             speaker = p.get("voice", s["voice"])
-            tts.yandex_say(clean(p["text"]), os.path.join(config.PUBLIC_DIR, wav), spec=speaker, speed=float(config.YANDEX_SPEED)*mul)
+            tts.yandex_say(
+                clean(p["text"]), os.path.join(config.PUBLIC_DIR, wav),
+                spec=speaker, speed=float(config.YANDEX_SPEED) * mul,
+                profile=s.get("voiceProfiles", {}).get(speaker),
+                whisper=p.get("whisper", False),
+            )
             print(f"SpeechKit: сцена {i}, голос {speaker}", flush=True)
         else:
             synth_voiced(clean(p["text"]), os.path.join(config.PUBLIC_DIR, wav), mul, s.get("voice"), s.get("voice2"))
@@ -372,7 +377,7 @@ def build_props(s):
     return props
 
 
-def add_music(video):
+def add_music(video, quiet=False):
     """Подмешивает музыку (приглушается под голос) и звуковые эффекты."""
     has_music = os.path.exists("work_music.audio")
     has_sfx = os.path.exists("work_sfx.wav")
@@ -385,15 +390,18 @@ def add_music(video):
         inputs += ["-stream_loop", "-1", "-i", "work_music.audio"]
     if has_sfx:
         inputs += ["-i", "work_sfx.wav"]
-    fx_in = f"[{2 if has_music else 1}:a]{fmt},volume=0.9[fx];" if has_sfx else ""
+    effects_gain = 0.45 if quiet else 0.9
+    music_gain = 0.65 if quiet else 1.6
+    fallback_gain = 0.25 if quiet else 0.55
+    fx_in = f"[{2 if has_music else 1}:a]{fmt},volume={effects_gain}[fx];" if has_sfx else ""
     fx = "[fx]" if has_sfx else ""
     n = 1 + int(has_music) + int(has_sfx)
     tail = f"amix=inputs={n}:duration=first:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=11,alimiter=limit=0.95[a]"  # громкость как у роликов в TikTok
     if has_music:
         graphs = (
-            f"[0:a]{fmt},asplit=2[v][sc];[1:a]{fmt},volume=1.6[m];{fx_in}"
+            f"[0:a]{fmt},asplit=2[v][sc];[1:a]{fmt},volume={music_gain}[m];{fx_in}"
             f"[m][sc]sidechaincompress=threshold=0.03:ratio=5:attack=60:release=700[md];[v][md]{fx}{tail}",
-            f"[0:a]{fmt}[v];[1:a]{fmt},volume=0.55[m];{fx_in}[v][m]{fx}{tail}",
+            f"[0:a]{fmt}[v];[1:a]{fmt},volume={fallback_gain}[m];{fx_in}[v][m]{fx}{tail}",
         )
     else:
         graphs = (f"[0:a]{fmt}[v];{fx_in}[v]{fx}{tail}",)
@@ -409,13 +417,13 @@ def add_music(video):
     raise RuntimeError(last_err)
 
 
-def render():
+def render(quiet=False):
     os.makedirs(os.path.dirname(config.OUTPUT), exist_ok=True)
     subprocess.run(["npx", "remotion", "render", "src/index.jsx", "Main", config.OUTPUT,
                     "--props=./props.json", "--concurrency=100%", "--crf=20",
                     "--timeout=120000", "--log=warn", "--gl=swangle"], check=True)
     try:
-        final = add_music(config.OUTPUT)
+        final = add_music(config.OUTPUT, quiet=quiet)
         shutil.move(final, config.OUTPUT)
     except Exception as e:
         print("Не удалось подмешать музыку:", e)
@@ -485,7 +493,7 @@ def main():
         return
 
     build_props(s)
-    video = render()
+    video = render(quiet=any(scene.get("whisper") for scene in [s.get("hook", {}), *s["scenes"]]))
     if s.get("serial"):
         from serial_season import verify_video
         verify_video(video, FPS)

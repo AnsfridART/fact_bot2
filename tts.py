@@ -246,7 +246,59 @@ def _edge(text, wav_path, voice=None, rate=None, preset=None):
     return wav_path
 
 
-def _yandex_full(text, wav_path, voice=None, emotion=None, speed=None):
+
+STORY_VOICE_FILTERS = {
+    "soft": "highpass=f=75,equalizer=f=3500:t=q:w=1:g=-2,deesser=i=0.25",
+    "bright": (
+        "highpass=f=100,asetrate=57100,aresample=48000,atempo=0.84063,"
+        "equalizer=f=2400:t=q:w=1:g=1.5,deesser=i=0.35"
+    ),
+}
+
+
+def _whisper_pcm(samples, sample_rate):
+    """Передаёт огибающую речи шумовому возбуждению, убирая основной тон."""
+    size, hop = sample_rate // 50, sample_rate // 200
+    window = np.hanning(size)
+    dry = np.pad(samples.astype(float), (size // 2, size))
+    wet = np.zeros_like(dry)
+    weights = np.zeros_like(dry)
+    rng = np.random.default_rng(0)
+    # Сглаживаем спектр на ±200 Гц, сохраняя форманты и согласные.
+    kernel = np.hanning(9)
+    kernel /= kernel.sum()
+    for start in range(0, len(dry) - size + 1, hop):
+        frame = slice(start, start + size)
+        power = np.abs(np.fft.rfft(dry[frame] * window)) ** 2
+        envelope = np.sqrt(np.convolve(power, kernel, mode="same"))
+        noise = np.fft.rfft(rng.standard_normal(size) * window)
+        breath = np.fft.irfft(envelope * noise / np.sqrt(np.sum(window ** 2)), n=size)
+        wet[frame] += breath * window
+        weights[frame] += window ** 2
+    result = slice(size // 2, size // 2 + len(samples))
+    return np.clip(wet[result] / weights[result], -32768, 32767).astype(np.int16)
+
+
+def _story_voice(samples, raw, wav_path, profile, whisper):
+    if whisper:
+        samples = _whisper_pcm(samples, 48000)
+    _write_wav(raw, samples, 48000)
+    filters = ["adeclick", "afftdn=nr=5:nf=-55", STORY_VOICE_FILTERS[profile]]
+    if whisper:
+        filters.append("highpass=f=180")
+    target = -18 if whisper else -15
+    filters.extend([
+        "lowpass=f=11500",
+        "acompressor=threshold=-19dB:ratio=2:attack=12:release=110",
+        f"loudnorm=I={target}:TP=-2:LRA=8",
+    ])
+    try:
+        _ffmpeg(raw, wav_path, ",".join(filters))
+    finally:
+        os.remove(raw)
+
+
+def _yandex_full(text, wav_path, voice=None, emotion=None, speed=None, *, profile=None, whisper=False):
     """Yandex SpeechKit: вся фраза одним запросом — так интонация естественнее."""
     data = {"text": text, "lang": "ru-RU", "voice": voice or config.YANDEX_VOICE,
             "speed": str(speed or config.YANDEX_SPEED), "format": "lpcm", "sampleRateHertz": "48000"}
@@ -268,7 +320,11 @@ def _yandex_full(text, wav_path, voice=None, emotion=None, speed=None):
     if not r.ok:
         raise RuntimeError(f"SpeechKit {r.status_code}: {r.text[:300]}")
     raw = wav_path + ".raw.wav"
-    _write_wav(raw, np.frombuffer(r.content, dtype=np.int16), 48000)
+    samples = np.frombuffer(r.content, dtype=np.int16)
+    if profile:
+        _story_voice(samples, raw, wav_path, profile, whisper)
+        return wav_path
+    _write_wav(raw, samples, 48000)
     trim = "silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.02,"
     _ffmpeg(raw, wav_path, trim + PRESETS["clean"])
     os.remove(raw)
@@ -326,12 +382,14 @@ def _yandex_v3(text, wav_path, voice, role=None, speed=1.0, pitch=0.0):
     return wav_path
 
 
-def yandex_say(text, wav_path, spec=None, speed=None):
+def yandex_say(text, wav_path, spec=None, speed=None, *, profile=None, whisper=False):
     """Единая точка для SpeechKit: спецификация голоса «голос[:роль[:тон]]» — сама выбирает API v1 или v3."""
     voice, role, pitch = parse_voice(spec or config.YANDEX_VOICE)
     sp = speed or float(config.YANDEX_SPEED)
     if voice in V1_VOICES and not pitch and role in (None, "neutral", "good", "evil"):
-        return _yandex_full(text, wav_path, voice=voice, emotion=role, speed=sp)
+        return _yandex_full(text, wav_path, voice=voice, emotion=role, speed=sp, profile=profile, whisper=whisper)
+    if profile or whisper:
+        raise ValueError("Обработка голосов сериала требует голос SpeechKit v1")
     return _yandex_v3(text, wav_path, voice, role, sp, pitch)
 
 
