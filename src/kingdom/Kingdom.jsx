@@ -123,7 +123,7 @@ function hall(s,north=false){
   box(s,-2.3,.48,-2.7,1.24,.67,1,"#804a3a","oak");box(s,-2.3,.55,-3.1,1.26,1.85,.2,"#ae594a","cloth");
   box(s,.7,0,-.55,2.3,.78,.85,timber,"oak");box(s,.7,.78,-.55,2.6,.12,1.10,"#b98453","oak");
 }
-function actor(s,role,x,y,z,t,{walk=0,yaw=0,gesture=0,mood=0,speak=false}={}){
+function actor(s,role,x,y,z,t,{walk=0,yaw=0,gesture=0,mood=0,speak=false,uncrowned=false}={}){
   s.object(x,y+.85,z,()=>{
     s.shadow(x,z,.37,.17); const [px,py,,scale]=s.project(x,y,z),c=s.c;
     c.save();c.translate(px,py);c.scale(scale/86,scale/86);c.lineCap="round";c.lineJoin="round";
@@ -143,7 +143,7 @@ function actor(s,role,x,y,z,t,{walk=0,yaw=0,gesture=0,mood=0,speak=false}={}){
     if(!back){for(const k of [-1,1]){const ex=side*11+k*(10-3*Math.abs(side));oval(ex,-114,4.5,5.6,"#fff5df");oval(ex+side,-114,2,2.8,ink,false);line([[ex-5,-122+k*mood*2],[ex+3,-124]],2)}
       oval(side*10+1,-101,4,1.4+(speak?2.3*Math.abs(Math.sin(13*t)):0),"#864f46")}
     if(northern&&!back)shape([[-23,-109],[-13,-103],[-3,-99],[8,-101],[23,-109],[19,-91],[4,-81],[-12,-91]],"#96979e");
-    if(regal)shape([[-24,-128],[-27,-146],[-15,-138],[-7,-150],[1,-139],[13,-151],[17,-137],[26,-144],[23,-128]],northern?"#d5dae3":gold);
+    if(regal&&!uncrowned)shape([[-24,-128],[-27,-146],[-15,-138],[-7,-150],[1,-139],[13,-151],[17,-137],[26,-144],[23,-128]],northern?"#d5dae3":gold);
     else{shape([[-24,-123],[-23,-134],[-10,-143],[8,-141],[23,-132],[25,-123],[8,-129],[-8,-127]],clerk?"#863f38":"#405563");if(clerk)oval(-22,-130,8,8,"#7d4237")}
     c.restore();
   });
@@ -175,14 +175,14 @@ function draw(canvas,seg,f,state){
   }
   const s=new Stage(c,cam),poly=s.poly.bind(s);s.poly=(pts,col,edge,w)=>poly(pts,col,edge?ink:null,edge?Math.max(w||1,1.2):w);
   const sky=c.createLinearGradient(0,0,0,960);sky.addColorStop(0,"#82adbd");sky.addColorStop(.6,"#f3d8a4");sky.addColorStop(1,"#bdab85");c.fillStyle=sky;c.fillRect(0,0,540,960);
-  if(cityShot){city(s,shot.plan&&p>.20?[...state,{type:shot.plan,x:3,z:5.3}]:state,shot.brokenBridge);if(shot.cart)cart(s,k);actor(s,"king",shot.cart?-.5:-.2,0,shot.brokenBridge?3.92:3.8-k*1.6,t,{walk:shot.brokenBridge?0:1,yaw:2.9});}
+  if(cityShot){city(s,shot.plan&&p>.20?[...state,{type:shot.plan,x:3,z:5.3}]:state,shot.brokenBridge);if(shot.cart)cart(s,k);actor(s,"king",shot.cart?-.5:-.2,0,shot.brokenBridge?3.92:3.8-k*1.6,t,{walk:shot.brokenBridge?0:1,yaw:2.9,uncrowned:shot.uncrowned});}
   else if(shot.set==="north"){
     hall(s,true);
     actor(s,"rival",-.18,0,.25,t,{yaw:-.46,gesture:.45+.24*Math.sin(t*1.8),speak:true,mood:1});
   } else {
     hall(s);
     const walk=shot.action==="descend",u=smooth(p,.04,.82);
-    actor(s,"king",walk?lerp(-2.3,-.85,u):-.85,walk?.48*(1-u):0,walk?lerp(-2.3,.25,u):.25,t,{walk:walk&&u<1?.8:0,yaw:shot.action==="turn"?lerp(3.1,-1,k):.7,gesture:Math.abs(Math.sin(t*1.4))*.8,speak:shot.role==="king",mood:.7});
+    actor(s,"king",walk?lerp(-2.3,-.85,u):-.85,walk?.48*(1-u):0,walk?lerp(-2.3,.25,u):.25,t,{walk:walk&&u<1?.8:0,yaw:shot.action==="turn"?lerp(3.1,-1,k):.7,gesture:Math.abs(Math.sin(t*1.4))*.8,speak:shot.role==="king",mood:.7,uncrowned:shot.uncrowned});
     actor(s,"mira",1.35,0,-.12,t,{yaw:-.75,gesture:shot.role==="mira"?.65+.28*Math.sin(t*2):.12,speak:shot.role==="mira"});
     if(shot.role==="warden")actor(s,"warden",.50,0,1.05,t,{yaw:-.8,gesture:.7,speak:true});
     for(let i=0;i<(shot.coins??6);i++)s.object(.05+i*.20,.99,-.43,()=>s.cylinder(.05+i*.20,.90,-.43,.11,.08,gold,8));
